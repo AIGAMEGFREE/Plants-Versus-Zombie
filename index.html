@@ -554,6 +554,8 @@ const S = {
   seedSelectStartBtn: null, seedSelectBackBtn: null,
   achievements: {}, achievementQueue: [],
   minigameType: null, minigameTime: 0, minigameScore: 0, minigameBest: {}, minigameCards: [],
+  // Флаги для миниигр
+  minigameFlags: { endless: false, sunny: false, gravity: false },
 };
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -580,7 +582,7 @@ function isPlantAwake(plantType) {
 }
 
 // ==================== СОХРАНЕНИЕ ====================
-const SAVE_KEY = 'pvz_save_v17';
+const SAVE_KEY = 'pvz_save_v18';
 let saveToastTimer = null;
 function showSaveToast(msg) {
   const el = document.getElementById('saveToast');
@@ -593,7 +595,7 @@ function showSaveToast(msg) {
 function saveProgress(silent = false) {
   try {
     const data = {
-      version: 17,
+      version: 18,
       unlocked: S.unlockedLevels,
       stars: S.levelStars,
       totalKills: S.totalKillsEver,
@@ -646,7 +648,7 @@ function unlockAchievement(id) {
 
 function checkAchievements() {
   if (S.killedZombies > 0) unlockAchievement('first_blood');
-  if (S.killedZombies >= 100) unlockAchievement('veteran');
+  if (S.totalKillsEver >= 100) unlockAchievement('veteran');
   if (S.sun >= 1000) unlockAchievement('sunflower_farm');
   if (S.unlockedLevels >= 10) unlockAchievement('collector');
   if (S.garlicPushes >= 5) unlockAchievement('garlic_master');
@@ -2359,7 +2361,6 @@ function drawGameScene() {
     if (bgCacheYard) ctx.drawImage(bgCacheYard, 0, 0);
   }
 
-  // КРАТЕРЫ (под всем остальным)
   for (const c of S.craters) {
     const a = clamp(c.life / c.maxLife, 0, 1);
     ctx.save();
@@ -2476,6 +2477,28 @@ function drawGameScene() {
   drawParticles();
   drawTopBar();
   drawBottomBar();
+
+  // Отображение очков миниигры
+  if (S.minigameType === 'sunny_day') {
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.beginPath(); ctx.roundRect(W/2 - 180, 50, 360, 50, 10); ctx.fill();
+    ctx.strokeStyle = '#ffeb3b'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('☀️ Цель: 500 солнца  (' + Math.floor(S.sun) + ')', W/2, 75);
+  }
+  if (S.minigameType === 'endless') {
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.beginPath(); ctx.roundRect(W/2 - 180, 50, 360, 50, 10); ctx.fill();
+    ctx.strokeStyle = '#ffeb3b'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('♾️ Волна: ' + S.currentWave + '  Убито: ' + S.killedZombies, W/2, 75);
+  }
 }
 
 // ==================== ВЕРХНЯЯ ПАНЕЛЬ ====================
@@ -2512,7 +2535,7 @@ function drawTopBar() {
   ctx.font = 'bold 18px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(S.sun, scX + 40, scY + 69);
+  ctx.fillText(Math.floor(S.sun), scX + 40, scY + 69);
 
   const startX = scX + sunW + 4;
   for (let i = 0; i < seeds.length; i++) {
@@ -3171,14 +3194,22 @@ function drawAchievements() {
 // ==================== СТАРТ ====================
 function startMinigame(mg) {
   S.minigameType = mg.id;
+  S.minigameScore = 0;
+  S.minigameTime = 0;
+  S.minigameFlags = { endless: false, sunny: false, gravity: false };
+  if (mg.config.endless) S.minigameFlags.endless = true;
+  if (mg.config.sunny) S.minigameFlags.sunny = true;
+  if (mg.config.gravity) S.minigameFlags.gravity = true;
+
   const lvl = {
-    id: -1, name: 'MG', location: 'yard', rows: 5, rowsOffset: 0, time: 'day',
+    id: -1, name: mg.name.slice(0, 6), location: 'yard', rows: 5, rowsOffset: 0, time: 'day',
     seeds: mg.config.seeds || ['peashooter','sunflower','wallnut'],
-    totalZombies: mg.config.endless ? 9999 : 30,
+    totalZombies: mg.config.endless ? 9999 : (mg.config.sunny ? 9999 : 30),
     spawnInterval: mg.config.spawnRate || 5000,
     types: ['basic','cone','bucket','flag','football','dancer'],
     waves: mg.config.endless ? 999 : 5,
     desc: mg.name,
+    _mgConfig: mg.config,
   };
   startLevel(lvl);
   S.minigameType = mg.id;
@@ -3200,19 +3231,22 @@ function startLevelWithSeedSelect(level) {
 
 // ==================== ЛОГИКА ====================
 function update(dt) {
-  S.time += dt;
+  // ВАЖНО: S.time увеличивается только в loop(), не здесь!
   const dts = dt / 1000;
 
   for (const k in S.cooldowns) {
     S.cooldowns[k] = Math.max(0, S.cooldowns[k] - dt);
   }
 
-  S.sunTimer += dt;
-  if (S.sunTimer > 6500) {
-    S.sunTimer = 0;
-    const x = rand(GRID_X + 20, GRID_X + GRID_W - 20);
-    const targetY = rand(activeTop() + 40, activeBottom() - 40);
-    S.suns.push({ x, y: -30, targetY, life: 10000, maxLife: 10000, vy: 1.4, phase: Math.random() * 10, value: 25 });
+  // Солнце падает только в обычных уровнях (не в sunny_day)
+  if (!S.minigameFlags.sunny) {
+    S.sunTimer += dt;
+    if (S.sunTimer > 6500) {
+      S.sunTimer = 0;
+      const x = rand(GRID_X + 20, GRID_X + GRID_W - 20);
+      const targetY = rand(activeTop() + 40, activeBottom() - 40);
+      S.suns.push({ x, y: -30, targetY, life: 10000, maxLife: 10000, vy: 1.4, phase: Math.random() * 10, value: 25 });
+    }
   }
 
   // Растения
@@ -3242,7 +3276,7 @@ function update(dt) {
         if (p.chewTimer <= 0) p.chewing = false;
       } else {
         p.shootTimer += dt;
-        const target = S.zombies.find(z => z.row === p.row && z.hp > 0 && z.x < YARD_RIGHT && Math.abs(z.x - cellCX(p.col)) < 60);
+        const target = S.zombies.find(z => z.row === p.row && z.hp > 0 && z.x < YARD_RIGHT && Math.abs(z.x - cellCX(p.col)) < 60 && !z.hypnotized);
         if (target && p.shootTimer > 3000) {
           p.shootTimer = 0; p.chewing = true; p.chewTimer = 6000;
           target.hp -= 3000;
@@ -3282,10 +3316,13 @@ function update(dt) {
       if (p.shootTimer > 3000) {
         p.shootTimer = 0;
         const target = S.zombies.find(z => z.row === p.row && Math.abs(z.x - cellCX(p.col)) < 80 && z.hp > 0 && !z.hypnotized);
-        if (target) { target.hypnotized = true; target.hp = target.maxHp; }
+        if (target) {
+          target.hypnotized = true;
+          target.hp = target.maxHp;
+          target.attackTimer = 0;
+        }
       }
     }
-    // Puffshroom
     if (p.type === 'puffshroom') {
       p.shootTimer += dt;
       const target = S.zombies.find(z =>
@@ -3300,7 +3337,6 @@ function update(dt) {
         });
       }
     }
-    // Fumeshroom
     if (p.type === 'fumeshroom') {
       p.shootTimer += dt;
       const target = S.zombies.find(z =>
@@ -3321,7 +3357,6 @@ function update(dt) {
         });
       }
     }
-    // Scaredy
     if (p.type === 'scaredy') {
       const closeZombie = S.zombies.find(z =>
         z.row === p.row && z.hp > 0 && !z.hypnotized &&
@@ -3484,9 +3519,43 @@ function update(dt) {
 
   // Спавн зомби
   S.zombieSpawnTimer += dt;
-  if (S.spawnedZombies < S.totalZombies && S.zombieSpawnTimer > S.currentLevel.spawnInterval) {
+  const spawnInterval = S.currentLevel.spawnInterval || 5000;
+
+  // В миниигре endless спавн ускоряется с волнами
+  let effectiveInterval = spawnInterval;
+  if (S.minigameFlags.endless) {
+    effectiveInterval = Math.max(800, spawnInterval * Math.pow(0.92, S.currentWave - 1));
+  }
+
+  const canSpawn = S.minigameFlags.endless || S.minigameFlags.sunny || S.spawnedZombies < S.totalZombies;
+  if (canSpawn && S.zombieSpawnTimer > effectiveInterval) {
     S.zombieSpawnTimer = 0;
     spawnZombie();
+
+    // В gravity-миниигре зомби падают с неба
+    if (S.minigameFlags.gravity) {
+      const z = S.zombies[S.zombies.length - 1];
+      if (z) {
+        z.y_air = cellCY(z.row) - 200;
+        z.falling = true;
+      }
+    }
+  }
+
+  // Падение зомби в gravity-миниигре
+  if (S.minigameFlags.gravity) {
+    for (const z of S.zombies) {
+      if (z.falling && z.y_air !== undefined) {
+        z.y_air += 400 * dts;
+        const groundY = cellCY(z.row);
+        if (z.y_air >= groundY) {
+          z.y_air = groundY;
+          z.falling = false;
+          S.shake = 4;
+          addParticles(z.x, groundY + 20, 8, '#8b5a2b', 4, 400, 4);
+        }
+      }
+    }
   }
 
   if (S.currentLevel.boss === 'zomboss' && !S.bossSpawned && S.spawnedZombies >= S.totalZombies - 1) {
@@ -3501,17 +3570,50 @@ function update(dt) {
     S.shake = 30;
   }
 
+  // Волны
   const zombiesPerWave = Math.ceil(S.currentLevel.totalZombies / S.currentLevel.waves);
   if (S.killedZombies >= S.currentWave * zombiesPerWave && S.currentWave < S.currentLevel.waves) {
     const aliveThisWave = S.zombies.filter(z => z.hp > 0 && z.type !== 'zomboss').length;
-    if (aliveThisWave === 0) { S.currentWave++; S.zombieSpawnTimer = 0; }
+    if (aliveThisWave === 0) {
+      S.currentWave++;
+      S.zombieSpawnTimer = 0;
+      if (S.currentLevel.boss && S.currentWave === S.currentLevel.waves) {
+        S.bossSpawned = false;
+      }
+    }
   }
 
-  S.levelProgress = clamp(S.killedZombies / S.totalZombies, 0, 1);
+  // В endless и sunny волны растут по таймеру
+  if (S.minigameFlags.endless || S.minigameFlags.sunny) {
+    S.minigameTime += dt;
+    if (S.minigameTime > 20000) {
+      S.minigameTime = 0;
+      S.currentWave++;
+    }
+  }
 
-  const bossAlive = S.zombies.some(z => (z.type === 'zomboss') && z.hp > 0);
-  if (S.killedZombies >= S.totalZombies && S.zombies.length === 0 && S.spawnedZombies >= S.totalZombies && !bossAlive) {
-    gameOver(true);
+  S.levelProgress = S.minigameFlags.endless || S.minigameFlags.sunny
+    ? clamp(S.currentWave / 20, 0, 1)
+    : clamp(S.killedZombies / S.totalZombies, 0, 1);
+
+  // Проверка победы
+  if (S.minigameFlags.sunny) {
+    if (S.sun >= 500) {
+      S.minigameScore = Math.floor(S.sun);
+      gameOver(true);
+    }
+  } else if (S.minigameFlags.endless) {
+    // Бесконечный - никогда не побеждает, только поражение
+    // (или можно сделать победу после 20 волн)
+    if (S.currentWave > 20) {
+      S.minigameScore = S.killedZombies;
+      gameOver(true);
+    }
+  } else {
+    const bossAlive = S.zombies.some(z => (z.type === 'zomboss') && z.hp > 0);
+    if (S.killedZombies >= S.totalZombies && S.zombies.length === 0 && S.spawnedZombies >= S.totalZombies && !bossAlive) {
+      gameOver(true);
+    }
   }
 
   if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 0.02);
@@ -3541,6 +3643,7 @@ function spawnZombie() {
     hp: def.hp, maxHp: def.hp, speed: def.speed, dmg: def.dmg,
     walkPhase: Math.random() * Math.PI * 2,
     slowTimer: 0, hitFlash: 0, dyingTimer: 0, attackTimer: 0, garlicPushTimer: 0, hypnotized: false,
+    y_air: undefined, falling: false,
   });
   S.spawnedZombies++;
 }
@@ -3562,6 +3665,7 @@ function gameOver(won) {
     S.totalWinsEver++;
     S.totalKillsEver += S.killedZombies;
     if (S.minigameType) {
+      if (S.minigameScore === 0) S.minigameScore = S.killedZombies;
       const best = S.minigameBest[S.minigameType] || 0;
       if (S.minigameScore > best) S.minigameBest[S.minigameType] = S.minigameScore;
     }
@@ -3569,6 +3673,9 @@ function gameOver(won) {
     saveProgress();
   } else {
     S.shake = 30;
+    // Всё равно засчитываем убийства
+    S.totalKillsEver += S.killedZombies;
+    saveProgress(true);
   }
 }
 
@@ -3696,6 +3803,7 @@ canvas.addEventListener('click', (e) => {
     S.scene = 'levelselect';
     S.gameOver = false;
     S.minigameType = null;
+    S.minigameFlags = { endless: false, sunny: false, gravity: false };
     return;
   }
 
@@ -3731,6 +3839,7 @@ canvas.addEventListener('click', (e) => {
     S.scene = 'levelselect';
     S.gameOver = false;
     S.minigameType = null;
+    S.minigameFlags = { endless: false, sunny: false, gravity: false };
     return;
   }
 
@@ -3764,13 +3873,11 @@ canvas.addEventListener('click', (e) => {
     if (!isPlantAwake(seed.id)) return;
     if (S.plants.find(p => p.row === row && p.col === col)) return;
 
-    // Нельзя сажать на кратер
     if (S.craters.find(c => c.row === row && c.col === col)) {
       showSaveToast('🌋 Здесь кратер!');
       return;
     }
 
-    // Мгновенные растения
     if (seed.id === 'cherry' || seed.id === 'jalapeno' || seed.id === 'doomshroom' || seed.id === 'iceshroom') {
       S.sun -= seed.cost;
       S.cooldowns[seed.id] = seed.cd;
@@ -3794,7 +3901,6 @@ canvas.addEventListener('click', (e) => {
           addParticles(cellCX(c), cellCY(row), 15, '#ff5722', 8, 800, 5);
         }
       } else if (seed.id === 'doomshroom') {
-        // ☢️ ЯДЕРНЫЙ ВЗРЫВ ☢️
         S.shake = 40;
         S.flash = 1;
         unlockAchievement('nuclear_master');
@@ -3900,6 +4006,7 @@ function startLevel(level) {
   S.usedShovelThisLevel = 0;
   S.garlicPushes = 0;
   S.levelStartTime = S.time;
+  S.minigameTime = 0;
   S.mowers = [];
   for (let r = 0; r < ROWS; r++) {
     S.mowers.push({ row: r, x: GRID_X - 32, used: false, active: false });
@@ -3948,6 +4055,11 @@ function render() {
           ctx.font = 'bold 32px Impact, Arial Black, sans-serif';
           ctx.fillText('😎 ПОФИГИЗМ АКТИВИРОВАН!', W / 2, H / 2 + 60);
         }
+        if (S.minigameType) {
+          ctx.fillStyle = '#ffeb3b';
+          ctx.font = 'bold 28px Arial';
+          ctx.fillText('🏅 Счёт: ' + S.minigameScore, W / 2, H / 2 + 100);
+        }
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 26px Arial';
         ctx.fillText('Прогресс сохранён 💾', W / 2, H / 2 + 110);
@@ -3966,7 +4078,6 @@ function render() {
   }
   ctx.restore();
 
-  // Вспышка от ядерного взрыва
   if (S.flash > 0) {
     ctx.fillStyle = `rgba(255,255,255,${S.flash * 0.9})`;
     ctx.fillRect(0, 0, W, H);
@@ -3987,14 +4098,14 @@ function render() {
 function loop(now) {
   const dt = Math.min(now - S.lastTime, 50);
   S.lastTime = now;
-  S.time += dt;
+  S.time += dt; // Время увеличивается ТОЛЬКО здесь
 
   if (S.scene === 'playing' && !S.gameOver) update(dt);
   else if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 0.02);
 
   if (S.scene === 'playing') {
-    S.killedZombies = Math.min(S.totalZombies,
-      S.spawnedZombies - S.zombies.filter(z => z.hp > 0 && z.type !== 'zomboss').length);
+    const aliveNonBoss = S.zombies.filter(z => z.hp > 0 && z.type !== 'zomboss').length;
+    S.killedZombies = Math.min(S.totalZombies, S.spawnedZombies - aliveNonBoss);
   }
 
   render();
