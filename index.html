@@ -579,7 +579,7 @@ function isPlantAwake(plantType) {
 }
 
 // ==================== СОХРАНЕНИЕ ====================
-const SAVE_KEY = 'pvz_save_v14';
+const SAVE_KEY = 'pvz_save_v15';
 let saveToastTimer = null;
 function showSaveToast(msg) {
   const el = document.getElementById('saveToast');
@@ -592,7 +592,7 @@ function showSaveToast(msg) {
 function saveProgress(silent = false) {
   try {
     const data = {
-      version: 14,
+      version: 15,
       unlocked: S.unlockedLevels,
       stars: S.levelStars,
       totalKills: S.totalKillsEver,
@@ -1363,6 +1363,7 @@ function drawMower(x, y) {
 // ==================== ВЕРХНЯЯ ПАНЕЛЬ ====================
 function drawTopBar() {
   if (!S.currentLevel) return;
+  // ✅ ВАЖНО: seeds берём из S.currentLevel.seeds напрямую
   const seeds = S.currentLevel.seeds.map(id => ALL_PLANTS[id]).filter(Boolean);
   const panelX = 8, panelY = 8;
   const packetW = 62, packetH = 84;
@@ -1940,12 +1941,18 @@ function startMinigame(mg) {
 }
 
 function startLevelWithSeedSelect(level) {
-  const seedList = level.seeds;
+  // Используем полный список семян
+  const seedList = level._allSeeds || level.seeds;
   if (seedList.length <= 6) { startLevel(level); return; }
   S.currentLevel = level;
   S.seedSelectMode = true;
   S.seedSelectAvailable = [...seedList];
-  S.seedSelectChosen = seedList.slice(0, 6);
+  // Если уже было выбрано — восстанавливаем
+  if (level._chosenSeeds && level._chosenSeeds.length > 0 && level._chosenSeeds.length <= 6) {
+    S.seedSelectChosen = [...level._chosenSeeds];
+  } else {
+    S.seedSelectChosen = seedList.slice(0, 6);
+  }
   S.scene = 'seedselect';
 }
 
@@ -2302,11 +2309,13 @@ canvas.addEventListener('click', (e) => {
         x >= S.seedSelectStartBtn.x && x <= S.seedSelectStartBtn.x + S.seedSelectStartBtn.w &&
         y >= S.seedSelectStartBtn.y && y <= S.seedSelectStartBtn.y + S.seedSelectStartBtn.h) {
       const lvl = S.currentLevel;
-      const originalSeeds = [...lvl.seeds];
+      // ✅ Сохраняем полный список семян и выбор
+      if (!lvl._allSeeds) lvl._allSeeds = [...lvl.seeds];
+      lvl._chosenSeeds = [...S.seedSelectChosen];
+      // ✅ Подставляем только выбранные семена
       lvl.seeds = [...S.seedSelectChosen];
       S.seedSelectMode = false;
       startLevel(lvl);
-      lvl.seeds = originalSeeds;
       return;
     }
     const slotSize = 90, slotGap = 12;
@@ -2358,7 +2367,6 @@ canvas.addEventListener('click', (e) => {
     }
     for (const n of S.levelNodes) {
       if (x >= n.x && x <= n.x + n.w && y >= n.y && y <= n.y + n.h) {
-        // ✅ ИСПОЛЬЗУЕМ startLevelWithSeedSelect
         startLevelWithSeedSelect(n.level);
         return;
       }
