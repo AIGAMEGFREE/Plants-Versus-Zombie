@@ -37,7 +37,6 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 
-// Полифилл roundRect
 if (!ctx.roundRect) {
   ctx.roundRect = function(x, y, w, h, r) {
     if (typeof r === 'number') r = [r, r, r, r];
@@ -478,31 +477,31 @@ const ZOMBIE_TYPES = {
 };
 
 const LEVELS = [
-  { id: 1, name: '1-1', location: 'yard',  rows: 1, rowsOffset: 2, time: 'day', seeds: ['peashooter','sunflower'], totalZombies: 8, spawnInterval: 7000, types: ['basic'], waves: 1, desc: 'Один ряд' },
-  { id: 2, name: '1-2', location: 'yard',  rows: 3, rowsOffset: 1, time: 'day', seeds: ['peashooter','sunflower','wallnut'], totalZombies: 14, spawnInterval: 6000, types: ['basic','cone'], waves: 2, desc: 'Три ряда' },
-  { id: 3, name: '1-3', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato'], totalZombies: 16, spawnInterval: 5500, types: ['basic','cone'], waves: 2, desc: 'Полный двор' },
-  { id: 4, name: '1-4', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato','cherry'], totalZombies: 18, spawnInterval: 5000, types: ['basic','cone','flag'], waves: 3, desc: 'Гости идут' },
-  { id: 5, name: '1-5', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato','cherry','snowpea','garlic'], totalZombies: 20, spawnInterval: 4800, types: ['basic','cone','bucket'], waves: 3, desc: 'Вёдра и кони' },
-  { id: 6, name: '1-6', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato','cherry','snowpea','repeater','garlic'], totalZombies: 24, spawnInterval: 4500, types: ['basic','cone','bucket','flag','dancer'], waves: 4, desc: 'Танцоры' },
-  { id: 7, name: '1-7', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato','cherry','snowpea','repeater','threepeater','torchwood','jalapeno','garlic','chomper'], totalZombies: 28, spawnInterval: 4200, types: ['basic','cone','bucket','flag','football','dancer'], waves: 5, desc: 'Оборона' },
-  { id: 8, name: '2-1', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','wallnut'], totalZombies: 12, spawnInterval: 6000, types: ['basic','cone'], waves: 1, desc: 'Сумерки' },
-  { id: 9, name: '2-2', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','wallnut'], totalZombies: 16, spawnInterval: 5500, types: ['basic','cone','bucket'], waves: 2, desc: 'Тёмная аллея' },
-  { id: 10, name: '2-3', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','iceshroom','scaredy','wallnut'], totalZombies: 20, spawnInterval: 5000, types: ['basic','cone','bucket','flag'], waves: 3, desc: 'Лунный свет' },
-  { id: 11, name: '2-4', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','iceshroom','hypnoshroom','wallnut','cherry'], totalZombies: 24, spawnInterval: 4600, types: ['basic','cone','bucket','flag','dancer'], waves: 4, desc: 'Гипноз' },
-  { id: 12, name: '2-5', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','iceshroom','hypnoshroom','doomshroom','scaredy','wallnut','cherry'], totalZombies: 30, spawnInterval: 4200, types: ['basic','cone','bucket','flag','dancer','football'], waves: 5, desc: 'Мрачная луна' },
-  { id: 13, name: '3-1', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato'], totalZombies: 14, spawnInterval: 6000, types: ['basic','cone'], waves: 2, desc: 'Дворик' },
-  { id: 14, name: '3-2', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater'], totalZombies: 18, spawnInterval: 5500, types: ['basic','cone','bucket'], waves: 2, desc: 'Первый бассейн' },
-  { id: 15, name: '3-3', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater','tanglekelp'], totalZombies: 22, spawnInterval: 5000, types: ['basic','cone','bucket','flag'], waves: 3, desc: 'Водные гости' },
-  { id: 16, name: '3-4', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater','tanglekelp','jalapeno','snowpea'], totalZombies: 26, spawnInterval: 4600, types: ['basic','cone','bucket','flag','dancer'], waves: 4, desc: 'Глубокий бассейн' },
-  { id: 17, name: '3-5', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater','tanglekelp','jalapeno','snowpea','repeater'], totalZombies: 28, spawnInterval: 4400, types: ['basic','cone','bucket','flag','dancer','football'], waves: 4, desc: 'Водный штурм' },
-  { id: 18, name: '3-6', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater','tanglekelp','jalapeno','snowpea','repeater','garlic'], totalZombies: 32, spawnInterval: 4200, types: ['basic','cone','bucket','flag','football','dancer'], waves: 5, desc: 'Бассейн в огне' },
-  { id: 19, name: '4-1', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','sunflower','wallnut','potato'], totalZombies: 14, spawnInterval: 6000, types: ['basic','cone'], waves: 2, desc: 'На крыше' },
-  { id: 20, name: '4-2', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato'], totalZombies: 18, spawnInterval: 5500, types: ['basic','cone','bucket'], waves: 2, desc: 'Балкон' },
-  { id: 21, name: '4-3', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry'], totalZombies: 22, spawnInterval: 5000, types: ['basic','cone','bucket','flag'], waves: 3, desc: 'Летающие' },
-  { id: 22, name: '4-4', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry','snowpea','coffee'], totalZombies: 26, spawnInterval: 4600, types: ['basic','cone','bucket','flag','balloon'], waves: 4, desc: 'Воздух' },
-  { id: 23, name: '4-5', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry','snowpea','coffee','repeater'], totalZombies: 28, spawnInterval: 4400, types: ['basic','cone','bucket','flag','balloon','football'], waves: 4, desc: 'Штурм' },
-  { id: 24, name: '4-6', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry','snowpea','coffee','repeater','threepeater','chomper'], totalZombies: 32, spawnInterval: 4200, types: ['basic','cone','bucket','flag','balloon','football','dancer'], waves: 5, desc: 'Крыша в огне' },
-  { id: 25, name: '4-7', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry','snowpea','coffee','repeater','threepeater','jalapeno','garlic','chomper'], totalZombies: 30, spawnInterval: 5000, types: ['basic','cone','bucket','flag','football','dancer'], waves: 4, desc: 'БОСС: ЗОМБОС!', boss: 'zomboss' },
+  { id: 1, name: '1-1', location: 'yard',  rows: 1, rowsOffset: 2, time: 'day', seeds: ['peashooter','sunflower'], totalZombies: 12, spawnInterval: 6500, types: ['basic'], waves: 1, desc: 'Один ряд' },
+  { id: 2, name: '1-2', location: 'yard',  rows: 3, rowsOffset: 1, time: 'day', seeds: ['peashooter','sunflower','wallnut'], totalZombies: 22, spawnInterval: 5500, types: ['basic','cone'], waves: 2, desc: 'Три ряда' },
+  { id: 3, name: '1-3', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato'], totalZombies: 28, spawnInterval: 5000, types: ['basic','cone'], waves: 3, desc: 'Полный двор' },
+  { id: 4, name: '1-4', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato','cherry'], totalZombies: 34, spawnInterval: 4500, types: ['basic','cone','flag'], waves: 3, desc: 'Гости идут' },
+  { id: 5, name: '1-5', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato','cherry','snowpea','garlic'], totalZombies: 40, spawnInterval: 4200, types: ['basic','cone','bucket'], waves: 4, desc: 'Вёдра и кони' },
+  { id: 6, name: '1-6', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato','cherry','snowpea','repeater','garlic'], totalZombies: 48, spawnInterval: 4000, types: ['basic','cone','bucket','flag','dancer'], waves: 4, desc: 'Танцоры' },
+  { id: 7, name: '1-7', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato','cherry','snowpea','repeater','threepeater','torchwood','jalapeno','garlic','chomper'], totalZombies: 60, spawnInterval: 3500, types: ['basic','cone','bucket','flag','football','dancer'], waves: 6, desc: 'Оборона' },
+  { id: 8, name: '2-1', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','wallnut'], totalZombies: 24, spawnInterval: 5000, types: ['basic','cone'], waves: 2, desc: 'Сумерки' },
+  { id: 9, name: '2-2', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','wallnut'], totalZombies: 30, spawnInterval: 4600, types: ['basic','cone','bucket'], waves: 3, desc: 'Тёмная аллея' },
+  { id: 10, name: '2-3', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','iceshroom','scaredy','wallnut'], totalZombies: 36, spawnInterval: 4400, types: ['basic','cone','bucket','flag'], waves: 3, desc: 'Лунный свет' },
+  { id: 11, name: '2-4', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','iceshroom','hypnoshroom','wallnut','cherry'], totalZombies: 42, spawnInterval: 4200, types: ['basic','cone','bucket','flag','dancer'], waves: 4, desc: 'Гипноз' },
+  { id: 12, name: '2-5', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','iceshroom','hypnoshroom','doomshroom','scaredy','wallnut','cherry'], totalZombies: 50, spawnInterval: 3800, types: ['basic','cone','bucket','flag','dancer','football'], waves: 5, desc: 'Мрачная луна' },
+  { id: 13, name: '3-1', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato'], totalZombies: 26, spawnInterval: 5000, types: ['basic','cone'], waves: 3, desc: 'Дворик' },
+  { id: 14, name: '3-2', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater'], totalZombies: 34, spawnInterval: 4600, types: ['basic','cone','bucket'], waves: 3, desc: 'Первый бассейн' },
+  { id: 15, name: '3-3', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater','tanglekelp'], totalZombies: 40, spawnInterval: 4400, types: ['basic','cone','bucket','flag'], waves: 4, desc: 'Водные гости' },
+  { id: 16, name: '3-4', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater','tanglekelp','jalapeno','snowpea'], totalZombies: 48, spawnInterval: 4200, types: ['basic','cone','bucket','flag','dancer'], waves: 4, desc: 'Глубокий бассейн' },
+  { id: 17, name: '3-5', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater','tanglekelp','jalapeno','snowpea','repeater'], totalZombies: 54, spawnInterval: 4000, types: ['basic','cone','bucket','flag','dancer','football'], waves: 5, desc: 'Водный штурм' },
+  { id: 18, name: '3-6', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater','tanglekelp','jalapeno','snowpea','repeater','garlic'], totalZombies: 62, spawnInterval: 3600, types: ['basic','cone','bucket','flag','football','dancer'], waves: 6, desc: 'Бассейн в огне' },
+  { id: 19, name: '4-1', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','sunflower','wallnut','potato'], totalZombies: 26, spawnInterval: 5000, types: ['basic','cone'], waves: 3, desc: 'На крыше' },
+  { id: 20, name: '4-2', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato'], totalZombies: 34, spawnInterval: 4600, types: ['basic','cone','bucket'], waves: 3, desc: 'Балкон' },
+  { id: 21, name: '4-3', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry'], totalZombies: 42, spawnInterval: 4400, types: ['basic','cone','bucket','flag'], waves: 4, desc: 'Летающие' },
+  { id: 22, name: '4-4', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry','snowpea','coffee'], totalZombies: 50, spawnInterval: 4200, types: ['basic','cone','bucket','flag','balloon'], waves: 5, desc: 'Воздух' },
+  { id: 23, name: '4-5', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry','snowpea','coffee','repeater'], totalZombies: 56, spawnInterval: 4000, types: ['basic','cone','bucket','flag','balloon','football'], waves: 5, desc: 'Штурм' },
+  { id: 24, name: '4-6', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry','snowpea','coffee','repeater','threepeater','chomper'], totalZombies: 64, spawnInterval: 3600, types: ['basic','cone','bucket','flag','balloon','football','dancer'], waves: 6, desc: 'Крыша в огне' },
+  { id: 25, name: '4-7', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato','cherry','snowpea','coffee','repeater','threepeater','jalapeno','garlic','chomper'], totalZombies: 60, spawnInterval: 3800, types: ['basic','cone','bucket','flag','football','dancer'], waves: 5, desc: 'БОСС: ЗОМБОС!', boss: 'zomboss' },
 ];
 
 const ACHIEVEMENTS = {
@@ -521,8 +520,8 @@ const ACHIEVEMENTS = {
   minigame_win:    { name: 'Игрок мини-игр',      desc: 'Победить в мини-игре',              icon: '🎮' },
   endless_10:      { name: 'Волна за волной',     desc: '10 волн в бесконечном',             icon: '🌊' },
   speedrun:        { name: 'Спидраннер',          desc: 'Пройти уровень за 60 секунд',       icon: '⚡' },
-  chill_master:    { name: 'Пофигизм',            desc: 'Пройти уровень без посадки растений', icon: '😎' },
-  nuclear_master:  { name: 'Ядерный апокалипсис', desc: 'Использовать ядерный гриб',         icon: '☢️' },
+  chill_master:    { name: '😎 Пофигист',          desc: 'Пройти уровень без посадки растений', icon: '😎' },
+  nuclear_master:  { name: '☢️ Ядерная бомба',     desc: 'Использовать ядерный гриб',         icon: '☢️' },
 };
 
 const MINIGAMES = [
@@ -539,7 +538,7 @@ const S = {
   unlockedLevels: 1, levelStars: {}, totalKillsEver: 0, totalWinsEver: 0,
   plantedThisLevel: 0, usedShovelThisLevel: 0, garlicPushes: 0,
   menuBtn: null, menuMinigameBtn: null, resetBtn: null, achMenuBtn: null,
-  levelNodes: [], backBtn: null,
+  levelNodes: [], backBtn: null, achScroll: 0, achScrollMax: 0,
   currentLevel: null, dayNight: 'day', location: 'yard',
   sun: 75, plants: [], zombies: [], projectiles: [], suns: [], particles: [], mowers: [],
   craters: [], flash: 0,
@@ -554,8 +553,8 @@ const S = {
   seedSelectStartBtn: null, seedSelectBackBtn: null,
   achievements: {}, achievementQueue: [],
   minigameType: null, minigameTime: 0, minigameScore: 0, minigameBest: {}, minigameCards: [],
-  // Флаги для миниигр
   minigameFlags: { endless: false, sunny: false, gravity: false },
+  totalZombiesDead: 0,
 };
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -582,7 +581,7 @@ function isPlantAwake(plantType) {
 }
 
 // ==================== СОХРАНЕНИЕ ====================
-const SAVE_KEY = 'pvz_save_v18';
+const SAVE_KEY = 'pvz_save_v23';
 let saveToastTimer = null;
 function showSaveToast(msg) {
   const el = document.getElementById('saveToast');
@@ -595,7 +594,7 @@ function showSaveToast(msg) {
 function saveProgress(silent = false) {
   try {
     const data = {
-      version: 18,
+      version: 23,
       unlocked: S.unlockedLevels,
       stars: S.levelStars,
       totalKills: S.totalKillsEver,
@@ -647,7 +646,7 @@ function unlockAchievement(id) {
 }
 
 function checkAchievements() {
-  if (S.killedZombies > 0) unlockAchievement('first_blood');
+  if (S.totalZombiesDead > 0) unlockAchievement('first_blood');
   if (S.totalKillsEver >= 100) unlockAchievement('veteran');
   if (S.sun >= 1000) unlockAchievement('sunflower_farm');
   if (S.unlockedLevels >= 10) unlockAchievement('collector');
@@ -770,28 +769,44 @@ function drawPlant(type, x, y, t = 0, scale = 1, plant = null) {
 
 function drawStemSway(t, phase = 0) {
   const sway = Math.sin(t * 0.0025 + phase) * 4;
-  ctx.strokeStyle = '#3d8b1f';
-  ctx.lineWidth = 7;
+  const sg = ctx.createLinearGradient(-3, 32, 3, -8);
+  sg.addColorStop(0, '#2d6b12'); sg.addColorStop(0.5, '#4caf50'); sg.addColorStop(1, '#7cb342');
+  ctx.strokeStyle = sg;
+  ctx.lineWidth = 8;
   ctx.lineCap = 'round';
   ctx.beginPath();
   ctx.moveTo(0, 32);
   ctx.quadraticCurveTo(sway * 0.3, 12, sway, -8);
   ctx.stroke();
-
-  ctx.fillStyle = '#4caf50';
-  ctx.beginPath();
-  ctx.ellipse(-16, 14, 16, 8, -0.5 + sway * 0.01, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(16, 14, 16, 8, 0.5 - sway * 0.01, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = '#2e7d32';
+  ctx.strokeStyle = 'rgba(20,60,10,0.6)';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(-30, 16); ctx.lineTo(-2, 10);
-  ctx.moveTo(30, 16); ctx.lineTo(2, 10);
+  ctx.moveTo(-3, 32);
+  ctx.quadraticCurveTo(sway * 0.3 - 3, 12, sway - 3, -8);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(3, 32);
+  ctx.quadraticCurveTo(sway * 0.3 + 3, 12, sway + 3, -8);
   ctx.stroke();
 
+  for (const side of [-1, 1]) {
+    const lx = side * 16, ly = 14;
+    const lg = ctx.createRadialGradient(lx * 0.5, ly, 2, lx, ly, 18);
+    lg.addColorStop(0, '#7cb342'); lg.addColorStop(0.6, '#4caf50'); lg.addColorStop(1, '#2e7d32');
+    ctx.fillStyle = lg;
+    ctx.beginPath();
+    ctx.ellipse(lx, ly, 16, 8, side * 0.5 + sway * 0.01, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#1b5e20';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(20,80,10,0.7)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(side * 2, ly + 2);
+    ctx.quadraticCurveTo(lx * 0.7, ly - 1, lx * 1.15, ly - 2);
+    ctx.stroke();
+  }
   return sway;
 }
 
@@ -803,6 +818,15 @@ function drawSunflower(t) {
   const petalCount = 18;
   for (let i = 0; i < petalCount; i++) {
     const a = (i / petalCount) * Math.PI * 2 + Math.sin(t * 0.001 + i * 0.3) * 0.05;
+    const px = Math.cos(a) * 30;
+    const py = Math.sin(a) * 30 + cy;
+    ctx.fillStyle = '#f9a825';
+    ctx.beginPath();
+    ctx.ellipse(px, py, 12, 7, a, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (let i = 0; i < petalCount; i++) {
+    const a = (i / petalCount) * Math.PI * 2 + 0.1 + Math.sin(t * 0.001 + i * 0.3) * 0.05;
     const px = Math.cos(a) * 28;
     const py = Math.sin(a) * 28 + cy;
     const lg = ctx.createLinearGradient(px - 6, py - 6, px + 6, py + 6);
@@ -811,6 +835,9 @@ function drawSunflower(t) {
     ctx.beginPath();
     ctx.ellipse(px, py, 10, 6, a, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = 'rgba(180,120,0,0.4)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
   }
 
   const g = ctx.createRadialGradient(-4, cy - 5, 3, 0, cy, 20);
@@ -871,6 +898,18 @@ function drawPeashooter(t, ice, heads) {
     ctx.arc(-12, cy2, 16, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = '#1b5e20'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(-16, cy2 - 4, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(-17, cy2 - 4, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#0a1f05';
+    ctx.beginPath();
+    ctx.ellipse(-2, cy2 + 2, 5, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   const g = ctx.createRadialGradient(-6, cy - 6, 3, 0, cy, 24);
@@ -1120,6 +1159,15 @@ function drawPotato(plant, t) {
     ctx.ellipse(0, 0, 22, 18, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = '#5d4037'; ctx.lineWidth = 2; ctx.stroke();
+
+    for (let i = 0; i < 4; i++) {
+      const px = -12 + i * 8;
+      const py = 4 + (i % 2) * 4;
+      ctx.fillStyle = 'rgba(100,80,40,0.6)';
+      ctx.beginPath();
+      ctx.ellipse(px, py, 2, 1.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     ctx.fillStyle = '#fff';
     ctx.beginPath();
@@ -1962,16 +2010,16 @@ function drawTanglekelp(t) {
   ctx.stroke();
 }
 
-// ==================== ЗОМБИ ====================
+// ==================== ЗОМБИ (РУКИ ВПЕРЁД ИЗ ПЛЕЧ) ====================
 function drawZombie(z, t) {
   const x = z.x;
-  const y = cellCY(z.row);
+  const y = (z.y_air !== undefined && z.falling) ? z.y_air : cellCY(z.row);
   const dying = z.hp <= 0;
   const alpha = dying ? clamp(1 - z.dyingTimer / 800, 0, 1) : 1;
   const isBoss = z.type === 'zomboss';
 
   let bushAlpha = 1;
-  if (z.x > ROAD_RIGHT - 20 && S.location !== 'roof') {
+  if (z.x > ROAD_RIGHT - 20 && S.location !== 'roof' && !z.falling) {
     const t2 = clamp((z.x - (ROAD_RIGHT - 20)) / 80, 0, 1);
     bushAlpha = 1 - t2 * 0.85;
   }
@@ -1980,184 +2028,412 @@ function drawZombie(z, t) {
   ctx.globalAlpha = alpha * bushAlpha;
   ctx.translate(x, y);
   if (dying) ctx.rotate((1 - alpha) * 0.7);
-  if (isBoss) ctx.scale(2.4, 2.4);
+  if (isBoss) ctx.scale(2.0, 2.0);
 
   const bob = dying ? 0 : Math.sin(t * 0.008 + z.walkPhase) * 3;
   ctx.translate(0, bob);
 
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.beginPath();
-  ctx.ellipse(0, 32, 22, 6, 0, 0, Math.PI * 2);
-  ctx.fill();
+  if (!z.falling) {
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(0, 38, 26, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
-  ctx.fillStyle = '#3a3a3a';
-  ctx.beginPath();
-  ctx.ellipse(-9, 24, 7, 12, 0, 0, Math.PI * 2);
-  ctx.ellipse(9, 24, 7, 12, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath();
-  ctx.ellipse(-10, 34, 9, 5, 0, 0, Math.PI * 2);
-  ctx.ellipse(10, 34, 9, 5, 0, 0, Math.PI * 2);
-  ctx.fill();
+  const legPhase1 = Math.sin(t * 0.008 + z.walkPhase);
+  const legPhase2 = Math.sin(t * 0.008 + z.walkPhase + Math.PI);
 
-  let bodyColor = '#8b3a3a';
-  if (z.type === 'football') bodyColor = '#b71c1c';
-  if (z.type === 'dancer') bodyColor = '#4a148c';
-  if (z.type === 'zomboss') bodyColor = '#1a2a1a';
-  if (z.hypnotized) bodyColor = '#c040a0';
-
-  const bodyG = ctx.createRadialGradient(-6, -6, 3, 0, 2, 28);
-  bodyG.addColorStop(0, 'rgba(255,255,255,0.3)');
-  bodyG.addColorStop(0.4, bodyColor);
-  bodyG.addColorStop(1, 'rgba(0,0,0,0.5)');
-  ctx.fillStyle = bodyG;
-  ctx.beginPath();
-  ctx.ellipse(0, 0, 22, 26, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 1.5; ctx.stroke();
-
-  ctx.fillStyle = '#a5d66a';
-  ctx.strokeStyle = '#4a7a2a'; ctx.lineWidth = 1.5;
+  // === ЗАДНЯЯ ПРАВАЯ РУКА (за торсом, видна частично) ===
   ctx.save();
-  ctx.translate(-18, -4);
-  ctx.rotate(-0.3 + Math.sin(t * 0.008 + z.walkPhase) * 0.05);
+  ctx.translate(16, -8);
+  ctx.rotate(0.35 + Math.sin(t * 0.008 + z.walkPhase + 1) * 0.05);
+  const backSleeve = ctx.createLinearGradient(-8, -8, 8, 8);
+  backSleeve.addColorStop(0, '#3a2410'); backSleeve.addColorStop(1, '#2a1a0a');
+  ctx.fillStyle = backSleeve;
   ctx.beginPath();
-  ctx.roundRect(-8, -6, 36, 12, 6);
-  ctx.fill(); ctx.stroke();
+  ctx.roundRect(-8, -6, 24, 12, 5);
+  ctx.fill();
+  ctx.strokeStyle = '#1a0e05'; ctx.lineWidth = 1.5; ctx.stroke();
+  // Кисть задней руки
+  ctx.fillStyle = '#7a9a3a';
+  ctx.beginPath();
+  ctx.arc(18, 0, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1.5; ctx.stroke();
   ctx.restore();
-  ctx.save();
-  ctx.translate(18, -6);
-  ctx.rotate(0.15 + Math.sin(t * 0.008 + z.walkPhase + 1) * 0.05);
-  ctx.beginPath();
-  ctx.roundRect(-8, -6, 36, 12, 6);
-  ctx.fill(); ctx.stroke();
-  ctx.restore();
-  ctx.beginPath();
-  ctx.arc(-26, -10, 7, 0, Math.PI * 2);
-  ctx.arc(26, -12, 7, 0, Math.PI * 2);
-  ctx.fill(); ctx.stroke();
 
-  const headG = ctx.createRadialGradient(-6, -22, 3, 0, -18, 22);
+  // === НОГИ ===
+  ctx.save();
+  ctx.translate(-10, 22);
+  ctx.rotate(legPhase1 * 0.12);
+  const pantsG1 = ctx.createLinearGradient(-8, -10, 8, 22);
+  pantsG1.addColorStop(0, '#2a3a6a'); pantsG1.addColorStop(0.5, '#1a2a5a'); pantsG1.addColorStop(1, '#0a1a3a');
+  ctx.fillStyle = pantsG1;
+  ctx.beginPath(); ctx.roundRect(-8, -8, 15, 26, 3); ctx.fill();
+  ctx.strokeStyle = '#0a0a1a'; ctx.lineWidth = 1.5; ctx.stroke();
+  const shoeG1 = ctx.createLinearGradient(-8, 16, 12, 26);
+  shoeG1.addColorStop(0, '#8a5a2a'); shoeG1.addColorStop(0.5, '#6d4c21'); shoeG1.addColorStop(1, '#3a2410');
+  ctx.fillStyle = shoeG1;
+  ctx.beginPath(); ctx.ellipse(2, 20, 12, 6, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#2d1b08'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(10, 22);
+  ctx.rotate(legPhase2 * 0.12);
+  const pantsG2 = ctx.createLinearGradient(-8, -10, 8, 22);
+  pantsG2.addColorStop(0, '#2a3a6a'); pantsG2.addColorStop(0.5, '#1a2a5a'); pantsG2.addColorStop(1, '#0a1a3a');
+  ctx.fillStyle = pantsG2;
+  ctx.beginPath(); ctx.roundRect(-8, -8, 15, 26, 3); ctx.fill();
+  ctx.strokeStyle = '#0a0a1a'; ctx.lineWidth = 1.5; ctx.stroke();
+  const shoeG2 = ctx.createLinearGradient(-8, 16, 12, 26);
+  shoeG2.addColorStop(0, '#8a5a2a'); shoeG2.addColorStop(0.5, '#6d4c21'); shoeG2.addColorStop(1, '#3a2410');
+  ctx.fillStyle = shoeG2;
+  ctx.beginPath(); ctx.ellipse(2, 20, 12, 6, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#2d1b08'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.restore();
+
+  // === ТОРС ===
+  ctx.fillStyle = '#c8c8c8';
+  ctx.beginPath(); ctx.ellipse(0, -2, 18, 24, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#666'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  const jacketG = ctx.createRadialGradient(-6, -6, 3, 0, 2, 30);
+  jacketG.addColorStop(0, 'rgba(255,255,255,0.15)');
+  jacketG.addColorStop(0.4, '#6d4c2a');
+  jacketG.addColorStop(0.7, '#4a3020');
+  jacketG.addColorStop(1, '#2a1a0a');
+  ctx.fillStyle = jacketG;
+  ctx.beginPath(); ctx.ellipse(0, 0, 22, 26, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#1a0e05'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Рваные края пиджака
+  ctx.fillStyle = '#2a1a0a';
+  for (let i = 0; i < 6; i++) {
+    const rx = -20 + i * 8;
+    const rh = 4 + Math.sin(t * 0.005 + i * 1.3) * 2;
+    ctx.beginPath();
+    ctx.moveTo(rx, 22);
+    ctx.lineTo(rx + 3, 22 + rh);
+    ctx.lineTo(rx + 6, 22);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Полы пиджака
+  ctx.fillStyle = '#3a2410';
+  ctx.beginPath();
+  ctx.moveTo(-22, -8); ctx.lineTo(-18, 22); ctx.lineTo(-8, 22); ctx.lineTo(-6, -8);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(22, -8); ctx.lineTo(18, 22); ctx.lineTo(8, 22); ctx.lineTo(6, -8);
+  ctx.closePath(); ctx.fill();
+
+  // Галстук
+  const tieG = ctx.createLinearGradient(-6, -20, 6, 20);
+  tieG.addColorStop(0, '#e53935'); tieG.addColorStop(0.5, '#c62828'); tieG.addColorStop(1, '#8e0000');
+  ctx.fillStyle = tieG;
+  ctx.beginPath();
+  ctx.moveTo(-3, -22); ctx.lineTo(3, -22); ctx.lineTo(5, 8); ctx.lineTo(0, 14); ctx.lineTo(-5, 8);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#4a0000'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(-4, -14); ctx.lineTo(4, -14);
+  ctx.moveTo(-4, -6); ctx.lineTo(4, -6);
+  ctx.moveTo(-4, 2); ctx.lineTo(4, 2);
+  ctx.stroke();
+  ctx.fillStyle = '#b71c1c';
+  ctx.beginPath(); ctx.ellipse(0, -24, 5, 3, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#4a0000'; ctx.lineWidth = 1; ctx.stroke();
+
+  // Воротник
+  ctx.fillStyle = '#e8e8e8';
+  ctx.beginPath();
+  ctx.moveTo(-10, -26); ctx.lineTo(-2, -18); ctx.lineTo(-6, -26);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(10, -26); ctx.lineTo(2, -18); ctx.lineTo(6, -26);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#888'; ctx.lineWidth = 1; ctx.stroke();
+
+  // === ПЕРЕДНЯЯ ЛЕВАЯ РУКА (вытянута ВПЕРЁД из левого плеча) ===
+  ctx.save();
+  // Крепление: левое плечо (снаружи торса, чуть ниже верха)
+  ctx.translate(-20, -8);
+  // Поворот: рука идёт вправо-вниз, вперёд
+  ctx.rotate(0.5 + Math.sin(t * 0.008 + z.walkPhase) * 0.05);
+  // Рукав
+  const sleeveG1 = ctx.createLinearGradient(-8, -8, 8, 8);
+  sleeveG1.addColorStop(0, '#8a6a3a'); sleeveG1.addColorStop(1, '#4a3020');
+  ctx.fillStyle = sleeveG1;
+  ctx.beginPath();
+  ctx.roundRect(-8, -7, 32, 14, 5);
+  ctx.fill();
+  ctx.strokeStyle = '#1a0e05'; ctx.lineWidth = 1.5; ctx.stroke();
+  // Манжета
+  ctx.fillStyle = '#8a5a2a';
+  ctx.fillRect(20, -7, 5, 14);
+  ctx.strokeRect(20, -7, 5, 14);
+  // Кисть
+  const skinG1 = ctx.createRadialGradient(28, -2, 2, 30, 0, 10);
+  skinG1.addColorStop(0, '#c8e88a'); skinG1.addColorStop(0.6, '#8bc34a'); skinG1.addColorStop(1, '#4a7a2a');
+  ctx.fillStyle = skinG1;
+  ctx.beginPath();
+  ctx.arc(30, 0, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1.5; ctx.stroke();
+  // Пальцы (3 штуки, направлены вперёд)
+  for (let i = -1; i <= 1; i++) {
+    ctx.save();
+    ctx.translate(36, i * 4);
+    ctx.rotate(i * 0.3 + 0.3);
+    ctx.fillStyle = '#9ecf5a';
+    ctx.beginPath();
+    ctx.roundRect(0, -2.5, 8, 5, 2);
+    ctx.fill();
+    ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1; ctx.stroke();
+    // Ноготь
+    ctx.fillStyle = '#e8dcc0';
+    ctx.beginPath();
+    ctx.ellipse(7.5, 0, 1.5, 1.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+
+  // === ПЕРЕДНЯЯ ПРАВАЯ РУКА (вытянута ВПЕРЁД из правого плеча, чуть выше) ===
+  ctx.save();
+  ctx.translate(20, -14);
+  ctx.rotate(0.35 + Math.sin(t * 0.008 + z.walkPhase + 1) * 0.05);
+  const sleeveG2 = ctx.createLinearGradient(-8, -8, 8, 8);
+  sleeveG2.addColorStop(0, '#8a6a3a'); sleeveG2.addColorStop(1, '#4a3020');
+  ctx.fillStyle = sleeveG2;
+  ctx.beginPath();
+  ctx.roundRect(-8, -7, 32, 14, 5);
+  ctx.fill();
+  ctx.strokeStyle = '#1a0e05'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = '#8a5a2a';
+  ctx.fillRect(20, -7, 5, 14);
+  ctx.strokeRect(20, -7, 5, 14);
+  const skinG2 = ctx.createRadialGradient(28, -2, 2, 30, 0, 10);
+  skinG2.addColorStop(0, '#c8e88a'); skinG2.addColorStop(0.6, '#8bc34a'); skinG2.addColorStop(1, '#4a7a2a');
+  ctx.fillStyle = skinG2;
+  ctx.beginPath();
+  ctx.arc(30, 0, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1.5; ctx.stroke();
+  for (let i = -1; i <= 1; i++) {
+    ctx.save();
+    ctx.translate(36, i * 4);
+    ctx.rotate(i * 0.3 + 0.3);
+    ctx.fillStyle = '#9ecf5a';
+    ctx.beginPath();
+    ctx.roundRect(0, -2.5, 8, 5, 2);
+    ctx.fill();
+    ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = '#e8dcc0';
+    ctx.beginPath();
+    ctx.ellipse(7.5, 0, 1.5, 1.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+
+  // === ШЕЯ ===
+  ctx.fillStyle = '#7a9a4a';
+  ctx.beginPath(); ctx.roundRect(-7, -30, 14, 12, 3); ctx.fill();
+  ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // === ГОЛОВА ===
+  const headG = ctx.createRadialGradient(-8, -24, 4, 0, -18, 26);
   if (isBoss) {
     headG.addColorStop(0, '#a0c070'); headG.addColorStop(0.5, '#6a9a3a'); headG.addColorStop(1, '#1a2a0a');
   } else if (z.hypnotized) {
     headG.addColorStop(0, '#ffd0e8'); headG.addColorStop(0.6, '#e060b0'); headG.addColorStop(1, '#6a1050');
   } else {
-    headG.addColorStop(0, '#e8f5c8'); headG.addColorStop(0.4, '#b8d878');
-    headG.addColorStop(0.7, '#8bc34a'); headG.addColorStop(1, '#4a7a2a');
+    headG.addColorStop(0, '#c8e090'); headG.addColorStop(0.4, '#a5c66a');
+    headG.addColorStop(0.7, '#7a9a3a'); headG.addColorStop(1, '#3a5a1a');
   }
   ctx.fillStyle = headG;
+  ctx.beginPath(); ctx.ellipse(0, -20, 24, 26, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = isBoss ? '#1a2a0a' : '#2d5a1a';
+  ctx.lineWidth = 2; ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.beginPath(); ctx.ellipse(-10, -32, 8, 6, -0.5, 0, Math.PI * 2); ctx.fill();
+
+  // Шрамы
+  ctx.strokeStyle = 'rgba(80,40,40,0.6)'; ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.arc(0, -18, 22, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = isBoss ? '#1a2a0a' : '#33691e';
-  ctx.lineWidth = 1.5;
+  ctx.moveTo(-14, -32); ctx.lineTo(-8, -26);
+  ctx.moveTo(-12, -36); ctx.lineTo(-6, -30);
   ctx.stroke();
 
-  ctx.strokeStyle = isBoss ? '#1a2a0a' : '#2e7d32';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
+  // Волосы
+  ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 2; ctx.lineCap = 'round';
   const hairWave = Math.sin(t * 0.006 + z.walkPhase) * 2;
   ctx.beginPath();
-  ctx.moveTo(-14, -34); ctx.quadraticCurveTo(-18, -40, -20 + hairWave, -44);
-  ctx.moveTo(-6, -38); ctx.quadraticCurveTo(-8, -44, -10 + hairWave, -48);
-  ctx.moveTo(6, -38); ctx.quadraticCurveTo(8, -44, 10 - hairWave, -48);
-  ctx.moveTo(14, -34); ctx.quadraticCurveTo(18, -40, 20 - hairWave, -44);
+  ctx.moveTo(-16, -38); ctx.quadraticCurveTo(-20, -44, -22 + hairWave, -50);
+  ctx.moveTo(-10, -42); ctx.quadraticCurveTo(-12, -48, -14 + hairWave, -54);
+  ctx.moveTo(-2, -44); ctx.quadraticCurveTo(-4, -50, -6 + hairWave, -56);
+  ctx.moveTo(6, -44); ctx.quadraticCurveTo(8, -50, 10 - hairWave, -54);
+  ctx.moveTo(14, -40); ctx.quadraticCurveTo(18, -46, 20 - hairWave, -50);
   ctx.stroke();
 
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  ctx.arc(-8, -20, 5, 0, Math.PI * 2);
-  ctx.arc(8, -20, 5, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
+  // Глаза
+  ctx.fillStyle = '#f5f0d8';
+  ctx.beginPath(); ctx.arc(-9, -20, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(9, -20, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(-9, -20, 8, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(9, -20, 8, 0, Math.PI * 2); ctx.stroke();
+  const lookX = Math.sin(t * 0.003) * 0.8;
   ctx.fillStyle = '#000';
   ctx.beginPath();
-  ctx.arc(-9 + Math.sin(t * 0.003) * 0.5, -20, 2.5, 0, Math.PI * 2);
-  ctx.arc(7 + Math.sin(t * 0.003) * 0.5, -20, 2.5, 0, Math.PI * 2);
+  ctx.arc(-10 + lookX, -20, 2, 0, Math.PI * 2);
+  ctx.arc(8 + lookX, -20, 2, 0, Math.PI * 2);
   ctx.fill();
+  ctx.strokeStyle = 'rgba(80,60,40,0.4)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(-9, -15, 5, 0.2, Math.PI - 0.2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(9, -15, 5, 0.2, Math.PI - 0.2); ctx.stroke();
 
-  ctx.fillStyle = '#3e2723';
+  // Нос
+  ctx.fillStyle = '#5a7a2a';
   ctx.beginPath();
-  ctx.ellipse(0, -8, 9, 5, 0, 0, Math.PI * 2);
+  ctx.arc(-2, -16, 1.5, 0, Math.PI * 2);
+  ctx.arc(2, -16, 1.5, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(-5, -12, 3, 4);
-  ctx.fillRect(-1, -12, 3, 4);
-  ctx.fillRect(3, -12, 3, 4);
 
+  // Рот
+  const mouthOpen = 1 + Math.sin(t * 0.01 + z.walkPhase) * 0.2;
+  ctx.fillStyle = '#3a0a0a';
+  ctx.beginPath(); ctx.ellipse(0, -8, 11, 6 * mouthOpen, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#1a0505'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = '#f5f0d8';
+  ctx.fillRect(-7, -13, 2.5, 4);
+  ctx.fillRect(-3, -13, 3, 3);
+  ctx.fillRect(1, -13, 2.5, 4.5);
+  ctx.fillRect(5, -13, 2.5, 3);
+  ctx.fillRect(-6, -6, 2.5, 2.5);
+  ctx.fillRect(-1, -6, 3, 2);
+  ctx.fillRect(4, -6, 2, 2.5);
+  ctx.fillStyle = '#8a2a2a';
+  ctx.beginPath(); ctx.ellipse(0, -5, 5, 3, 0, 0, Math.PI * 2); ctx.fill();
+  const droolY = -3 + Math.sin(t * 0.005) * 1.5;
+  ctx.fillStyle = 'rgba(180,200,120,0.8)';
+  ctx.beginPath(); ctx.ellipse(-4, droolY, 1.8, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Брови
+  ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(-14, -28); ctx.lineTo(-5, -26);
+  ctx.moveTo(14, -28); ctx.lineTo(5, -26);
+  ctx.stroke();
+
+  // Аксессуары
   if (z.type === 'cone') {
-    const coneG = ctx.createLinearGradient(-18, 0, 18, 0);
-    coneG.addColorStop(0, '#bf5700'); coneG.addColorStop(0.5, '#ff8f00'); coneG.addColorStop(1, '#bf5700');
+    const coneG = ctx.createLinearGradient(-22, 0, 22, 0);
+    coneG.addColorStop(0, '#8a3a00'); coneG.addColorStop(0.3, '#d97000'); coneG.addColorStop(0.5, '#ff9500');
+    coneG.addColorStop(0.7, '#d97000'); coneG.addColorStop(1, '#8a3a00');
     ctx.fillStyle = coneG;
-    ctx.beginPath();
-    ctx.moveTo(-18, -34); ctx.lineTo(0, -68); ctx.lineTo(18, -34);
-    ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = '#e65100'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-22, -36); ctx.lineTo(0, -76); ctx.lineTo(22, -36); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#5a2000'; ctx.lineWidth = 2.5; ctx.stroke();
     ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(-12, -44); ctx.lineTo(12, -44);
-    ctx.moveTo(-8, -52); ctx.lineTo(8, -52);
+    ctx.moveTo(-15, -48); ctx.lineTo(15, -48);
+    ctx.moveTo(-9, -58); ctx.lineTo(9, -58);
+    ctx.moveTo(-4, -68); ctx.lineTo(4, -68);
     ctx.stroke();
   }
 
   if (z.type === 'bucket') {
-    const bg = ctx.createLinearGradient(-20, 0, 20, 0);
-    bg.addColorStop(0, '#455a64'); bg.addColorStop(0.3, '#90a4ae');
-    bg.addColorStop(0.6, '#cfd8dc'); bg.addColorStop(1, '#37474f');
+    const bg = ctx.createLinearGradient(-24, 0, 24, 0);
+    bg.addColorStop(0, '#3a4a52'); bg.addColorStop(0.25, '#6a7a82');
+    bg.addColorStop(0.5, '#b8c0c8'); bg.addColorStop(0.75, '#6a7a82');
+    bg.addColorStop(1, '#2a3a42');
     ctx.fillStyle = bg;
     ctx.beginPath();
-    ctx.moveTo(-20, -30); ctx.lineTo(-18, -62); ctx.lineTo(18, -62); ctx.lineTo(20, -30);
+    ctx.moveTo(-24, -32); ctx.lineTo(-22, -70); ctx.lineTo(22, -70); ctx.lineTo(24, -32);
     ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = '#263238'; ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = '#263238';
-    ctx.fillRect(-20, -34, 40, 5);
-    ctx.strokeStyle = '#263238'; ctx.lineWidth = 2;
+    ctx.strokeStyle = '#1a2a32'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.fillStyle = '#1a2a32';
+    ctx.fillRect(-25, -38, 50, 6);
+    ctx.strokeRect(-25, -38, 50, 6);
+    ctx.strokeStyle = '#1a2a32'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(0, -52, 24, Math.PI, 0); ctx.stroke();
+  }
+
+  if (z.type === 'football') {
+    ctx.fillStyle = '#b71c1c';
+    ctx.beginPath(); ctx.arc(0, -22, 26, Math.PI, 0); ctx.fill();
+    ctx.strokeStyle = '#5a0a0a'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(0, -46, 20, Math.PI, 0);
+    ctx.moveTo(-22, -22); ctx.lineTo(22, -22);
+    ctx.moveTo(-18, -16); ctx.lineTo(18, -16);
+    ctx.moveTo(-14, -10); ctx.lineTo(14, -10);
+    ctx.stroke();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(-8, -48); ctx.lineTo(-8, -22);
+    ctx.moveTo(8, -48); ctx.lineTo(8, -22);
     ctx.stroke();
   }
 
   if (z.type === 'balloon') {
     ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, -40); ctx.lineTo(0, -60); ctx.stroke();
-    const bg = ctx.createRadialGradient(-4, -70, 3, 0, -68, 20);
+    ctx.beginPath(); ctx.moveTo(0, -44); ctx.lineTo(0, -64); ctx.stroke();
+    const bg = ctx.createRadialGradient(-6, -76, 4, 0, -74, 22);
     bg.addColorStop(0, '#ff80ab'); bg.addColorStop(0.6, '#e91e63'); bg.addColorStop(1, '#880e4f');
     ctx.fillStyle = bg;
-    ctx.beginPath();
-    ctx.ellipse(0, -68, 18, 22, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, -74, 20, 24, 0, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = '#4a0828'; ctx.lineWidth = 1.5; ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.beginPath(); ctx.ellipse(-6, -82, 6, 10, -0.3, 0, Math.PI * 2); ctx.fill();
+  }
+
+  if (z.type === 'dancer') {
+    ctx.fillStyle = '#4a148c';
+    ctx.beginPath(); ctx.arc(0, -28, 26, Math.PI, 0); ctx.fill();
+    ctx.strokeStyle = '#2a0a5a'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#ffeb3b';
+    ctx.beginPath(); ctx.arc(0, -50, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#f9a825'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#e91e63';
     ctx.beginPath();
-    ctx.ellipse(-6, -74, 5, 8, -0.3, 0, Math.PI * 2);
+    ctx.arc(-12, -46, 4, 0, Math.PI * 2);
+    ctx.arc(12, -46, 4, 0, Math.PI * 2);
     ctx.fill();
   }
 
   if (isBoss) {
     ctx.fillStyle = '#4a7a3a';
-    ctx.beginPath();
-    ctx.arc(0, -18, 32, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(0, -18, 34, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = '#1a2a0a'; ctx.lineWidth = 3; ctx.stroke();
     ctx.fillStyle = '#ff8a65';
-    ctx.beginPath();
-    ctx.arc(0, -22, 20, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(0, -22, 22, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = '#bf360c'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#ffeb3b';
+    ctx.beginPath();
+    ctx.arc(-9, -22, 5, 0, Math.PI * 2);
+    ctx.arc(9, -22, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f44336';
+    ctx.beginPath();
+    ctx.arc(-9, -22, 2, 0, Math.PI * 2);
+    ctx.arc(9, -22, 2, 0, Math.PI * 2);
+    ctx.fill();
     ctx.fillStyle = '#90a4ae';
     ctx.beginPath();
-    ctx.ellipse(-32, -10, 15, 22, 0, 0, Math.PI * 2);
-    ctx.ellipse(32, -10, 15, 22, 0, 0, Math.PI * 2);
+    ctx.ellipse(-34, -10, 16, 24, 0, 0, Math.PI * 2);
+    ctx.ellipse(34, -10, 16, 24, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = '#455a64'; ctx.lineWidth = 2; ctx.stroke();
     ctx.fillStyle = '#ffd700';
     ctx.beginPath();
-    ctx.moveTo(-24, -46); ctx.lineTo(-20, -64); ctx.lineTo(-10, -54);
-    ctx.lineTo(0, -70); ctx.lineTo(10, -54); ctx.lineTo(20, -64);
-    ctx.lineTo(24, -46); ctx.closePath(); ctx.fill();
+    ctx.moveTo(-26, -50); ctx.lineTo(-22, -70); ctx.lineTo(-12, -58);
+    ctx.lineTo(0, -76); ctx.lineTo(12, -58); ctx.lineTo(22, -70);
+    ctx.lineTo(26, -50); ctx.closePath(); ctx.fill();
     ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2; ctx.stroke();
   }
 
@@ -2165,13 +2441,11 @@ function drawZombie(z, t) {
     const aura = 0.6 + Math.sin(t * 0.005) * 0.4;
     ctx.strokeStyle = `rgba(224,64,160,${aura})`;
     ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(0, -10, 42, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, -10, 46, 0, Math.PI * 2); ctx.stroke();
     for (let i = 0; i < 3; i++) {
       const a = t * 0.003 + i * 2.1;
-      const sx = Math.cos(a) * 35;
-      const sy = Math.sin(a) * 35 - 10;
+      const sx = Math.cos(a) * 38;
+      const sy = Math.sin(a) * 38 - 10;
       ctx.fillStyle = `rgba(255,150,220,${0.7 + Math.sin(a * 3) * 0.3})`;
       drawStarSimple(sx, sy, 5, 5);
     }
@@ -2182,12 +2456,10 @@ function drawZombie(z, t) {
   if (!dying && z.hp < z.maxHp) {
     ctx.save();
     ctx.globalAlpha = bushAlpha;
-    const bw = isBoss ? 140 : 44;
-    const by = y - (isBoss ? 160 : 84);
+    const bw = isBoss ? 140 : 46;
+    const by = y - (isBoss ? 170 : 96);
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.beginPath();
-    ctx.roundRect(x - bw / 2, by, bw, isBoss ? 12 : 7, 3);
-    ctx.fill();
+    ctx.beginPath(); ctx.roundRect(x - bw / 2, by, bw, isBoss ? 12 : 7, 3); ctx.fill();
     const pct = z.hp / z.maxHp;
     const hg = ctx.createLinearGradient(0, by, 0, by + 7);
     if (pct > 0.5) { hg.addColorStop(0, '#81c784'); hg.addColorStop(1, '#388e3c'); }
@@ -2478,7 +2750,6 @@ function drawGameScene() {
   drawTopBar();
   drawBottomBar();
 
-  // Отображение очков миниигры
   if (S.minigameType === 'sunny_day') {
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.beginPath(); ctx.roundRect(W/2 - 180, 50, 360, 50, 10); ctx.fill();
@@ -2497,7 +2768,7 @@ function drawGameScene() {
     ctx.font = 'bold 24px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('♾️ Волна: ' + S.currentWave + '  Убито: ' + S.killedZombies, W/2, 75);
+    ctx.fillText('♾️ Волна: ' + S.currentWave + '  Убито: ' + S.totalZombiesDead, W/2, 75);
   }
 }
 
@@ -2664,17 +2935,10 @@ function drawBottomBar() {
   ctx.font = 'bold 13px Arial';
   ctx.fillText('ВОЛНА ' + S.currentWave + '/' + (S.currentLevel ? S.currentLevel.waves : 5), W / 2 + 80, barY + 31);
 
-  if (S.plantedThisLevel === 0 && !S.gameOver) {
-    ctx.font = 'bold 14px Impact, Arial Black, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillStyle = 'rgba(255,235,59,0.85)';
-    ctx.fillText('😎 Пофигизм: активно', W - 20, barY + 20);
-  } else {
-    ctx.font = 'bold 13px Arial';
-    ctx.textAlign = 'right';
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.fillText('🌱 Посажено: ' + S.plantedThisLevel, W - 20, barY + 20);
-  }
+  ctx.font = 'bold 13px Arial';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.fillText('🧟 Убито: ' + S.totalZombiesDead + ' / ' + S.totalZombies, W - 20, barY + 20);
 }
 
 // ==================== МЕНЮ ====================
@@ -3156,15 +3420,30 @@ function drawAchievements() {
   const startX = (W - totalW) / 2;
   const startY = 110;
 
+  const viewTop = startY;
+  const viewBottom = H - 20;
+  const viewH = viewBottom - viewTop;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, viewTop, W, viewH);
+  ctx.clip();
+
   const achList = Object.entries(ACHIEVEMENTS);
+  const rows = Math.ceil(achList.length / cols);
+  const contentH = rows * (cardH + gap);
+  S.achScrollMax = Math.max(0, contentH - viewH);
+  S.achScroll = clamp(S.achScroll, 0, S.achScrollMax);
+
   for (let i = 0; i < achList.length; i++) {
     const [id, a] = achList[i];
     const unlockedA = !!S.achievements[id];
     const col = i % cols;
     const row = Math.floor(i / cols);
     const cx = startX + col * (cardW + gap);
-    const cy = startY + row * (cardH + gap);
-    if (cy > H - 60) continue;
+    const cy = startY + row * (cardH + gap) - S.achScroll;
+
+    if (cy + cardH < viewTop - 20 || cy > viewBottom + 20) continue;
 
     const g = ctx.createLinearGradient(cx, cy, cx, cy + cardH);
     if (unlockedA) { g.addColorStop(0, '#ffd54f'); g.addColorStop(0.5, '#ffb300'); g.addColorStop(1, '#e65100'); }
@@ -3188,6 +3467,36 @@ function drawAchievements() {
     ctx.font = 'italic 12px Arial';
     ctx.fillStyle = unlockedA ? '#5d4037' : '#666';
     ctx.fillText(a.desc, cx + 90, cy + 52);
+
+    if (!unlockedA) {
+      ctx.font = 'bold 28px Arial';
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#666';
+      ctx.fillText('🔒', cx + cardW - 15, cy + cardH / 2);
+    } else {
+      ctx.font = 'bold 28px Arial';
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#4caf50';
+      ctx.fillText('✅', cx + cardW - 15, cy + cardH / 2);
+    }
+  }
+
+  ctx.restore();
+
+  if (S.achScrollMax > 0) {
+    const barX = W - 15;
+    const barW = 8;
+    const trackH = viewH;
+    const thumbH = Math.max(30, trackH * (viewH / contentH));
+    const thumbY = viewTop + (S.achScroll / S.achScrollMax) * (trackH - thumbH);
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.beginPath();
+    ctx.roundRect(barX, viewTop, barW, trackH, 4);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,235,59,0.7)';
+    ctx.beginPath();
+    ctx.roundRect(barX, thumbY, barW, thumbH, 4);
+    ctx.fill();
   }
 }
 
@@ -3231,14 +3540,12 @@ function startLevelWithSeedSelect(level) {
 
 // ==================== ЛОГИКА ====================
 function update(dt) {
-  // ВАЖНО: S.time увеличивается только в loop(), не здесь!
   const dts = dt / 1000;
 
   for (const k in S.cooldowns) {
     S.cooldowns[k] = Math.max(0, S.cooldowns[k] - dt);
   }
 
-  // Солнце падает только в обычных уровнях (не в sunny_day)
   if (!S.minigameFlags.sunny) {
     S.sunTimer += dt;
     if (S.sunTimer > 6500) {
@@ -3249,7 +3556,6 @@ function update(dt) {
     }
   }
 
-  // Растения
   for (const p of S.plants) {
     if (!isPlantAwake(p.type)) continue;
 
@@ -3378,7 +3684,6 @@ function update(dt) {
     }
   }
 
-  // Снаряды
   for (const pr of S.projectiles) {
     if (pr.delay > 0) { pr.delay -= dt; continue; }
     pr.x += pr.vx * dts;
@@ -3391,7 +3696,7 @@ function update(dt) {
       if (z.hp <= 0 || z.hypnotized) continue;
       if (z.row !== pr.row) continue;
       if (z.x >= YARD_RIGHT) continue;
-      const zy = cellCY(z.row) - 20;
+      const zy = (z.y_air !== undefined && z.falling) ? z.y_air - 20 : cellCY(z.row) - 20;
       if (Math.abs(pr.x - z.x) < 28 && Math.abs(pr.y - zy) < 55) {
         z.hp -= pr.damage;
         z.hitFlash = 180;
@@ -3405,7 +3710,6 @@ function update(dt) {
   }
   S.projectiles = S.projectiles.filter(p => !p.dead);
 
-  // Солнце
   for (const s of S.suns) {
     s.life -= dt;
     if (s.y < s.targetY) {
@@ -3415,14 +3719,11 @@ function update(dt) {
   }
   S.suns = S.suns.filter(s => s.life > 0);
 
-  // Кратеры тают
   for (const c of S.craters) c.life -= dt;
   S.craters = S.craters.filter(c => c.life > 0);
 
-  // Вспышка затухает
   if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 0.002);
 
-  // Зомби
   for (const z of S.zombies) {
     if (z.hp <= 0) { z.dyingTimer = (z.dyingTimer || 0) + dt; continue; }
     if (z.hitFlash > 0) z.hitFlash -= dt;
@@ -3480,12 +3781,12 @@ function update(dt) {
       }
     }
 
-    if (!attacking) {
+    if (!attacking && !z.falling) {
       const speedMul = z.slowTimer > 0 ? 0.5 : 1;
       z.x -= z.speed * speedMul * dts;
     }
 
-    if (z.x < GRID_X - 15) {
+    if (z.x < GRID_X - 15 && !z.falling) {
       const mower = S.mowers[z.row];
       if (mower && !mower.used) {
         mower.used = true; mower.active = true; mower.x = GRID_X - 30;
@@ -3496,7 +3797,6 @@ function update(dt) {
     }
   }
 
-  // Газонокосилки
   for (const m of S.mowers) {
     if (m.active) {
       m.x += 700 * dts;
@@ -3507,9 +3807,16 @@ function update(dt) {
     }
   }
 
+  for (const z of S.zombies) {
+    if (z.hp <= 0 && !z._deadCounted) {
+      z._deadCounted = true;
+      S.totalZombiesDead++;
+      S.killedZombies++;
+    }
+  }
+
   S.zombies = S.zombies.filter(z => !(z.hp <= 0 && z.dyingTimer > 800));
 
-  // Частицы
   for (const p of S.particles) {
     p.x += p.vx; p.y += p.vy;
     p.vy += p.gravity; p.vx *= 0.98;
@@ -3517,22 +3824,25 @@ function update(dt) {
   }
   S.particles = S.particles.filter(p => p.life > 0);
 
-  // Спавн зомби
   S.zombieSpawnTimer += dt;
   const spawnInterval = S.currentLevel.spawnInterval || 5000;
 
-  // В миниигре endless спавн ускоряется с волнами
   let effectiveInterval = spawnInterval;
   if (S.minigameFlags.endless) {
     effectiveInterval = Math.max(800, spawnInterval * Math.pow(0.92, S.currentWave - 1));
   }
 
-  const canSpawn = S.minigameFlags.endless || S.minigameFlags.sunny || S.spawnedZombies < S.totalZombies;
+  let canSpawn = false;
+  if (S.minigameFlags.endless || S.minigameFlags.sunny) {
+    canSpawn = true;
+  } else {
+    canSpawn = S.spawnedZombies < S.totalZombies;
+  }
+
   if (canSpawn && S.zombieSpawnTimer > effectiveInterval) {
     S.zombieSpawnTimer = 0;
     spawnZombie();
 
-    // В gravity-миниигре зомби падают с неба
     if (S.minigameFlags.gravity) {
       const z = S.zombies[S.zombies.length - 1];
       if (z) {
@@ -3542,7 +3852,6 @@ function update(dt) {
     }
   }
 
-  // Падение зомби в gravity-миниигре
   if (S.minigameFlags.gravity) {
     for (const z of S.zombies) {
       if (z.falling && z.y_air !== undefined) {
@@ -3558,7 +3867,7 @@ function update(dt) {
     }
   }
 
-  if (S.currentLevel.boss === 'zomboss' && !S.bossSpawned && S.spawnedZombies >= S.totalZombies - 1) {
+  if (S.currentLevel.boss === 'zomboss' && !S.bossSpawned && S.spawnedZombies >= S.totalZombies) {
     S.bossSpawned = true;
     const row = Math.floor(Math.random() * ROWS);
     S.zombies.push({
@@ -3566,24 +3875,20 @@ function update(dt) {
       hp: ZOMBIE_TYPES.zomboss.hp, maxHp: ZOMBIE_TYPES.zomboss.hp,
       speed: ZOMBIE_TYPES.zomboss.speed, dmg: ZOMBIE_TYPES.zomboss.dmg,
       walkPhase: 0, slowTimer: 0, hitFlash: 0, dyingTimer: 0, attackTimer: 0, garlicPushTimer: 0, hypnotized: false,
+      y_air: undefined, falling: false,
     });
     S.shake = 30;
   }
 
-  // Волны
   const zombiesPerWave = Math.ceil(S.currentLevel.totalZombies / S.currentLevel.waves);
   if (S.killedZombies >= S.currentWave * zombiesPerWave && S.currentWave < S.currentLevel.waves) {
     const aliveThisWave = S.zombies.filter(z => z.hp > 0 && z.type !== 'zomboss').length;
     if (aliveThisWave === 0) {
       S.currentWave++;
       S.zombieSpawnTimer = 0;
-      if (S.currentLevel.boss && S.currentWave === S.currentLevel.waves) {
-        S.bossSpawned = false;
-      }
     }
   }
 
-  // В endless и sunny волны растут по таймеру
   if (S.minigameFlags.endless || S.minigameFlags.sunny) {
     S.minigameTime += dt;
     if (S.minigameTime > 20000) {
@@ -3596,28 +3901,28 @@ function update(dt) {
     ? clamp(S.currentWave / 20, 0, 1)
     : clamp(S.killedZombies / S.totalZombies, 0, 1);
 
-  // Проверка победы
   if (S.minigameFlags.sunny) {
     if (S.sun >= 500) {
       S.minigameScore = Math.floor(S.sun);
       gameOver(true);
     }
   } else if (S.minigameFlags.endless) {
-    // Бесконечный - никогда не побеждает, только поражение
-    // (или можно сделать победу после 20 волн)
     if (S.currentWave > 20) {
       S.minigameScore = S.killedZombies;
       gameOver(true);
     }
   } else {
-    const bossAlive = S.zombies.some(z => (z.type === 'zomboss') && z.hp > 0);
-    if (S.killedZombies >= S.totalZombies && S.zombies.length === 0 && S.spawnedZombies >= S.totalZombies && !bossAlive) {
+    const allSpawned = S.spawnedZombies >= S.totalZombies;
+    const bossKilled = !S.currentLevel.boss || (S.bossSpawned && !S.zombies.some(z => z.type === 'zomboss' && z.hp > 0));
+    const noAliveZombies = !S.zombies.some(z => z.hp > 0);
+    const noDyingZombies = !S.zombies.some(z => z.hp <= 0 && z.dyingTimer < 800);
+    if (allSpawned && bossKilled && noAliveZombies && noDyingZombies && S.totalZombiesDead >= S.totalZombies) {
       gameOver(true);
     }
   }
 
   if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 0.02);
-  if (S.killedZombies >= 1) unlockAchievement('first_blood');
+  if (S.totalZombiesDead > 0) unlockAchievement('first_blood');
   if (S.sun >= 1000) unlockAchievement('sunflower_farm');
 }
 
@@ -3649,6 +3954,7 @@ function spawnZombie() {
 }
 
 function gameOver(won) {
+  if (S.gameOver) return;
   S.gameOver = true;
   S.won = won;
   if (won) {
@@ -3663,9 +3969,9 @@ function gameOver(won) {
       if (S.unlockedLevels === lvlId && lvlId < LEVELS.length) S.unlockedLevels = lvlId + 1;
     }
     S.totalWinsEver++;
-    S.totalKillsEver += S.killedZombies;
+    S.totalKillsEver += S.totalZombiesDead;
     if (S.minigameType) {
-      if (S.minigameScore === 0) S.minigameScore = S.killedZombies;
+      if (S.minigameScore === 0) S.minigameScore = S.totalZombiesDead;
       const best = S.minigameBest[S.minigameType] || 0;
       if (S.minigameScore > best) S.minigameBest[S.minigameType] = S.minigameScore;
     }
@@ -3673,8 +3979,7 @@ function gameOver(won) {
     saveProgress();
   } else {
     S.shake = 30;
-    // Всё равно засчитываем убийства
-    S.totalKillsEver += S.killedZombies;
+    S.totalKillsEver += S.totalZombiesDead;
     saveProgress(true);
   }
 }
@@ -3697,6 +4002,13 @@ canvas.addEventListener('mouseleave', () => {
   S.cursorX = -1; S.cursorY = -1;
 });
 
+canvas.addEventListener('wheel', (e) => {
+  if (S.scene === 'achievements') {
+    S.achScroll = clamp(S.achScroll + e.deltaY * 0.5, 0, S.achScrollMax);
+    e.preventDefault();
+  }
+}, { passive: false });
+
 canvas.addEventListener('click', (e) => {
   const p = getPos(e);
   const x = p.x, y = p.y;
@@ -3708,6 +4020,7 @@ canvas.addEventListener('click', (e) => {
     }
     if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w &&
         y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
+      S.achScroll = 0;
       S.scene = 'achievements'; return;
     }
     for (const c of S.minigameCards) {
@@ -3771,6 +4084,7 @@ canvas.addEventListener('click', (e) => {
     }
     if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w &&
         y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
+      S.achScroll = 0;
       S.scene = 'achievements'; return;
     }
     if (S.menuMinigameBtn && x >= S.menuMinigameBtn.x && x <= S.menuMinigameBtn.x + S.menuMinigameBtn.w &&
@@ -3994,6 +4308,7 @@ function startLevel(level) {
   S.zombieSpawnTimer = 3000;
   S.spawnedZombies = 0;
   S.killedZombies = 0;
+  S.totalZombiesDead = 0;
   S.totalZombies = level.totalZombies;
   S.spawnInterval = level.spawnInterval;
   S.currentWave = 1;
@@ -4050,11 +4365,6 @@ function render() {
           drawStarSimple(W / 2 - 100 + i * 100, H / 2 - 10, 40, 5);
           ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.stroke();
         }
-        if (S.plantedThisLevel === 0) {
-          ctx.fillStyle = '#4fc3f7';
-          ctx.font = 'bold 32px Impact, Arial Black, sans-serif';
-          ctx.fillText('😎 ПОФИГИЗМ АКТИВИРОВАН!', W / 2, H / 2 + 60);
-        }
         if (S.minigameType) {
           ctx.fillStyle = '#ffeb3b';
           ctx.font = 'bold 28px Arial';
@@ -4098,15 +4408,10 @@ function render() {
 function loop(now) {
   const dt = Math.min(now - S.lastTime, 50);
   S.lastTime = now;
-  S.time += dt; // Время увеличивается ТОЛЬКО здесь
+  S.time += dt;
 
   if (S.scene === 'playing' && !S.gameOver) update(dt);
   else if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 0.02);
-
-  if (S.scene === 'playing') {
-    const aliveNonBoss = S.zombies.filter(z => z.hp > 0 && z.type !== 'zomboss').length;
-    S.killedZombies = Math.min(S.totalZombies, S.spawnedZombies - aliveNonBoss);
-  }
 
   render();
   requestAnimationFrame(loop);
