@@ -306,7 +306,6 @@ function buildYardBackground(isNight, rows, rowStart) {
     g.fill();
   }
 
-  // Дом
   const houseW = GRID_X - 45;
   const houseTop = 100;
   const houseBottom = H - 60;
@@ -332,12 +331,6 @@ function buildYardBackground(isNight, rows, rowStart) {
     g.moveTo(0, y);
     g.lineTo(houseW, y);
     g.stroke();
-    for (let x = (y / 22) % 2 === 0 ? 0 : 30; x < houseW; x += 60) {
-      g.beginPath();
-      g.moveTo(x, y);
-      g.lineTo(x, y + 22);
-      g.stroke();
-    }
   }
 
   const roofTop = 30;
@@ -377,14 +370,6 @@ function buildYardBackground(isNight, rows, rowStart) {
   }
   g.fillStyle = winG;
   g.fillRect(winX, winY, winW, winH);
-  g.strokeStyle = '#8b5a2b';
-  g.lineWidth = 4;
-  g.beginPath();
-  g.moveTo(winX + winW / 2, winY);
-  g.lineTo(winX + winW / 2, winY + winH);
-  g.moveTo(winX, winY + winH / 2);
-  g.lineTo(winX + winW, winY + winH / 2);
-  g.stroke();
 
   const doorX = 45;
   const doorY = houseBottom - 150;
@@ -409,10 +394,6 @@ function buildYardBackground(isNight, rows, rowStart) {
   g.quadraticCurveTo(doorX + doorW / 2, doorY - 15, doorX + doorW, doorY + 40);
   g.lineTo(doorX + doorW, doorY + doorH);
   g.closePath();
-  g.fill();
-  g.fillStyle = '#ffd700';
-  g.beginPath();
-  g.arc(doorX + doorW - 12, doorY + doorH / 2 + 10, 5, 0, Math.PI * 2);
   g.fill();
 
   return oc;
@@ -448,12 +429,6 @@ function buildRoofBackground(rows, rowStart) {
     g.moveTo(0, y);
     g.lineTo(W, y);
     g.stroke();
-    for (let x = (y / 20) % 2 === 0 ? 0 : 20; x < W; x += 40) {
-      g.beginPath();
-      g.moveTo(x, y);
-      g.lineTo(x, y + 20);
-      g.stroke();
-    }
   }
 
   for (let r = 0; r < rows; r++) {
@@ -475,14 +450,6 @@ function buildRoofBackground(rows, rowStart) {
 
   g.fillStyle = '#8b5a2b';
   g.fillRect(0, 80, W, 40);
-  g.strokeStyle = '#5d4037';
-  g.lineWidth = 3;
-  for (let x = 0; x < W; x += 40) {
-    g.beginPath();
-    g.moveTo(x, 80);
-    g.lineTo(x, 120);
-    g.stroke();
-  }
 
   return oc;
 }
@@ -544,7 +511,6 @@ function buildPoolBackground(rows, rowStart) {
     for (let c = 0; c < COLS; c++) {
       const x = GRID_X + c * CELL_W;
       const y = GRID_Y + realRow * CELL_H;
-
       if (isPoolRow) {
         const waterG = g.createLinearGradient(x, y, x, y + CELL_H);
         waterG.addColorStop(0, c % 2 === 0 ? '#3a8ec8' : '#3288c0');
@@ -573,40 +539,18 @@ function buildPoolBackground(rows, rowStart) {
     }
   }
 
-  // Бортики бассейна
   const poolTopY = GRID_Y + 2 * CELL_H;
   const poolBottomY = GRID_Y + 4 * CELL_H;
   g.fillStyle = '#e8d8b8';
   g.fillRect(GRID_X, poolTopY - 8, GRID_W, 12);
   g.fillRect(GRID_X, poolBottomY - 4, GRID_W, 12);
-  g.strokeStyle = '#5d4037';
-  g.lineWidth = 2;
-  g.strokeRect(GRID_X, poolTopY - 8, GRID_W, 12);
-  g.strokeRect(GRID_X, poolBottomY - 4, GRID_W, 12);
 
-  // Дорога справа
   const roadX = YARD_RIGHT;
   const roadTop = aTop - 25;
   const roadBottom = aBottom + 25;
   g.fillStyle = '#8a8a8a';
   g.fillRect(roadX, roadTop, ROAD_W, roadBottom - roadTop);
 
-  const tileSize = 80;
-  for (let ty = 0; ty < Math.ceil((roadBottom - roadTop) / tileSize); ty++) {
-    for (let tx = 0; tx < Math.ceil(ROAD_W / tileSize); tx++) {
-      const tileX = roadX + tx * tileSize;
-      const tileY = roadTop + ty * tileSize;
-      const tileW = Math.min(tileSize, roadX + ROAD_W - tileX);
-      const tileH = Math.min(tileSize, roadBottom - tileY);
-      g.fillStyle = (tx + ty) % 2 === 0 ? '#b8b8b8' : '#a8a8a8';
-      g.fillRect(tileX + 3, tileY + 3, tileW - 6, tileH - 6);
-      g.strokeStyle = '#5a5a5a';
-      g.lineWidth = 3;
-      g.strokeRect(tileX + 3, tileY + 3, tileW - 6, tileH - 6);
-    }
-  }
-
-  // Дом
   const houseW = GRID_X - 45;
   const houseTop = 100;
   const houseBottom = H - 60;
@@ -650,7 +594,6 @@ function buildBushes(isNight, rows, rowStart) {
 
   const aTop = GRID_Y + rowStart * CELL_H;
   const aBottom = aTop + rows * CELL_H;
-
   const roadEndX = ROAD_RIGHT;
   const blobs = [];
 
@@ -749,7 +692,7 @@ const ZOMBIE_TYPES = {
 };
 
 const LEVELS = [
-  // === ЛОКАЦИЯ 1 — ДВОР ===
+  // ЛОКАЦИЯ 1 — ДВОР
   { id: 1, name: '1-1', location: 'yard',  rows: 1, rowsOffset: 2, time: 'day', seeds: ['peashooter','sunflower'],
     totalZombies: 8, spawnInterval: 7000, types: ['basic'], waves: 1, desc: 'Один ряд' },
   { id: 2, name: '1-2', location: 'yard',  rows: 3, rowsOffset: 1, time: 'day', seeds: ['peashooter','sunflower','wallnut'],
@@ -765,7 +708,7 @@ const LEVELS = [
   { id: 7, name: '1-7', location: 'yard',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','potato','cherry','snowpea','repeater','threepeater','torchwood','jalapeno','garlic','chomper'],
     totalZombies: 28, spawnInterval: 4200, types: ['basic','cone','bucket','flag','football','dancer'], waves: 5, desc: 'Оборона двора' },
 
-  // === ЛОКАЦИЯ 2 — НОЧЬ ===
+  // ЛОКАЦИЯ 2 — НОЧЬ
   { id: 8, name: '2-1', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','wallnut'],
     totalZombies: 12, spawnInterval: 6000, types: ['basic','cone'], waves: 1, desc: 'Сумерки' },
   { id: 9, name: '2-2', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','wallnut'],
@@ -777,7 +720,7 @@ const LEVELS = [
   { id: 12, name: '2-5', location: 'night', rows: 5, rowsOffset: 0, time: 'night', seeds: ['puffshroom','sunshroom','fumeshroom','iceshroom','hypnoshroom','doomshroom','scaredy','wallnut','cherry'],
     totalZombies: 30, spawnInterval: 4200, types: ['basic','cone','bucket','flag','dancer','football'], waves: 5, desc: 'Мрачная луна' },
 
-  // === ЛОКАЦИЯ 3 — БАССЕЙН ===
+  // ЛОКАЦИЯ 3 — БАССЕЙН
   { id: 13, name: '3-1', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato'],
     totalZombies: 14, spawnInterval: 6000, types: ['basic','cone'], waves: 2, desc: 'Задний дворик' },
   { id: 14, name: '3-2', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater'],
@@ -791,7 +734,7 @@ const LEVELS = [
   { id: 18, name: '3-6', location: 'pool',   rows: 5, rowsOffset: 0, time: 'day', seeds: ['peashooter','sunflower','wallnut','lilypad','potato','cherry','threepeater','tanglekelp','jalapeno','snowpea','repeater','garlic'],
     totalZombies: 32, spawnInterval: 4200, types: ['basic','cone','bucket','flag','football','dancer'], waves: 5, desc: 'Бассейн в огне' },
 
-  // === ЛОКАЦИЯ 4 — КРЫША ===
+  // ЛОКАЦИЯ 4 — КРЫША
   { id: 19, name: '4-1', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','sunflower','wallnut','potato'],
     totalZombies: 14, spawnInterval: 6000, types: ['basic','cone'], waves: 2, desc: 'На крыше' },
   { id: 20, name: '4-2', location: 'roof',  rows: 5, rowsOffset: 0, time: 'day', seeds: ['cabbage','kernelpult','sunflower','wallnut','potato'],
@@ -894,10 +837,8 @@ const S = {
   seedSelectCardRects: [],
   seedSelectStartBtn: null,
   seedSelectBackBtn: null,
-  // Достижения
   achievements: {},
   achievementQueue: [],
-  // Мини-игры
   minigameType: null,
   minigameData: {},
   minigameTime: 0,
@@ -932,7 +873,7 @@ function isPlantAwake(plantType) {
 }
 
 // ==================== СОХРАНЕНИЕ ====================
-const SAVE_KEY = 'pvz_save_v10';
+const SAVE_KEY = 'pvz_save_v11';
 
 let saveToastTimer = null;
 function showSaveToast(msg) {
@@ -946,7 +887,7 @@ function showSaveToast(msg) {
 function saveProgress(silent = false) {
   try {
     const data = {
-      version: 10,
+      version: 11,
       unlocked: S.unlockedLevels,
       stars: S.levelStars,
       totalKills: S.totalKillsEver,
@@ -996,7 +937,7 @@ function loadProgress() {
 function resetProgress() {
   if (!confirm('Точно сбросить ВЕСЬ прогресс? Это действие нельзя отменить.')) return;
   try {
-    const keys = ['pvz_save_v10', 'pvz_backup', 'pvz_save_v9', 'pvz_save_v8', 'pvz_save_v7'];
+    const keys = ['pvz_save_v11', 'pvz_backup', 'pvz_save_v10', 'pvz_save_v9'];
     for (const k of keys) {
       try { localStorage.removeItem(k); } catch(e) {}
       try { sessionStorage.removeItem(k); } catch(e) {}
@@ -1049,7 +990,6 @@ function checkAchievements() {
     if (stars === 3) unlockAchievement('perfectionist');
     if (S.levelStartTime && S.time - S.levelStartTime < 60000) unlockAchievement('speedrun');
     if (S.unlockedLevels >= 2) unlockAchievement('first_win');
-    // 😎 ПОФИГИЗМ
     if (S.plantedThisLevel === 0) unlockAchievement('chill_master');
   }
   if (S.minigameType && S.gameOver && S.won) unlockAchievement('minigame_win');
@@ -1090,11 +1030,6 @@ function drawAchievementToasts() {
   ctx.lineWidth = 3;
   ctx.stroke();
 
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  ctx.beginPath();
-  ctx.roundRect(boxX + 6, boxY + 6, boxW - 12, 30, 10);
-  ctx.fill();
-
   ctx.font = 'bold 50px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -1120,6 +1055,8 @@ function drawAchievementToasts() {
 
 // ==================== ЭКРАН МИНИ-ИГР ====================
 function drawMinigameMenu() {
+  ctx.clearRect(0, 0, W, H);
+
   const bg = ctx.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, '#1a2a4a');
   bg.addColorStop(0.5, '#0d1a2e');
@@ -1151,7 +1088,6 @@ function drawMinigameMenu() {
 
   drawBackBtn(20, 20, 140, 50);
 
-  // Кнопка достижений
   const achBtnW = 240, achBtnH = 50;
   const achBtnX = W - achBtnW - 20;
   const achBtnY = 20;
@@ -1164,17 +1100,10 @@ function drawMinigameMenu() {
   ctx.beginPath();
   ctx.roundRect(achBtnX, achBtnY, achBtnW, achBtnH, 10);
   ctx.fill();
-  ctx.strokeStyle = '#2a0050';
-  ctx.lineWidth = 3;
-  ctx.stroke();
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 20px Impact, Arial Black, sans-serif';
-  ctx.strokeStyle = '#2a0050';
-  ctx.lineWidth = 4;
   const achUnlocked = Object.keys(S.achievements).length;
-  const achText = '🏆 ' + achUnlocked + '/' + Object.keys(ACHIEVEMENTS).length;
-  ctx.strokeText(achText, achBtnX + achBtnW / 2, achBtnY + achBtnH / 2);
-  ctx.fillText(achText, achBtnX + achBtnW / 2, achBtnY + achBtnH / 2);
+  ctx.fillText('🏆 ' + achUnlocked + '/' + Object.keys(ACHIEVEMENTS).length, achBtnX + achBtnW / 2, achBtnY + achBtnH / 2);
   S.achMenuBtn = { x: achBtnX, y: achBtnY, w: achBtnW, h: achBtnH };
 
   S.minigameCards = [];
@@ -1191,9 +1120,7 @@ function drawMinigameMenu() {
     const row = Math.floor(i / cols);
     const cx = startX + col * (cardW + gap);
     const cy = startY + row * (cardH + gap);
-
-    const hover = S.cursorX >= cx && S.cursorX <= cx + cardW &&
-                  S.cursorY >= cy && S.cursorY <= cy + cardH;
+    const hover = S.cursorX >= cx && S.cursorX <= cx + cardW && S.cursorY >= cy && S.cursorY <= cy + cardH;
 
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.beginPath();
@@ -1203,11 +1130,9 @@ function drawMinigameMenu() {
     const cg = ctx.createLinearGradient(cx, cy, cx, cy + cardH);
     if (hover) {
       cg.addColorStop(0, '#4fc3f7');
-      cg.addColorStop(0.5, '#2196f3');
       cg.addColorStop(1, '#0d47a1');
     } else {
       cg.addColorStop(0, '#42a5f5');
-      cg.addColorStop(0.5, '#1976d2');
       cg.addColorStop(1, '#0a2a4a');
     }
     ctx.fillStyle = cg;
@@ -1217,11 +1142,6 @@ function drawMinigameMenu() {
     ctx.strokeStyle = hover ? '#ffeb3b' : '#0a1a3a';
     ctx.lineWidth = hover ? 4 : 3;
     ctx.stroke();
-
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    ctx.beginPath();
-    ctx.roundRect(cx + 10, cy + 10, cardW - 20, 50, 12);
-    ctx.fill();
 
     ctx.font = 'bold 64px Arial';
     ctx.textAlign = 'center';
@@ -1250,22 +1170,14 @@ function drawMinigameMenu() {
 
 // ==================== ЭКРАН ДОСТИЖЕНИЙ ====================
 function drawAchievements() {
+  ctx.clearRect(0, 0, W, H);
+
   const bg = ctx.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, '#2a1a3a');
   bg.addColorStop(0.5, '#1a0f25');
   bg.addColorStop(1, '#0a0510');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
-
-  for (let i = 0; i < 100; i++) {
-    const x = (i * 137) % W;
-    const y = (i * 71) % H;
-    const a = 0.2 + Math.abs(Math.sin(S.time / 1000 + i)) * 0.5;
-    ctx.fillStyle = `rgba(255,255,255,${a})`;
-    ctx.beginPath();
-    ctx.arc(x, y, 1, 0, Math.PI * 2);
-    ctx.fill();
-  }
 
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -1298,7 +1210,6 @@ function drawAchievements() {
     const row = Math.floor(i / cols);
     const cx = startX + col * (cardW + gap);
     const cy = startY + row * (cardH + gap);
-
     if (cy > H - 80) continue;
 
     const g = ctx.createLinearGradient(cx, cy, cx, cy + cardH);
@@ -1382,7 +1293,10 @@ function startLevelWithSeedSelect(level) {
   S.scene = 'seedselect';
 }
 
+// ==================== ЭКРАН ВЫБОРА СЕМЯН ====================
 function drawSeedSelect() {
+  ctx.clearRect(0, 0, W, H);
+
   const bg = ctx.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, '#2a1a3a');
   bg.addColorStop(0.5, '#1a0f25');
@@ -1425,7 +1339,7 @@ function drawSeedSelect() {
     const sy = slotRowY;
     const chosen = S.seedSelectChosen[i];
 
-    if (chosen) {
+    if (chosen && ALL_PLANTS[chosen]) {
       const def = ALL_PLANTS[chosen];
       const paperG = ctx.createLinearGradient(sx, sy, sx, sy + slotSize);
       paperG.addColorStop(0, '#f0e2c0');
@@ -1457,7 +1371,7 @@ function drawSeedSelect() {
         ctx.strokeRect(sx - 2, sy - 2, slotSize + 4, slotSize + 4);
       }
     } else {
-      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.fillRect(sx, sy, slotSize, slotSize);
       ctx.strokeStyle = '#666';
       ctx.lineWidth = 2;
@@ -1466,12 +1380,16 @@ function drawSeedSelect() {
       ctx.setLineDash([]);
       ctx.fillStyle = '#555';
       ctx.font = 'bold 40px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
       ctx.fillText('+', sx + slotSize / 2, sy + slotSize / 2);
     }
   }
 
   ctx.font = 'bold 22px Arial';
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
   ctx.fillText('Доступные растения', W / 2, 300);
 
   const availSize = 70;
@@ -1487,6 +1405,8 @@ function drawSeedSelect() {
   for (let i = 0; i < available.length; i++) {
     const seedId = available[i];
     const def = ALL_PLANTS[seedId];
+    if (!def) continue;
+
     const col = i % perRow;
     const row = Math.floor(i / perRow);
     const ax = availRowX + col * (availSize + availGap);
@@ -1561,16 +1481,10 @@ function drawSeedSelect() {
   ctx.beginPath();
   ctx.roundRect(backX, backY, backW, backH, 12);
   ctx.fill();
-  ctx.strokeStyle = '#3e1a00';
-  ctx.lineWidth = 3;
-  ctx.stroke();
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 24px Impact, Arial Black, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.strokeStyle = '#3e1a00';
-  ctx.lineWidth = 4;
-  ctx.strokeText('← НАЗАД', backX + backW / 2, backY + backH / 2);
   ctx.fillText('← НАЗАД', backX + backW / 2, backY + backH / 2);
   S.seedSelectBackBtn = { x: backX, y: backY, w: backW, h: backH };
 
@@ -1594,16 +1508,10 @@ function drawSeedSelect() {
   ctx.beginPath();
   ctx.roundRect(startX, startY, startW, startH, 16);
   ctx.fill();
-  ctx.strokeStyle = '#1e3a08';
-  ctx.lineWidth = 4;
-  ctx.stroke();
   ctx.fillStyle = canStart ? '#fff' : '#aaa';
   ctx.font = 'bold 36px Impact, Arial Black, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.strokeStyle = '#1e3a08';
-  ctx.lineWidth = 5;
-  ctx.strokeText('В БОЙ!', startX + startW / 2, startY + startH / 2);
   ctx.fillText('В БОЙ!', startX + startW / 2, startY + startH / 2);
   S.seedSelectStartBtn = { x: startX, y: startY, w: startW, h: startH, enabled: canStart };
 
@@ -1626,8 +1534,6 @@ function drawGameScene() {
   } else {
     if (bgCacheYard) ctx.drawImage(bgCacheYard, 0, 0);
   }
-
-  if (S.location === 'roof') drawPots();
 
   for (let r = 0; r < ROWS; r++) {
     const m = S.mowers[r];
@@ -1692,55 +1598,7 @@ function drawGameScene() {
   drawBottomBar();
 }
 
-function drawPots() {
-  if (S.location !== 'roof') return;
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      if (S.plants.find(p => p.row === r && p.col === c)) continue;
-      drawPot(cellCX(c), cellCY(r));
-    }
-  }
-}
-
-function drawPot(x, y) {
-  ctx.fillStyle = 'rgba(0,0,0,0.35)';
-  ctx.beginPath();
-  ctx.ellipse(x, y + 34, 26, 6, 0, 0, Math.PI * 2);
-  ctx.fill();
-  const g = ctx.createLinearGradient(x - 22, y, x + 22, y);
-  g.addColorStop(0, '#7a3a10');
-  g.addColorStop(0.4, '#c8804a');
-  g.addColorStop(0.6, '#d8905a');
-  g.addColorStop(1, '#7a3a10');
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.moveTo(x - 24, y - 12);
-  ctx.lineTo(x - 18, y + 30);
-  ctx.lineTo(x + 18, y + 30);
-  ctx.lineTo(x + 24, y - 12);
-  ctx.closePath();
-  ctx.fill();
-  ctx.strokeStyle = '#4a2408';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  const tg = ctx.createLinearGradient(x - 25, 0, x + 25, 0);
-  tg.addColorStop(0, '#8a4a20');
-  tg.addColorStop(0.5, '#d08050');
-  tg.addColorStop(1, '#8a4a20');
-  ctx.fillStyle = tg;
-  ctx.beginPath();
-  ctx.ellipse(x, y - 12, 25, 7, 0, 0, Math.PI * 2);
-  ctx.fill();
-  const eg = ctx.createRadialGradient(x - 4, y - 12, 2, x, y - 12, 18);
-  eg.addColorStop(0, '#4a2a18');
-  eg.addColorStop(1, '#1a0808');
-  ctx.fillStyle = eg;
-  ctx.beginPath();
-  ctx.ellipse(x, y - 12, 20, 5, 0, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-// ==================== РАСТЕНИЯ ====================
+// ==================== РАСТЕНИЯ (рисуем) ====================
 function drawPlant(type, x, y, t = 0, scale = 1, plant = null) {
   ctx.save();
   ctx.translate(x, y);
@@ -1825,13 +1683,9 @@ function drawSunflower(bob) {
     ctx.beginPath();
     ctx.ellipse(px, py, 9, 5, a, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#e6a100';
-    ctx.lineWidth = 1;
-    ctx.stroke();
   }
   const g = ctx.createRadialGradient(-3, cy - 4, 2, 0, cy, 18);
   g.addColorStop(0, '#a1724a');
-  g.addColorStop(0.5, '#6a3a1a');
   g.addColorStop(1, '#2d1b0a');
   ctx.fillStyle = g;
   ctx.beginPath();
@@ -1847,21 +1701,13 @@ function drawSunflower(bob) {
   ctx.arc(-6, cy - 3, 2.2, 0, Math.PI * 2);
   ctx.arc(6, cy - 3, 2.2, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.arc(0, cy + 4, 5, 0.3, Math.PI - 0.3);
-  ctx.stroke();
 }
 
 function drawPeashooter(bob, ice, heads) {
   drawStem();
   const cy = -16 + bob;
   if (heads === 2) {
-    const g2 = ctx.createRadialGradient(-14, cy - 18, 3, -10, cy - 18, 17);
-    g2.addColorStop(0, '#c5e88a');
-    g2.addColorStop(1, '#33691e');
-    ctx.fillStyle = g2;
+    ctx.fillStyle = '#8bc34a';
     ctx.beginPath();
     ctx.arc(-10, cy - 18, 16, 0, Math.PI * 2);
     ctx.fill();
@@ -1869,29 +1715,21 @@ function drawPeashooter(bob, ice, heads) {
   const g = ctx.createRadialGradient(-5, cy - 5, 3, 0, cy, 22);
   if (ice) {
     g.addColorStop(0, '#e1f5fe');
-    g.addColorStop(0.4, '#81d4fa');
-    g.addColorStop(0.7, '#4fc3f7');
+    g.addColorStop(0.5, '#81d4fa');
     g.addColorStop(1, '#01579b');
   } else {
     g.addColorStop(0, '#e8f5c8');
-    g.addColorStop(0.4, '#c5e88a');
-    g.addColorStop(0.7, '#8bc34a');
+    g.addColorStop(0.5, '#8bc34a');
     g.addColorStop(1, '#33691e');
   }
   ctx.fillStyle = g;
   ctx.beginPath();
   ctx.arc(0, cy, 20, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = ice ? '#01579b' : '#1b5e20';
-  ctx.lineWidth = 2;
-  ctx.stroke();
   ctx.fillStyle = ice ? '#29b6f6' : '#558b2f';
   ctx.beginPath();
   ctx.ellipse(22, cy, 10, 12, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = ice ? '#01579b' : '#1b5e20';
-  ctx.lineWidth = 2;
-  ctx.stroke();
   ctx.fillStyle = '#0a1f05';
   ctx.beginPath();
   ctx.ellipse(24, cy, 6, 7, 0, 0, Math.PI * 2);
@@ -1915,17 +1753,10 @@ function drawThreepeater(bob) {
     { x: -4, y: cy + 14, r: 15 },
   ];
   for (const h of heads) {
-    const g = ctx.createRadialGradient(h.x - 3, h.y - 3, 2, h.x, h.y, h.r);
-    g.addColorStop(0, '#e8f5c8');
-    g.addColorStop(0.5, '#8bc34a');
-    g.addColorStop(1, '#33691e');
-    ctx.fillStyle = g;
+    ctx.fillStyle = '#8bc34a';
     ctx.beginPath();
     ctx.arc(h.x, h.y, h.r, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#1b5e20';
-    ctx.lineWidth = 2;
-    ctx.stroke();
     ctx.fillStyle = '#fff';
     ctx.beginPath();
     ctx.arc(h.x + 3, h.y - 3, 4, 0, Math.PI * 2);
@@ -1951,9 +1782,6 @@ function drawWallnut(plant) {
   ctx.beginPath();
   ctx.ellipse(0, 0, 26, 32, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = '#4e342e';
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
   ctx.fillStyle = '#fff';
   ctx.beginPath();
   ctx.arc(-9, -6, 7, 0, Math.PI * 2);
@@ -1986,16 +1814,12 @@ function drawCherry(bob) {
 function drawCherryBall(x, y, r) {
   const g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, 2, x, y, r);
   g.addColorStop(0, '#ff8a80');
-  g.addColorStop(0.4, '#ff5252');
-  g.addColorStop(0.8, '#c62828');
+  g.addColorStop(0.5, '#c62828');
   g.addColorStop(1, '#7f0000');
   ctx.fillStyle = g;
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = '#4a0000';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
   ctx.fillStyle = '#fff';
   ctx.beginPath();
   ctx.arc(x - 5, y, 4, 0, Math.PI * 2);
@@ -2015,10 +1839,7 @@ function drawPotato(plant) {
   ctx.ellipse(0, 22, 26, 10, 0, 0, Math.PI * 2);
   ctx.fill();
   if (armed) {
-    const g = ctx.createRadialGradient(-4, -6, 3, 0, 0, 22);
-    g.addColorStop(0, '#d9b57a');
-    g.addColorStop(1, '#8b6914');
-    ctx.fillStyle = g;
+    ctx.fillStyle = '#c9a36a';
     ctx.beginPath();
     ctx.ellipse(0, 2, 20, 16, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -2038,10 +1859,7 @@ function drawPotato(plant) {
 function drawChomper(bob, plant) {
   drawStem();
   const cy = -18 + bob;
-  const g = ctx.createRadialGradient(-4, -6, 3, 0, 0, 24);
-  g.addColorStop(0, '#c5e88a');
-  g.addColorStop(1, '#33691e');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#7cb342';
   ctx.beginPath();
   ctx.ellipse(0, cy, 22, 26, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -2063,11 +1881,7 @@ function drawChomper(bob, plant) {
 
 function drawJalapeno(bob) {
   const cy = -8 + bob;
-  const g = ctx.createLinearGradient(-15, cy - 20, 15, cy + 20);
-  g.addColorStop(0, '#ff5252');
-  g.addColorStop(0.5, '#c62828');
-  g.addColorStop(1, '#7f0000');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#c62828';
   ctx.beginPath();
   ctx.ellipse(0, cy, 18, 26, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -2091,11 +1905,7 @@ function drawJalapeno(bob) {
 function drawTorchwood(bob) {
   drawStem('#6d4c21', '#5d4037');
   const cy = -16 + bob;
-  const g = ctx.createLinearGradient(-20, cy - 20, 20, cy + 20);
-  g.addColorStop(0, '#a89080');
-  g.addColorStop(0.5, '#5d4037');
-  g.addColorStop(1, '#2d1b12');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#5d4037';
   ctx.beginPath();
   ctx.roundRect(-18, cy - 22, 36, 44, 8);
   ctx.fill();
@@ -2117,17 +1927,10 @@ function drawTorchwood(bob) {
 }
 
 function drawGarlic(bob, plant) {
-  const g = ctx.createRadialGradient(-6, -10, 5, 0, 0, 30);
-  g.addColorStop(0, '#fff8e8');
-  g.addColorStop(0.7, '#e0e0c0');
-  g.addColorStop(1, '#a0a080');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#e0e0c0';
   ctx.beginPath();
   ctx.ellipse(0, 0, 22, 28, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = '#808060';
-  ctx.lineWidth = 2;
-  ctx.stroke();
   ctx.fillStyle = '#fff';
   ctx.beginPath();
   ctx.arc(-7, -6, 5, 0, Math.PI * 2);
@@ -2150,27 +1953,16 @@ function drawGarlic(bob, plant) {
 }
 
 function drawMushroomStem(color = '#e8dfc8') {
-  const g = ctx.createLinearGradient(-6, 0, 6, 0);
-  g.addColorStop(0, '#a89878');
-  g.addColorStop(0.5, color);
-  g.addColorStop(1, '#a89878');
-  ctx.fillStyle = g;
+  ctx.fillStyle = color;
   ctx.beginPath();
   ctx.roundRect(-6, 0, 12, 26, 3);
   ctx.fill();
-  ctx.strokeStyle = '#8a7a5a';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
 }
 
 function drawPuffshroom(bob) {
   const cy = -10 + bob;
   drawMushroomStem();
-  const g = ctx.createRadialGradient(-5, cy - 8, 3, 0, cy, 22);
-  g.addColorStop(0, '#e8d0f0');
-  g.addColorStop(0.6, '#a478b8');
-  g.addColorStop(1, '#4a2a5a');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#a478b8';
   ctx.beginPath();
   ctx.ellipse(0, cy, 20, 16, 0, Math.PI, 0);
   ctx.fill();
@@ -2187,11 +1979,7 @@ function drawPuffshroom(bob) {
 function drawSunshroom(bob) {
   const cy = -10 + bob;
   drawMushroomStem();
-  const g = ctx.createRadialGradient(-5, cy - 8, 3, 0, cy, 24);
-  g.addColorStop(0, '#ffdba0');
-  g.addColorStop(0.6, '#ff9800');
-  g.addColorStop(1, '#bf360c');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#ff9800';
   ctx.beginPath();
   ctx.ellipse(0, cy, 22, 18, 0, Math.PI, 0);
   ctx.fill();
@@ -2213,11 +2001,7 @@ function drawSunshroom(bob) {
 function drawFumeshroom(bob) {
   const cy = -10 + bob;
   drawMushroomStem();
-  const g = ctx.createRadialGradient(-5, cy - 8, 3, 0, cy, 24);
-  g.addColorStop(0, '#e0b8f0');
-  g.addColorStop(0.6, '#8e5aa8');
-  g.addColorStop(1, '#3a1a4a');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#8e5aa8';
   ctx.beginPath();
   ctx.ellipse(0, cy, 22, 18, 0, Math.PI, 0);
   ctx.fill();
@@ -2234,11 +2018,7 @@ function drawFumeshroom(bob) {
 function drawDoomshroom(bob) {
   const cy = -10 + bob;
   drawMushroomStem('#4a4a4a');
-  const g = ctx.createRadialGradient(-5, cy - 10, 3, 0, cy, 30);
-  g.addColorStop(0, '#7a7a8a');
-  g.addColorStop(0.5, '#3a3a4a');
-  g.addColorStop(1, '#0a0a1a');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#3a3a4a';
   ctx.beginPath();
   ctx.ellipse(0, cy, 28, 22, 0, Math.PI, 0);
   ctx.fill();
@@ -2255,11 +2035,7 @@ function drawDoomshroom(bob) {
 function drawIceshroom(bob) {
   const cy = -10 + bob;
   drawMushroomStem('#d8e8f0');
-  const g = ctx.createRadialGradient(-5, cy - 8, 3, 0, cy, 24);
-  g.addColorStop(0, '#e1f5fe');
-  g.addColorStop(0.6, '#4fc3f7');
-  g.addColorStop(1, '#01579b');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#4fc3f7';
   ctx.beginPath();
   ctx.ellipse(0, cy, 22, 18, 0, Math.PI, 0);
   ctx.fill();
@@ -2276,11 +2052,7 @@ function drawIceshroom(bob) {
 function drawHypnoshroom(bob) {
   const cy = -10 + bob;
   drawMushroomStem();
-  const g = ctx.createRadialGradient(-5, cy - 8, 3, 0, cy, 24);
-  g.addColorStop(0, '#ffc8e0');
-  g.addColorStop(0.6, '#e040a0');
-  g.addColorStop(1, '#5a0830');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#e040a0';
   ctx.beginPath();
   ctx.ellipse(0, cy, 22, 18, 0, Math.PI, 0);
   ctx.fill();
@@ -2304,11 +2076,7 @@ function drawHypnoshroom(bob) {
 function drawScaredy(bob) {
   const cy = -10 + bob;
   drawMushroomStem();
-  const g = ctx.createRadialGradient(-5, cy - 8, 3, 0, cy, 22);
-  g.addColorStop(0, '#f0e8d8');
-  g.addColorStop(0.6, '#b0a890');
-  g.addColorStop(1, '#5a5040');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#b0a890';
   ctx.beginPath();
   ctx.ellipse(0, cy, 18, 14, 0, Math.PI, 0);
   ctx.fill();
@@ -2330,11 +2098,7 @@ function drawScaredy(bob) {
 function drawCabbage(bob) {
   drawStem();
   const cy = -16 + bob;
-  const g = ctx.createRadialGradient(-5, cy - 5, 3, 0, cy, 22);
-  g.addColorStop(0, '#e8f5c8');
-  g.addColorStop(0.5, '#a5d66a');
-  g.addColorStop(1, '#33691e');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#a5d66a';
   ctx.beginPath();
   ctx.arc(0, cy, 21, 0, Math.PI * 2);
   ctx.fill();
@@ -2353,11 +2117,7 @@ function drawCabbage(bob) {
 function drawKernelpult(bob) {
   drawStem();
   const cy = -16 + bob;
-  const g = ctx.createLinearGradient(-15, cy, 15, cy);
-  g.addColorStop(0, '#f5e6a0');
-  g.addColorStop(0.5, '#ffd54f');
-  g.addColorStop(1, '#c8a020');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#ffd54f';
   ctx.beginPath();
   ctx.ellipse(0, cy, 16, 22, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -2391,16 +2151,7 @@ function drawCoffee(bob) {
   ctx.lineTo(16, cy - 10);
   ctx.closePath();
   ctx.fill();
-  ctx.strokeStyle = '#888';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(18, cy, 8, -Math.PI / 2, Math.PI / 2);
-  ctx.stroke();
-  const cg = ctx.createRadialGradient(0, cy - 8, 2, 0, cy - 8, 14);
-  cg.addColorStop(0, '#8a4a20');
-  cg.addColorStop(1, '#2a1408');
-  ctx.fillStyle = cg;
+  ctx.fillStyle = '#6a3a1a';
   ctx.beginPath();
   ctx.ellipse(0, cy - 8, 14, 4, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -2408,28 +2159,12 @@ function drawCoffee(bob) {
 
 function drawLilypad(bob) {
   const cy = -6 + bob;
-  const g = ctx.createRadialGradient(-6, cy - 4, 3, 0, cy, 32);
-  g.addColorStop(0, '#8bc34a');
-  g.addColorStop(0.5, '#5c9e2a');
-  g.addColorStop(1, '#2d5a10');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#5c9e2a';
   ctx.beginPath();
   ctx.arc(0, cy, 30, 0.35, Math.PI * 2 - 0.35);
   ctx.lineTo(0, cy);
   ctx.closePath();
   ctx.fill();
-  ctx.strokeStyle = '#1b5e20';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.strokeStyle = 'rgba(20,60,10,0.5)';
-  ctx.lineWidth = 1.5;
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2 + 0.4;
-    ctx.beginPath();
-    ctx.moveTo(0, cy);
-    ctx.lineTo(Math.cos(a) * 26, cy + Math.sin(a) * 26);
-    ctx.stroke();
-  }
   ctx.fillStyle = '#fff';
   ctx.beginPath();
   ctx.arc(-7, cy - 3, 3.5, 0, Math.PI * 2);
@@ -2454,13 +2189,6 @@ function drawTanglekelp(bob, plant) {
     ctx.moveTo(ox, cy + 22);
     ctx.quadraticCurveTo(ox + wave, cy, ox + wave * 1.5, cy - 20);
     ctx.stroke();
-    ctx.fillStyle = '#43a047';
-    ctx.beginPath();
-    ctx.ellipse(ox + wave * 0.7, cy + 5, 7, 3, -0.3 + wave * 0.05, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(ox + wave * 1.2, cy - 10, 7, 3, 0.3 + wave * 0.05, 0, Math.PI * 2);
-    ctx.fill();
   }
   ctx.fillStyle = '#fff';
   ctx.beginPath();
@@ -2494,106 +2222,30 @@ function drawZombie(z, t) {
   if (dying) ctx.rotate((1 - alpha) * 0.7);
   if (isBoss) ctx.scale(2.4, 2.4);
 
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.beginPath();
-  ctx.ellipse(0, 34, 24, 7, 0, 0, Math.PI * 2);
-  ctx.fill();
-
   const bob = dying ? 0 : Math.sin(t * 0.008 + z.walkPhase) * 3;
-  const lean = dying ? 0 : Math.sin(t * 0.008 + z.walkPhase) * 0.08;
   ctx.translate(0, bob);
-  ctx.rotate(lean);
 
-  if (z.slowTimer > 0 && !dying) {
-    const g = ctx.createRadialGradient(0, -10, 5, 0, -10, 50);
-    g.addColorStop(0, 'rgba(79,195,247,0.4)');
-    g.addColorStop(1, 'rgba(79,195,247,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(0, -10, 50, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  if (z.hypnotized && !dying) {
-    const g = ctx.createRadialGradient(0, -10, 5, 0, -10, 50);
-    g.addColorStop(0, 'rgba(224,64,160,0.5)');
-    g.addColorStop(1, 'rgba(224,64,160,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(0, -10, 50, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  if (z.hitFlash > 0) {
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = `rgba(255,255,255,${z.hitFlash / 200 * 0.6})`;
-    ctx.beginPath();
-    ctx.arc(0, -10, 38, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
-  }
-
-  ctx.fillStyle = z.type === 'football' ? '#333' : '#3a3a3a';
+  ctx.fillStyle = '#3a3a3a';
   ctx.beginPath();
   ctx.ellipse(-8, 26, 8, 12, 0, 0, Math.PI * 2);
   ctx.ellipse(8, 26, 8, 12, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath();
-  ctx.ellipse(-10, 36, 9, 5, 0, 0, Math.PI * 2);
-  ctx.ellipse(10, 36, 9, 5, 0, 0, Math.PI * 2);
-  ctx.fill();
 
   let bodyColor = '#8b3a3a';
-  if (z.type === 'flag') bodyColor = '#8b2f2f';
   if (z.type === 'football') bodyColor = '#b71c1c';
-  if (z.type === 'dancer') bodyColor = '#4a148c';
-  if (z.type === 'balloon') bodyColor = '#e91e63';
   if (z.type === 'zomboss') bodyColor = '#1a2a1a';
-  if (z.hypnotized) bodyColor = '#c040a0';
-
-  const bodyG = ctx.createRadialGradient(-6, -6, 3, 0, 2, 28);
-  bodyG.addColorStop(0, 'rgba(255,255,255,0.25)');
-  bodyG.addColorStop(0.5, bodyColor);
-  bodyG.addColorStop(1, 'rgba(0,0,0,0.4)');
-  ctx.fillStyle = bodyG;
+  ctx.fillStyle = bodyColor;
   ctx.beginPath();
   ctx.ellipse(0, 2, 22, 26, 0, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = '#a5d66a';
-  ctx.save();
-  ctx.translate(-18, -4);
-  ctx.rotate(-0.3);
-  ctx.beginPath();
-  ctx.roundRect(-6, -6, 34, 12, 6);
-  ctx.fill();
-  ctx.restore();
-  ctx.save();
-  ctx.translate(18, -6);
-  ctx.rotate(0.15);
-  ctx.beginPath();
-  ctx.roundRect(-6, -6, 34, 12, 6);
-  ctx.fill();
-  ctx.restore();
   ctx.beginPath();
   ctx.arc(-24, -8, 7, 0, Math.PI * 2);
   ctx.arc(24, -8, 7, 0, Math.PI * 2);
   ctx.fill();
 
-  const headG = ctx.createRadialGradient(-6, -22, 3, 0, -18, 22);
-  if (isBoss) {
-    headG.addColorStop(0, '#a0c070');
-    headG.addColorStop(1, '#1a2a0a');
-  } else if (z.hypnotized) {
-    headG.addColorStop(0, '#ffd0e8');
-    headG.addColorStop(1, '#6a1050');
-  } else {
-    headG.addColorStop(0, '#e8f5c8');
-    headG.addColorStop(0.5, '#a5d66a');
-    headG.addColorStop(1, '#558b2f');
-  }
-  ctx.fillStyle = headG;
+  ctx.fillStyle = '#8bc34a';
   ctx.beginPath();
   ctx.arc(0, -18, 22, 0, Math.PI * 2);
   ctx.fill();
@@ -2609,69 +2261,20 @@ function drawZombie(z, t) {
   ctx.arc(7, -20, 2.5, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = '#3e2723';
-  ctx.beginPath();
-  ctx.ellipse(0, -8, 9, 5, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(-5, -12, 3, 4);
-  ctx.fillRect(-1, -12, 3, 4);
-  ctx.fillRect(3, -12, 3, 4);
-
   if (z.type === 'cone') {
     ctx.fillStyle = '#ff8f00';
     ctx.beginPath();
     ctx.moveTo(-18, -34); ctx.lineTo(0, -68); ctx.lineTo(18, -34);
     ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = '#e65100';
-    ctx.lineWidth = 2; ctx.stroke();
   }
   if (z.type === 'bucket') {
-    const bg = ctx.createLinearGradient(-20, 0, 20, 0);
-    bg.addColorStop(0, '#455a64');
-    bg.addColorStop(0.5, '#cfd8dc');
-    bg.addColorStop(1, '#455a64');
-    ctx.fillStyle = bg;
+    ctx.fillStyle = '#90a4ae';
     ctx.beginPath();
     ctx.moveTo(-20, -30); ctx.lineTo(-18, -62); ctx.lineTo(18, -62); ctx.lineTo(20, -30);
     ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = '#263238';
-    ctx.lineWidth = 2; ctx.stroke();
-  }
-  if (z.type === 'flag') {
-    ctx.strokeStyle = '#5d4037';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(-26, -18); ctx.lineTo(-30, -70);
-    ctx.stroke();
-    ctx.fillStyle = '#d32f2f';
-    ctx.beginPath();
-    ctx.moveTo(-30, -70); ctx.lineTo(-2, -64); ctx.lineTo(-4, -46); ctx.lineTo(-30, -52);
-    ctx.closePath(); ctx.fill();
-  }
-  if (z.type === 'football') {
-    ctx.fillStyle = '#b71c1c';
-    ctx.beginPath();
-    ctx.arc(0, -22, 24, Math.PI, 0);
-    ctx.fill();
-  }
-  if (z.type === 'dancer') {
-    ctx.fillStyle = '#c62828';
-    ctx.beginPath();
-    ctx.arc(0, -34, 16, Math.PI, 0);
-    ctx.fill();
   }
   if (z.type === 'balloon') {
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, -40); ctx.lineTo(0, -60);
-    ctx.stroke();
-    const bg = ctx.createRadialGradient(-4, -70, 3, 0, -68, 20);
-    bg.addColorStop(0, '#ff80ab');
-    bg.addColorStop(0.6, '#e91e63');
-    bg.addColorStop(1, '#880e4f');
-    ctx.fillStyle = bg;
+    ctx.fillStyle = '#e91e63';
     ctx.beginPath();
     ctx.ellipse(0, -68, 18, 22, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -2699,42 +2302,15 @@ function drawZombie(z, t) {
     const pct = z.hp / z.maxHp;
     ctx.fillStyle = pct > 0.5 ? '#4caf50' : pct > 0.25 ? '#ff9800' : '#f44336';
     ctx.fillRect(x - bw / 2 + 1, by + 1, (bw - 2) * pct, isBoss ? 10 : 4);
-    if (isBoss) {
-      ctx.fillStyle = '#ffeb3b';
-      ctx.font = 'bold 20px Impact, Arial Black, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 4;
-      ctx.strokeText('ЗОМБОС', x, by - 18);
-      ctx.fillText('ЗОМБОС', x, by - 18);
-    }
     ctx.restore();
   }
 }
 
-// ==================== СНАРЯДЫ ====================
+// ==================== СНАРЯДЫ, СОЛНЦЕ, ЧАСТИЦЫ ====================
 function drawProjectile(p) {
-  for (let i = 0; i < p.trail.length; i++) {
-    const t = p.trail[i];
-    const a = t.life / 200;
-    ctx.globalAlpha = a * 0.5;
-    let color = '#8bc34a';
-    if (p.ice) color = '#4fc3f7';
-    if (p.spore) color = '#a478b8';
-    if (p.cabbage) color = '#a5d66a';
-    if (p.kernel) color = '#ffd54f';
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(t.x - i * 3, t.y, 4 - i * 0.4, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
   const g = ctx.createRadialGradient(p.x - 2, p.y - 2, 1, p.x, p.y, 10);
   if (p.ice) {
     g.addColorStop(0, '#e1f5fe'); g.addColorStop(0.5, '#4fc3f7'); g.addColorStop(1, '#01579b');
-  } else if (p.spore) {
-    g.addColorStop(0, '#e0c8f0'); g.addColorStop(0.5, '#a478b8'); g.addColorStop(1, '#4a2a5a');
   } else {
     g.addColorStop(0, '#e8f5c8'); g.addColorStop(0.5, '#8bc34a'); g.addColorStop(1, '#33691e');
   }
@@ -2744,23 +2320,17 @@ function drawProjectile(p) {
   ctx.fill();
 }
 
-// ==================== СОЛНЦЕ ====================
 function drawSun(s) {
   const pulse = 1 + Math.sin(S.time / 250 + s.phase) * 0.08;
   const r = 28 * pulse;
   const g = ctx.createRadialGradient(s.x, s.y, 4, s.x, s.y, r * 2);
   g.addColorStop(0, 'rgba(255,255,150,0.95)');
-  g.addColorStop(0.5, 'rgba(255,213,79,0.4)');
   g.addColorStop(1, 'rgba(255,213,79,0)');
   ctx.fillStyle = g;
   ctx.beginPath();
   ctx.arc(s.x, s.y, r * 2, 0, Math.PI * 2);
   ctx.fill();
-  const cg = ctx.createRadialGradient(s.x - 5, s.y - 5, 3, s.x, s.y, r);
-  cg.addColorStop(0, '#fffde7');
-  cg.addColorStop(0.5, '#ffe082');
-  cg.addColorStop(1, '#ffb300');
-  ctx.fillStyle = cg;
+  ctx.fillStyle = '#ffe082';
   ctx.beginPath();
   ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
   ctx.fill();
@@ -2778,7 +2348,7 @@ function drawParticles() {
   ctx.globalAlpha = 1;
 }
 
-// ==================== ВЕРХНЯЯ ПАНЕЛЬ ====================
+// ==================== ПАНЕЛИ ====================
 function drawTopBar() {
   if (!S.currentLevel) return;
   const seeds = S.currentLevel.seeds.map(id => ALL_PLANTS[id]);
@@ -2786,78 +2356,52 @@ function drawTopBar() {
   const panelY = 8;
   const packetW = 62, packetH = 84;
   const sunW = 78;
-  const totalW = sunW + seeds.length * (packetW + 4) + 60 + 90;
 
-  const pg = ctx.createLinearGradient(0, panelY, 0, panelY + packetH + 12);
-  pg.addColorStop(0, '#a87848');
-  pg.addColorStop(0.3, '#8b5a2b');
-  pg.addColorStop(0.7, '#6d4c21');
-  pg.addColorStop(1, '#3a2410');
-  ctx.fillStyle = pg;
+  ctx.fillStyle = 'rgba(80,50,20,0.9)';
   ctx.beginPath();
-  ctx.roundRect(panelX - 4, panelY - 4, totalW, packetH + 12, 8);
+  ctx.roundRect(panelX - 4, panelY - 4, sunW + seeds.length * (packetW + 4) + 60 + 90, packetH + 12, 8);
   ctx.fill();
-  ctx.strokeStyle = '#2d1b08';
-  ctx.lineWidth = 3;
-  ctx.stroke();
 
-  const scX = panelX;
-  const scY = panelY;
-  const sg = ctx.createRadialGradient(scX + 30, scY + 30, 3, scX + 30, scY + 30, 26);
-  sg.addColorStop(0, '#fffde7');
-  sg.addColorStop(0.5, '#ffd54f');
-  sg.addColorStop(1, '#f57f17');
-  ctx.fillStyle = sg;
+  ctx.fillStyle = '#ffd54f';
   ctx.beginPath();
-  ctx.arc(scX + 30, scY + 30, 26, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = '#e65100';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.fillStyle = 'rgba(0,0,0,0.65)';
-  ctx.beginPath();
-  ctx.roundRect(scX + 2, scY + 58, 76, 22, 4);
+  ctx.arc(panelX + 30, panelY + 30, 26, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 18px Arial';
   ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(S.sun, scX + 40, scY + 69);
+  ctx.fillText(S.sun, panelX + 40, panelY + 69);
 
-  const startX = scX + sunW + 4;
+  const startX = panelX + sunW + 4;
   for (let i = 0; i < seeds.length; i++) {
     drawSeedPacket(startX + i * (packetW + 4), panelY, packetW, packetH, seeds[i]);
   }
 
   const shX = startX + seeds.length * (packetW + 4) + 4;
   drawShovel(shX, panelY, packetW, packetH);
-  drawMenuBtn(W - 130, panelY, 122, 40);
+
+  // МЕНЮ кнопка
+  ctx.fillStyle = '#7cb342';
+  ctx.beginPath();
+  ctx.roundRect(W - 130, panelY, 122, 40, 8);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 22px Impact, Arial Black, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('MENU', W - 69, panelY + 20);
 }
 
 function drawSeedPacket(x, y, w, h, seed) {
+  if (!seed) return;
   const isSelected = S.selectedSeed === seed.id;
   const cd = S.cooldowns[seed.id] || 0;
   const ready = cd <= 0 && S.sun >= seed.cost;
   const awake = isPlantAwake(seed.id);
-  const hover = S.cursorX >= x && S.cursorX <= x + w && S.cursorY >= y && S.cursorY <= y + h;
 
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.fillRect(x + 2, y + 3, w, h);
-
-  const bg = ctx.createLinearGradient(0, y, 0, y + h);
-  if (isSelected) {
-    bg.addColorStop(0, '#fff9c4');
-    bg.addColorStop(1, '#ffe082');
-  } else {
-    bg.addColorStop(0, '#f0e2c0');
-    bg.addColorStop(0.5, '#d7c9a5');
-    bg.addColorStop(1, '#a8956d');
-  }
-  ctx.fillStyle = bg;
+  ctx.fillStyle = isSelected ? '#fff9c4' : '#e8d9b0';
   ctx.fillRect(x, y, w, h);
   ctx.strokeStyle = isSelected ? '#ffeb3b' : '#3e2723';
-  ctx.lineWidth = isSelected ? 3 : 2;
+  ctx.lineWidth = 2;
   ctx.strokeRect(x, y, w, h);
 
   ctx.save();
@@ -2876,7 +2420,7 @@ function drawSeedPacket(x, y, w, h, seed) {
     ctx.fillText('💤', x + w / 2, y + h / 2 - 6);
   }
 
-  ctx.fillStyle = 'rgba(0,0,0,0.8)';
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
   ctx.fillRect(x + 2, y + h - 18, w - 4, 16);
   ctx.fillStyle = ready && awake ? '#fff' : '#ff5252';
   ctx.font = 'bold 13px Arial';
@@ -2888,27 +2432,17 @@ function drawSeedPacket(x, y, w, h, seed) {
     const cdPct = cd / seed.cd;
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
     ctx.fillRect(x, y, w, h * cdPct);
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 16px Arial';
-    ctx.fillText(Math.ceil(cd / 1000), x + w / 2, y + h / 2 - 6);
   } else if (S.sun < seed.cost || !awake) {
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(x, y, w, h);
-  }
-
-  if (hover && ready && awake && !isSelected) {
-    ctx.strokeStyle = 'rgba(255,235,59,0.9)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(x - 1, y - 1, w + 2, h + 2);
   }
 }
 
 function drawShovel(x, y, w, h) {
-  const isSelected = S.shovelSelected;
-  ctx.fillStyle = isSelected ? '#fff9c4' : '#e8d9b0';
+  ctx.fillStyle = S.shovelSelected ? '#fff9c4' : '#e8d9b0';
   ctx.fillRect(x, y, w, h);
-  ctx.strokeStyle = isSelected ? '#ffeb3b' : '#3e2723';
-  ctx.lineWidth = isSelected ? 3 : 2;
+  ctx.strokeStyle = '#3e2723';
+  ctx.lineWidth = 2;
   ctx.strokeRect(x, y, w, h);
   ctx.save();
   ctx.translate(x + w / 2, y + h / 2);
@@ -2916,129 +2450,246 @@ function drawShovel(x, y, w, h) {
   ctx.fillStyle = '#8d6e63';
   ctx.fillRect(-3, -28, 6, 40);
   ctx.fillStyle = '#5d4037';
-  ctx.beginPath();
-  ctx.moveTo(-3, 12); ctx.lineTo(3, 12); ctx.lineTo(3, 30);
-  ctx.quadraticCurveTo(0, 38, -3, 30);
-  ctx.closePath(); ctx.fill();
+  ctx.fillRect(-3, 12, 6, 20);
   ctx.restore();
 }
 
-function drawMenuBtn(x, y, w, h) {
-  const hover = S.cursorX >= x && S.cursorX <= x + w && S.cursorY >= y && S.cursorY <= y + h;
-  const g = ctx.createLinearGradient(0, y, 0, y + h);
-  if (hover) { g.addColorStop(0, '#a4d65e'); g.addColorStop(1, '#4e7d1a'); }
-  else { g.addColorStop(0, '#8bc34a'); g.addColorStop(1, '#33691e'); }
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.roundRect(x, y, w, h, 8);
-  ctx.fill();
-  ctx.strokeStyle = '#1e3a08';
-  ctx.lineWidth = 3; ctx.stroke();
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 22px Impact, Arial Black, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.strokeStyle = '#1e3a08';
-  ctx.lineWidth = 4;
-  ctx.strokeText('MENU', x + w / 2, y + h / 2);
-  ctx.fillText('MENU', x + w / 2, y + h / 2);
-}
-
-// ==================== НИЖНЯЯ ПАНЕЛЬ ====================
 function drawBottomBar() {
   const barY = H - 60;
-  const bg = ctx.createLinearGradient(0, barY, 0, barY + 60);
-  bg.addColorStop(0, '#4e342e');
-  bg.addColorStop(1, '#1a0f08');
-  ctx.fillStyle = bg;
+  ctx.fillStyle = 'rgba(60,40,20,0.9)';
   ctx.fillRect(0, barY, W, 60);
-  ctx.strokeStyle = '#7a5a40';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(0, barY);
-  ctx.lineTo(W, barY);
-  ctx.stroke();
 
-  const lbX = W / 2 - 260;
-  const lbY = barY + 12;
   ctx.fillStyle = '#c62828';
   ctx.beginPath();
-  ctx.roundRect(lbX, lbY, 140, 36, 6);
+  ctx.roundRect(W / 2 - 260, barY + 12, 140, 36, 6);
   ctx.fill();
-  ctx.fillStyle = '#ffeb3b';
-  ctx.beginPath();
-  ctx.moveTo(lbX + 10, lbY + 8);
-  ctx.lineTo(lbX + 10, lbY + 30);
-  ctx.lineTo(lbX + 26, lbY + 22);
-  ctx.lineTo(lbX + 10, lbY + 14);
-  ctx.closePath(); ctx.fill();
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 20px Impact, Arial Black, sans-serif';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('Level ' + (S.currentLevel ? S.currentLevel.name : '1-1'), lbX + 34, lbY + 19);
-
-  const dnX = lbX + 150;
-  let locText = '☀ ДВОР';
-  let locColor = '#ffb300';
-  if (S.location === 'night') { locText = '🌙 НОЧЬ'; locColor = '#1a1a4a'; }
-  else if (S.location === 'roof') { locText = '🏠 КРЫША'; locColor = '#a85030'; }
-  else if (S.location === 'pool') { locText = '🏊 БАССЕЙН'; locColor = '#1a6a9a'; }
-  ctx.fillStyle = locColor;
-  ctx.beginPath();
-  ctx.roundRect(dnX, lbY, 120, 36, 6);
-  ctx.fill();
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 15px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText(locText, dnX + 60, lbY + 19);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Level ' + (S.currentLevel ? S.currentLevel.name : '1-1'), W / 2 - 190, barY + 30);
 
-  const zX = W / 2 - 60;
-  const zY = barY + 10;
-  ctx.fillStyle = '#d32f2f';
-  ctx.beginPath();
-  ctx.roundRect(zX, zY, 60, 40, 6);
-  ctx.fill();
-  ctx.fillStyle = '#8bc34a';
-  ctx.beginPath();
-  ctx.arc(zX + 30, zY + 18, 12, 0, Math.PI * 2);
-  ctx.fill();
-
-  const pbX = zX + 70;
-  const pbY = zY + 8;
-  const pbW = 280;
-  const pbH = 26;
+  // ВОЛНА прогресс
   ctx.fillStyle = '#2d1b12';
-  ctx.beginPath();
-  ctx.roundRect(pbX, pbY, pbW, pbH, 4);
-  ctx.fill();
-  const fillW = (pbW - 4) * S.levelProgress;
-  const grad = ctx.createLinearGradient(pbX, 0, pbX + pbW, 0);
-  grad.addColorStop(0, '#66bb6a'); grad.addColorStop(0.5, '#ffeb3b'); grad.addColorStop(1, '#ef5350');
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.roundRect(pbX + 2, pbY + 2, fillW, pbH - 4, 3);
-  ctx.fill();
-  ctx.fillStyle = '#d7ccc8';
+  ctx.fillRect(W / 2 - 60, barY + 18, 280, 26);
+  ctx.fillStyle = '#66bb6a';
+  ctx.fillRect(W / 2 - 58, barY + 20, 276 * S.levelProgress, 22);
+  ctx.fillStyle = '#fff';
   ctx.font = 'bold 13px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('ВОЛНА ' + S.currentWave + '/' + (S.currentLevel ? S.currentLevel.waves : 5), pbX + pbW / 2, pbY + pbH / 2);
+  ctx.fillText('ВОЛНА ' + S.currentWave + '/' + (S.currentLevel ? S.currentLevel.waves : 5), W / 2 + 80, barY + 31);
 
-  // Индикатор пофигизма
   if (S.plantedThisLevel === 0 && !S.gameOver) {
     ctx.font = 'bold 14px Impact, Arial Black, sans-serif';
     ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
     ctx.fillStyle = 'rgba(255,235,59,0.85)';
     ctx.fillText('😎 Пофигизм: активно', W - 20, barY + 20);
   } else {
     ctx.font = 'bold 13px Arial';
     ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
     ctx.fillText('🌱 Посажено: ' + S.plantedThisLevel, W - 20, barY + 20);
   }
+}
+
+// ==================== МЕНЮ ====================
+function drawMenu() {
+  ctx.clearRect(0, 0, W, H);
+
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#4a9ed6');
+  sky.addColorStop(0.5, '#a8d8ee');
+  sky.addColorStop(0.55, '#5aa62a');
+  sky.addColorStop(1, '#2d6b12');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const titleY = 100;
+  ctx.fillStyle = '#000';
+  ctx.font = 'bold 60px Impact, Arial Black, sans-serif';
+  ctx.fillText('PLANTS vs ZOMBIES', W / 2, titleY);
+  ctx.fillStyle = '#ffd54f';
+  ctx.fillText('PLANTS vs ZOMBIES', W / 2 - 3, titleY - 3);
+
+  // ИГРАТЬ
+  const btnW = 340, btnH = 90;
+  const btnX = W / 2 - btnW / 2;
+  const btnY = H / 2 + 20;
+  const hover = S.cursorX >= btnX && S.cursorX <= btnX + btnW && S.cursorY >= btnY && S.cursorY <= btnY + btnH;
+
+  ctx.fillStyle = hover ? '#a4d65e' : '#8bc34a';
+  ctx.beginPath();
+  ctx.roundRect(btnX, btnY, btnW, btnH, 16);
+  ctx.fill();
+  ctx.strokeStyle = '#1e3a08';
+  ctx.lineWidth = 5;
+  ctx.stroke();
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 44px Impact, Arial Black, sans-serif';
+  ctx.fillText('ИГРАТЬ', W / 2, btnY + btnH / 2);
+  S.menuBtn = { x: btnX, y: btnY, w: btnW, h: btnH };
+
+  // МИНИ-ИГРЫ
+  const mgW = 340, mgH = 70;
+  const mgX = W / 2 - mgW / 2;
+  const mgY = btnY + btnH + 15;
+  const mgHover = S.cursorX >= mgX && S.cursorX <= mgX + mgW && S.cursorY >= mgY && S.cursorY <= mgY + mgH;
+
+  ctx.fillStyle = mgHover ? '#ba68c8' : '#9c27b0';
+  ctx.beginPath();
+  ctx.roundRect(mgX, mgY, mgW, mgH, 12);
+  ctx.fill();
+  ctx.strokeStyle = '#2a0050';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 32px Impact, Arial Black, sans-serif';
+  ctx.fillText('🎮 МИНИ-ИГРЫ', W / 2, mgY + mgH / 2);
+  S.menuMinigameBtn = { x: mgX, y: mgY, w: mgW, h: mgH };
+
+  // Достижения
+  const achW = 240, achH = 50;
+  const achX = W - achW - 20;
+  const achY = 20;
+  const achHover = S.cursorX >= achX && S.cursorX <= achX + achW && S.cursorY >= achY && S.cursorY <= achY + achH;
+
+  ctx.fillStyle = achHover ? '#ba68c8' : '#9c27b0';
+  ctx.beginPath();
+  ctx.roundRect(achX, achY, achW, achH, 10);
+  ctx.fill();
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px Impact, Arial Black, sans-serif';
+  ctx.fillText('🏆 ' + Object.keys(S.achievements).length + '/' + Object.keys(ACHIEVEMENTS).length, achX + achW / 2, achY + achH / 2);
+  S.achMenuBtn = { x: achX, y: achY, w: achW, h: achH };
+
+  // Сброс
+  ctx.fillStyle = '#c62828';
+  ctx.beginPath();
+  ctx.roundRect(20, H - 70, 180, 50, 10);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 16px Impact, Arial Black, sans-serif';
+  ctx.fillText('🗑 СБРОС', 110, H - 45);
+  S.resetBtn = { x: 20, y: H - 70, w: 180, h: 50 };
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 16px Arial';
+  ctx.fillText('Открыто: ' + S.unlockedLevels + '/' + LEVELS.length + ' · Побед: ' + S.totalWinsEver + ' · Убийств: ' + S.totalKillsEver, W / 2, H - 40);
+}
+
+// ==================== КАРТА УРОВНЕЙ ====================
+function drawLevelSelect() {
+  ctx.clearRect(0, 0, W, H);
+
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#2a1a3a');
+  bg.addColorStop(1, '#0a0510');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 48px Impact, Arial Black, sans-serif';
+  ctx.fillStyle = '#ffd54f';
+  ctx.fillText('ВЫБОР ЛОКАЦИИ', W / 2, 60);
+
+  drawBackBtn(20, 20, 140, 50);
+
+  const locations = [
+    { key: 'yard',  name: 'ДВОР',    emoji: '☀',  color: '#5cc42e', bg1: '#a8d8ee', bg2: '#5aa62a', levels: LEVELS.filter(l => l.location === 'yard')  },
+    { key: 'night', name: 'НОЧЬ',    emoji: '🌙', color: '#3a4a8a', bg1: '#1a2a52', bg2: '#0a0a1a', levels: LEVELS.filter(l => l.location === 'night') },
+    { key: 'pool',  name: 'БАССЕЙН', emoji: '🏊', color: '#1a6a9a', bg1: '#4aa8e0', bg2: '#0a2a4a', levels: LEVELS.filter(l => l.location === 'pool')  },
+    { key: 'roof',  name: 'КРЫША',   emoji: '🏠', color: '#a85030', bg1: '#d8a060', bg2: '#5a2010', levels: LEVELS.filter(l => l.location === 'roof')  },
+  ];
+
+  const cardW = 260, cardH = 440;
+  const gap = 20;
+  const totalW = cardW * 4 + gap * 3;
+  const startX = (W - totalW) / 2;
+  const cardY = 130;
+
+  S.levelNodes = [];
+
+  for (let i = 0; i < locations.length; i++) {
+    const loc = locations[i];
+    const cx = startX + i * (cardW + gap);
+    const cy = cardY;
+    const firstLevel = loc.levels[0];
+    const unlocked = firstLevel && firstLevel.id <= S.unlockedLevels;
+
+    const g = ctx.createLinearGradient(cx, cy, cx, cy + cardH);
+    g.addColorStop(0, loc.bg1);
+    g.addColorStop(1, loc.bg2);
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.roundRect(cx, cy, cardW, cardH, 16);
+    ctx.fill();
+    ctx.strokeStyle = unlocked ? loc.color : '#333';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 32px Impact, Arial Black, sans-serif';
+    ctx.fillText(loc.emoji + ' ' + loc.name, cx + cardW / 2, cy + 35);
+
+    const btnW = 60, btnH = 50;
+    const cols = 3;
+    const startBtnX = cx + (cardW - cols * btnW - (cols - 1) * 8) / 2;
+    const startBtnY = cy + 70;
+
+    for (let j = 0; j < loc.levels.length; j++) {
+      const lvl = loc.levels[j];
+      const col = j % cols;
+      const row = Math.floor(j / cols);
+      const bx = startBtnX + col * (btnW + 8);
+      const by = startBtnY + row * (btnH + 8);
+      const lvlLocked = lvl.id > S.unlockedLevels;
+      const isBoss = !!lvl.boss;
+
+      ctx.fillStyle = lvlLocked ? '#444' : (isBoss ? '#d32f2f' : '#8bc34a');
+      ctx.beginPath();
+      ctx.roundRect(bx, by, btnW, btnH, 8);
+      ctx.fill();
+
+      ctx.fillStyle = lvlLocked ? '#666' : '#fff';
+      ctx.font = 'bold 14px Impact, Arial Black, sans-serif';
+      ctx.fillText(isBoss ? '👹' : lvl.name, bx + btnW / 2, by + btnH / 2);
+
+      if (!lvlLocked) {
+        S.levelNodes.push({ level: lvl, x: bx, y: by, w: btnW, h: btnH });
+      }
+    }
+  }
+}
+
+function drawBackBtn(x, y, w, h) {
+  ctx.fillStyle = '#ff7043';
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, 10);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px Impact, Arial Black, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('← НАЗАД', x + w / 2, y + h / 2);
+  S.backBtn = { x, y, w, h };
+}
+
+// ==================== ГАЗОНОКОСИЛКА ====================
+function drawMower(x, y) {
+  ctx.fillStyle = '#c62828';
+  ctx.beginPath();
+  ctx.roundRect(x - 22, y - 18, 44, 28, 6);
+  ctx.fill();
+  ctx.fillStyle = '#212121';
+  ctx.beginPath();
+  ctx.arc(x - 14, y + 10, 8, 0, Math.PI * 2);
+  ctx.arc(x + 14, y + 10, 8, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 // ==================== ЛОГИКА ====================
@@ -3060,17 +2711,11 @@ function update(dt) {
     S.sunTimer = 0;
     const x = rand(GRID_X + 20, GRID_X + GRID_W - 20);
     const targetY = rand(activeTop() + 40, activeBottom() - 40);
-    S.suns.push({
-      x, y: -30, targetY,
-      life: 10000, maxLife: 10000,
-      vy: 1.4, phase: Math.random() * 10, value: 25
-    });
+    S.suns.push({ x, y: -30, targetY, life: 10000, maxLife: 10000, vy: 1.4, phase: Math.random() * 10, value: 25 });
   }
 
   for (const p of S.plants) {
-    const awake = isPlantAwake(p.type);
-    if (!awake) continue;
-
+    if (!isPlantAwake(p.type)) continue;
     if (p.type === 'sunflower' || p.type === 'sunshroom') {
       p.sunTimer += dt;
       const interval = p.type === 'sunshroom' ? 7000 : 5500;
@@ -3078,11 +2723,9 @@ function update(dt) {
       if (p.sunTimer > interval) {
         p.sunTimer = 0;
         S.suns.push({
-          x: cellCX(p.col) + rand(-15, 15),
-          y: cellCY(p.row),
-          targetY: cellCY(p.row) + 30,
-          life: 10000, maxLife: 10000,
-          vy: 0.8, phase: Math.random() * 10, value: amount
+          x: cellCX(p.col) + rand(-15, 15), y: cellCY(p.row),
+          targetY: cellCY(p.row) + 30, life: 10000, maxLife: 10000, vy: 0.8,
+          phase: Math.random() * 10, value: amount
         });
       }
     }
@@ -3096,10 +2739,7 @@ function update(dt) {
         if (p.chewTimer <= 0) p.chewing = false;
       } else {
         p.shootTimer += dt;
-        const target = S.zombies.find(z =>
-          z.row === p.row && z.hp > 0 && z.x < YARD_RIGHT &&
-          Math.abs(z.x - cellCX(p.col)) < 60
-        );
+        const target = S.zombies.find(z => z.row === p.row && z.hp > 0 && z.x < YARD_RIGHT && Math.abs(z.x - cellCX(p.col)) < 60);
         if (target && p.shootTimer > 3000) {
           p.shootTimer = 0;
           p.chewing = true;
@@ -3113,15 +2753,9 @@ function update(dt) {
       const cooldown = p.type === 'snowpea' ? 1400 : 1500;
       let target = null;
       if (p.type === 'threepeater') {
-        target = S.zombies.find(z =>
-          Math.abs(z.row - p.row) <= 1 && z.x < ZOMBIE_ENTER_YARD_X + 5 &&
-          z.x > cellCX(p.col) && z.hp > 0 && !z.hypnotized
-        );
+        target = S.zombies.find(z => Math.abs(z.row - p.row) <= 1 && z.x < ZOMBIE_ENTER_YARD_X + 5 && z.x > cellCX(p.col) && z.hp > 0 && !z.hypnotized);
       } else {
-        target = S.zombies.find(z =>
-          z.row === p.row && z.x < ZOMBIE_ENTER_YARD_X + 5 &&
-          z.x > cellCX(p.col) && z.hp > 0 && !z.hypnotized
-        );
+        target = S.zombies.find(z => z.row === p.row && z.x < ZOMBIE_ENTER_YARD_X + 5 && z.x > cellCX(p.col) && z.hp > 0 && !z.hypnotized);
       }
       if (target && p.shootTimer > cooldown) {
         p.shootTimer = 0;
@@ -3129,112 +2763,16 @@ function update(dt) {
           for (let dr = -1; dr <= 1; dr++) {
             const row = p.row + dr;
             if (row < 0 || row >= ROWS) continue;
-            S.projectiles.push({
-              x: cellCX(p.col) + 22, y: cellCY(row) - 14,
-              row, vx: 500, damage: 20, trail: []
-            });
+            S.projectiles.push({ x: cellCX(p.col) + 22, y: cellCY(row) - 14, row, vx: 500, damage: 20 });
           }
         } else {
           const shots = p.type === 'repeater' ? 2 : 1;
           for (let i = 0; i < shots; i++) {
             S.projectiles.push({
-              x: cellCX(p.col) + 22, y: cellCY(p.row) - 14,
-              row: p.row, vx: 500,
-              damage: p.type === 'snowpea' ? 20 : 25,
-              ice: p.type === 'snowpea', trail: [],
-              delay: i * 150
+              x: cellCX(p.col) + 22, y: cellCY(p.row) - 14, row: p.row, vx: 500,
+              damage: p.type === 'snowpea' ? 20 : 25, ice: p.type === 'snowpea', delay: i * 150
             });
           }
-        }
-      }
-    }
-    if (p.type === 'cabbage') {
-      p.shootTimer += dt;
-      const target = S.zombies.find(z =>
-        z.row === p.row && z.x < ZOMBIE_ENTER_YARD_X + 5 &&
-        z.x > cellCX(p.col) && z.hp > 0 && !z.hypnotized
-      );
-      if (target && p.shootTimer > 1500) {
-        p.shootTimer = 0;
-        S.projectiles.push({
-          x: cellCX(p.col) + 22, y: cellCY(p.row) - 14,
-          row: p.row, vx: 550, damage: 40, cabbage: true, trail: []
-        });
-      }
-    }
-    if (p.type === 'kernelpult') {
-      p.shootTimer += dt;
-      const target = S.zombies.find(z =>
-        z.row === p.row && z.x < ZOMBIE_ENTER_YARD_X + 5 &&
-        z.x > cellCX(p.col) && z.hp > 0 && !z.hypnotized
-      );
-      if (target && p.shootTimer > 2000) {
-        p.shootTimer = 0;
-        S.projectiles.push({
-          x: cellCX(p.col) + 20, y: cellCY(p.row) - 20,
-          row: p.row, vx: 400, damage: 20, kernel: true, trail: [],
-          arc: true, vy: -3, gravity: 0.15
-        });
-      }
-    }
-    if (p.type === 'puffshroom') {
-      p.shootTimer += dt;
-      const target = S.zombies.find(z =>
-        z.row === p.row && z.x < cellCX(p.col) + 200 &&
-        z.x > cellCX(p.col) && z.hp > 0 && !z.hypnotized
-      );
-      if (target && p.shootTimer > 1500) {
-        p.shootTimer = 0;
-        S.projectiles.push({
-          x: cellCX(p.col) + 20, y: cellCY(p.row) - 14,
-          row: p.row, vx: 500, damage: 20, spore: true, trail: []
-        });
-      }
-    }
-    if (p.type === 'fumeshroom') {
-      p.shootTimer += dt;
-      const target = S.zombies.find(z =>
-        z.row === p.row && z.x < cellCX(p.col) + 80 &&
-        z.x > cellCX(p.col) - 20 && z.hp > 0 && !z.hypnotized
-      );
-      if (target && p.shootTimer > 1500) {
-        p.shootTimer = 0;
-        S.zombies.forEach(z => {
-          if (z.row === p.row && z.x > cellCX(p.col) - 20 && z.x < cellCX(p.col) + 80 && z.hp > 0 && !z.hypnotized) {
-            z.hp -= 20;
-          }
-        });
-      }
-    }
-    if (p.type === 'scaredy') {
-      const closeZombie = S.zombies.find(z =>
-        z.row === p.row && Math.abs(z.x - cellCX(p.col)) < 50 && z.hp > 0 && !z.hypnotized
-      );
-      if (closeZombie) continue;
-      p.shootTimer += dt;
-      const target = S.zombies.find(z =>
-        z.row === p.row && z.x < cellCX(p.col) + 180 &&
-        z.x > cellCX(p.col) && z.hp > 0 && !z.hypnotized
-      );
-      if (target && p.shootTimer > 1500) {
-        p.shootTimer = 0;
-        S.projectiles.push({
-          x: cellCX(p.col) + 20, y: cellCY(p.row) - 14,
-          row: p.row, vx: 500, damage: 20, spore: true, trail: []
-        });
-      }
-    }
-    if (p.type === 'hypnoshroom') {
-      p.shootTimer += dt;
-      if (p.shootTimer > 3000) {
-        p.shootTimer = 0;
-        const target = S.zombies.find(z =>
-          z.row === p.row && Math.abs(z.x - cellCX(p.col)) < 80 &&
-          z.hp > 0 && !z.hypnotized
-        );
-        if (target) {
-          target.hypnotized = true;
-          target.hp = target.maxHp;
         }
       }
     }
@@ -3243,17 +2781,8 @@ function update(dt) {
   for (const pr of S.projectiles) {
     if (pr.delay > 0) { pr.delay -= dt; continue; }
     pr.x += pr.vx * dts;
-    if (pr.arc) {
-      pr.vy += pr.gravity;
-      pr.y += pr.vy;
-    }
-    pr.trail.push({ x: pr.x, y: pr.y, life: 200 });
-    if (pr.trail.length > 8) pr.trail.shift();
-    for (const t of pr.trail) t.life -= dt;
-
     for (const z of S.zombies) {
-      if (z.hp <= 0) continue;
-      if (z.hypnotized) continue;
+      if (z.hp <= 0 || z.hypnotized) continue;
       if (z.row !== pr.row) continue;
       if (z.x >= YARD_RIGHT) continue;
       const zy = cellCY(z.row) - 20;
@@ -3290,16 +2819,6 @@ function update(dt) {
 
     if (z.hypnotized) {
       z.x += Math.abs(z.speed) * dts * 0.7;
-      for (const other of S.zombies) {
-        if (other === z || other.hypnotized || other.hp <= 0) continue;
-        if (other.row === z.row && Math.abs(other.x - z.x) < 40) {
-          z.attackTimer = (z.attackTimer || 0) + dt;
-          if (z.attackTimer > 800) {
-            z.attackTimer = 0;
-            other.hp -= z.dmg;
-          }
-        }
-      }
       continue;
     }
 
@@ -3310,19 +2829,13 @@ function update(dt) {
     if (plant && z.x < YARD_RIGHT && z.x - cellCX(col) < 38 && z.x - cellCX(col) > -15) {
       if (plant.type === 'garlic' && !(z.garlicPushTimer > 0)) {
         plant.hp -= z.dmg;
-        if (plant.hp <= 0) {
-          S.plants = S.plants.filter(p => p !== plant);
-        }
+        if (plant.hp <= 0) S.plants = S.plants.filter(p => p !== plant);
         let targetRow = z.row;
         const canUp = z.row > 0;
         const canDown = z.row < ROWS - 1;
-        if (canUp && canDown) {
-          targetRow = Math.random() < 0.5 ? z.row - 1 : z.row + 1;
-        } else if (canUp) {
-          targetRow = z.row - 1;
-        } else if (canDown) {
-          targetRow = z.row + 1;
-        }
+        if (canUp && canDown) targetRow = Math.random() < 0.5 ? z.row - 1 : z.row + 1;
+        else if (canUp) targetRow = z.row - 1;
+        else if (canDown) targetRow = z.row + 1;
         if (targetRow !== z.row) {
           addParticles(z.x, cellCY(z.row), 12, '#f0f0c0', 4, 500, 4);
           z.row = targetRow;
@@ -3370,9 +2883,7 @@ function update(dt) {
     if (m.active) {
       m.x += 700 * dts;
       for (const z of S.zombies) {
-        if (z.row === m.row && z.hp > 0 && z.x < m.x + 40 && z.x > m.x - 60) {
-          z.hp = 0;
-        }
+        if (z.row === m.row && z.hp > 0 && z.x < m.x + 40 && z.x > m.x - 60) z.hp = 0;
       }
       if (m.x > W + 60) m.active = false;
     }
@@ -3390,8 +2901,7 @@ function update(dt) {
   S.particles = S.particles.filter(p => p.life > 0);
 
   S.zombieSpawnTimer += dt;
-  const spawnInterval = S.currentLevel.spawnInterval;
-  if (S.spawnedZombies < S.totalZombies && S.zombieSpawnTimer > spawnInterval) {
+  if (S.spawnedZombies < S.totalZombies && S.zombieSpawnTimer > S.currentLevel.spawnInterval) {
     S.zombieSpawnTimer = 0;
     spawnZombie();
   }
@@ -3400,19 +2910,16 @@ function update(dt) {
     S.bossSpawned = true;
     const row = Math.floor(Math.random() * ROWS);
     S.zombies.push({
-      type: 'zomboss', row,
-      x: ZOMBIE_SPAWN_X + 40,
+      type: 'zomboss', row, x: ZOMBIE_SPAWN_X + 40,
       hp: ZOMBIE_TYPES.zomboss.hp, maxHp: ZOMBIE_TYPES.zomboss.hp,
       speed: ZOMBIE_TYPES.zomboss.speed, dmg: ZOMBIE_TYPES.zomboss.dmg,
-      walkPhase: 0, slowTimer: 0, hitFlash: 0, dyingTimer: 0, attackTimer: 0, garlicPushTimer: 0,
-      hypnotized: false,
+      walkPhase: 0, slowTimer: 0, hitFlash: 0, dyingTimer: 0, attackTimer: 0, garlicPushTimer: 0, hypnotized: false,
     });
     S.shake = 30;
   }
 
   const zombiesPerWave = Math.ceil(S.currentLevel.totalZombies / S.currentLevel.waves);
-  const waveEndKill = S.currentWave * zombiesPerWave;
-  if (S.killedZombies >= waveEndKill && S.currentWave < S.currentLevel.waves) {
+  if (S.killedZombies >= S.currentWave * zombiesPerWave && S.currentWave < S.currentLevel.waves) {
     const aliveThisWave = S.zombies.filter(z => z.hp > 0 && z.type !== 'zomboss').length;
     if (aliveThisWave === 0) {
       S.currentWave++;
@@ -3423,26 +2930,21 @@ function update(dt) {
   S.levelProgress = clamp(S.killedZombies / S.totalZombies, 0, 1);
 
   const bossAlive = S.zombies.some(z => (z.type === 'zomboss') && z.hp > 0);
-  const allKilled = S.killedZombies >= S.totalZombies;
-  if (allKilled && S.zombies.length === 0 && S.spawnedZombies >= S.totalZombies && !bossAlive) {
+  if (S.killedZombies >= S.totalZombies && S.zombies.length === 0 && S.spawnedZombies >= S.totalZombies && !bossAlive) {
     gameOver(true);
   }
 
   if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 0.02);
 
-  // Проверка достижений каждый кадр (быстрая)
   if (S.killedZombies >= 1) unlockAchievement('first_blood');
   if (S.sun >= 1000) unlockAchievement('sunflower_farm');
 }
 
 function explodePotato(plant) {
   S.shake = 10;
-  addParticles(cellCX(plant.col), cellCY(plant.row), 30, '#ff5722', 7, 800, 5);
   for (const z of S.zombies) {
     if (z.hp <= 0) continue;
-    if (Math.abs(z.x - cellCX(plant.col)) < 60 && Math.abs(z.row - plant.row) < 1) {
-      z.hp -= 1800;
-    }
+    if (Math.abs(z.x - cellCX(plant.col)) < 60 && Math.abs(z.row - plant.row) < 1) z.hp -= 1800;
   }
 }
 
@@ -3450,21 +2952,15 @@ function spawnZombie() {
   const lvl = S.currentLevel;
   const row = Math.floor(Math.random() * ROWS);
   let type = 'basic';
-  const availableTypes = lvl.types;
-  if (availableTypes.length === 1) {
-    type = availableTypes[0];
-  } else {
-    type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-  }
+  const available = lvl.types;
+  if (available.length === 1) type = available[0];
+  else type = available[Math.floor(Math.random() * available.length)];
   const def = ZOMBIE_TYPES[type];
   S.zombies.push({
-    type, row,
-    x: ZOMBIE_SPAWN_X + Math.random() * 40,
-    hp: def.hp, maxHp: def.hp,
-    speed: def.speed, dmg: def.dmg,
+    type, row, x: ZOMBIE_SPAWN_X + Math.random() * 40,
+    hp: def.hp, maxHp: def.hp, speed: def.speed, dmg: def.dmg,
     walkPhase: Math.random() * Math.PI * 2,
-    slowTimer: 0, hitFlash: 0, dyingTimer: 0, attackTimer: 0, garlicPushTimer: 0,
-    hypnotized: false,
+    slowTimer: 0, hitFlash: 0, dyingTimer: 0, attackTimer: 0, garlicPushTimer: 0, hypnotized: false,
   });
   S.spawnedZombies++;
 }
@@ -3477,14 +2973,11 @@ function gameOver(won) {
     let stars = 1;
     if (mowersUsed === 0) stars = 3;
     else if (mowersUsed <= 2) stars = 2;
-
     const lvlId = S.currentLevel.id;
     if (lvlId > 0) {
       const prevStars = S.levelStars[lvlId] || 0;
       if (stars > prevStars) S.levelStars[lvlId] = stars;
-      if (S.unlockedLevels === lvlId && lvlId < LEVELS.length) {
-        S.unlockedLevels = lvlId + 1;
-      }
+      if (S.unlockedLevels === lvlId && lvlId < LEVELS.length) S.unlockedLevels = lvlId + 1;
     }
     S.totalWinsEver++;
     S.totalKillsEver += S.killedZombies;
@@ -3499,359 +2992,6 @@ function gameOver(won) {
   }
 }
 
-// ==================== ГАЗОНОКОСИЛКА ====================
-function drawMower(x, y) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.beginPath();
-  ctx.ellipse(0, 12, 22, 6, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#c62828';
-  ctx.beginPath();
-  ctx.roundRect(-22, -18, 44, 28, 6);
-  ctx.fill();
-  ctx.fillStyle = '#e53935';
-  ctx.beginPath();
-  ctx.roundRect(-16, -28, 32, 14, 4);
-  ctx.fill();
-  ctx.fillStyle = '#212121';
-  ctx.beginPath();
-  ctx.arc(-14, 10, 8, 0, Math.PI * 2);
-  ctx.arc(14, 10, 8, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-}
-
-// ==================== МЕНЮ ====================
-function drawMenu() {
-  const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, '#4a9ed6');
-  sky.addColorStop(0.5, '#a8d8ee');
-  sky.addColorStop(0.55, '#5aa62a');
-  sky.addColorStop(1, '#2d6b12');
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, W, H);
-
-  const sunG = ctx.createRadialGradient(W * 0.8, 120, 20, W * 0.8, 120, 180);
-  sunG.addColorStop(0, 'rgba(255,235,59,0.9)');
-  sunG.addColorStop(0.4, 'rgba(255,213,79,0.4)');
-  sunG.addColorStop(1, 'rgba(255,213,79,0)');
-  ctx.fillStyle = sunG;
-  ctx.beginPath();
-  ctx.arc(W * 0.8, 120, 180, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#4a8c2a';
-  ctx.beginPath();
-  ctx.moveTo(0, H * 0.55);
-  for (let x = 0; x <= W; x += 40) {
-    ctx.lineTo(x, H * 0.55 - Math.sin(x * 0.008) * 35 - Math.cos(x * 0.02) * 20);
-  }
-  ctx.lineTo(W, H); ctx.lineTo(0, H);
-  ctx.closePath(); ctx.fill();
-
-  ctx.fillStyle = '#5cc42e';
-  ctx.beginPath();
-  ctx.moveTo(0, H * 0.75);
-  for (let x = 0; x <= W; x += 30) {
-    ctx.lineTo(x, H * 0.75 - Math.sin(x * 0.01) * 10);
-  }
-  ctx.lineTo(W, H); ctx.lineTo(0, H);
-  ctx.closePath(); ctx.fill();
-
-  ctx.fillStyle = '#f0e2c8';
-  ctx.fillRect(80, H * 0.55, 200, 120);
-  ctx.fillStyle = '#c0392b';
-  ctx.beginPath();
-  ctx.moveTo(60, H * 0.55 + 10);
-  ctx.lineTo(180, H * 0.55 - 50);
-  ctx.lineTo(300, H * 0.55 + 10);
-  ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#8bc0dc';
-  ctx.fillRect(110, H * 0.55 + 35, 40, 45);
-  ctx.fillRect(200, H * 0.55 + 35, 40, 45);
-
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const titleY = 100;
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.font = 'bold 60px Impact, Arial Black, sans-serif';
-  ctx.fillText('PLANTS vs ZOMBIES', W / 2 + 4, titleY + 4);
-  ctx.strokeStyle = '#1e3a08';
-  ctx.lineWidth = 8;
-  ctx.strokeText('PLANTS vs ZOMBIES', W / 2, titleY);
-  const tg = ctx.createLinearGradient(0, titleY - 40, 0, titleY + 40);
-  tg.addColorStop(0, '#ffffff');
-  tg.addColorStop(0.4, '#ffe082');
-  tg.addColorStop(1, '#ffb300');
-  ctx.fillStyle = tg;
-  ctx.fillText('PLANTS vs ZOMBIES', W / 2, titleY);
-
-  ctx.font = 'bold 24px Impact, Arial Black, sans-serif';
-  ctx.strokeStyle = '#1e3a08';
-  ctx.lineWidth = 5;
-  ctx.strokeText('ПРИКЛЮЧЕНИЕ', W / 2, titleY + 55);
-  ctx.fillStyle = '#fff';
-  ctx.fillText('ПРИКЛЮЧЕНИЕ', W / 2, titleY + 55);
-
-  // Кнопка ИГРАТЬ
-  const btnW = 340, btnH = 90;
-  const btnX = W / 2 - btnW / 2;
-  const btnY = H / 2 + 30;
-  const hover = S.menuHover;
-
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.beginPath();
-  ctx.roundRect(btnX + 4, btnY + 6, btnW, btnH, 16);
-  ctx.fill();
-
-  const bg = ctx.createLinearGradient(0, btnY, 0, btnY + btnH);
-  if (hover) {
-    bg.addColorStop(0, '#a4d65e');
-    bg.addColorStop(1, '#4e7d1a');
-  } else {
-    bg.addColorStop(0, '#8bc34a');
-    bg.addColorStop(1, '#3d6b18');
-  }
-  ctx.fillStyle = bg;
-  ctx.beginPath();
-  ctx.roundRect(btnX, btnY, btnW, btnH, 16);
-  ctx.fill();
-  ctx.strokeStyle = '#1e3a08';
-  ctx.lineWidth = 5;
-  ctx.stroke();
-
-  ctx.font = 'bold 44px Impact, Arial Black, sans-serif';
-  ctx.fillStyle = '#fff';
-  ctx.strokeStyle = '#1e3a08';
-  ctx.lineWidth = 6;
-  ctx.strokeText('ИГРАТЬ', W / 2, btnY + btnH / 2);
-  ctx.fillText('ИГРАТЬ', W / 2, btnY + btnH / 2);
-  S.menuBtn = { x: btnX, y: btnY, w: btnW, h: btnH };
-
-  // Кнопка МИНИ-ИГРЫ
-  const mgW = 340, mgH = 70;
-  const mgX = W / 2 - mgW / 2;
-  const mgY = btnY + btnH + 15;
-  const mgHover = S.cursorX >= mgX && S.cursorX <= mgX + mgW && S.cursorY >= mgY && S.cursorY <= mgY + mgH;
-
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.beginPath();
-  ctx.roundRect(mgX + 4, mgY + 6, mgW, mgH, 12);
-  ctx.fill();
-
-  const mgG = ctx.createLinearGradient(0, mgY, 0, mgY + mgH);
-  if (mgHover) { mgG.addColorStop(0, '#ba68c8'); mgG.addColorStop(1, '#4a148c'); }
-  else { mgG.addColorStop(0, '#ab47bc'); mgG.addColorStop(1, '#6a1b9a'); }
-  ctx.fillStyle = mgG;
-  ctx.beginPath();
-  ctx.roundRect(mgX, mgY, mgW, mgH, 12);
-  ctx.fill();
-  ctx.strokeStyle = '#2a0050';
-  ctx.lineWidth = 4;
-  ctx.stroke();
-
-  ctx.font = 'bold 32px Impact, Arial Black, sans-serif';
-  ctx.fillStyle = '#fff';
-  ctx.strokeStyle = '#2a0050';
-  ctx.lineWidth = 5;
-  ctx.strokeText('🎮 МИНИ-ИГРЫ', W / 2, mgY + mgH / 2);
-  ctx.fillText('🎮 МИНИ-ИГРЫ', W / 2, mgY + mgH / 2);
-  S.menuMinigameBtn = { x: mgX, y: mgY, w: mgW, h: mgH };
-
-  // Кнопка достижений
-  const achW = 240, achH = 50;
-  const achX = W - achW - 20;
-  const achY = 20;
-  const achHover = S.cursorX >= achX && S.cursorX <= achX + achW && S.cursorY >= achY && S.cursorY <= achY + achH;
-  const achG = ctx.createLinearGradient(0, achY, 0, achY + achH);
-  if (achHover) { achG.addColorStop(0, '#ba68c8'); achG.addColorStop(1, '#6a1b9a'); }
-  else { achG.addColorStop(0, '#9c27b0'); achG.addColorStop(1, '#4a148c'); }
-  ctx.fillStyle = achG;
-  ctx.beginPath();
-  ctx.roundRect(achX, achY, achW, achH, 10);
-  ctx.fill();
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 20px Impact, Arial Black, sans-serif';
-  ctx.fillText('🏆 ' + Object.keys(S.achievements).length + '/' + Object.keys(ACHIEVEMENTS).length, achX + achW / 2, achY + achH / 2);
-  S.achMenuBtn = { x: achX, y: achY, w: achW, h: achH };
-
-  drawResetBtn(20, H - 70, 180, 50);
-
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.font = 'bold 16px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('Открыто: ' + S.unlockedLevels + '/' + LEVELS.length + ' · Побед: ' + S.totalWinsEver + ' · Убийств: ' + S.totalKillsEver, W / 2, H - 40);
-}
-
-function drawResetBtn(x, y, w, h) {
-  const hover = S.cursorX >= x && S.cursorX <= x + w && S.cursorY >= y && S.cursorY <= y + h;
-  const g = ctx.createLinearGradient(0, y, 0, y + h);
-  if (hover) { g.addColorStop(0, '#e57373'); g.addColorStop(1, '#b71c1c'); }
-  else { g.addColorStop(0, '#c62828'); g.addColorStop(1, '#7f0000'); }
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.roundRect(x, y, w, h, 10);
-  ctx.fill();
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 16px Impact, Arial Black, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🗑 СБРОС', x + w / 2, y + h / 2);
-  S.resetBtn = { x, y, w, h };
-}
-
-// ==================== КАРТА УРОВНЕЙ ====================
-function drawLevelSelect() {
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#2a1a3a');
-  bg.addColorStop(0.5, '#1a0f25');
-  bg.addColorStop(1, '#0a0510');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = 'bold 48px Impact, Arial Black, sans-serif';
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 6;
-  ctx.strokeText('ВЫБОР ЛОКАЦИИ', W / 2, 60);
-  ctx.fillStyle = '#ffd54f';
-  ctx.fillText('ВЫБОР ЛОКАЦИИ', W / 2, 60);
-
-  drawBackBtn(20, 20, 140, 50);
-
-  const locations = [
-    { key: 'yard',  name: 'ДВОР',    emoji: '☀',  color: '#5cc42e', bg1: '#a8d8ee', bg2: '#5aa62a', levels: LEVELS.filter(l => l.location === 'yard')  },
-    { key: 'night', name: 'НОЧЬ',    emoji: '🌙', color: '#3a4a8a', bg1: '#1a2a52', bg2: '#0a0a1a', levels: LEVELS.filter(l => l.location === 'night') },
-    { key: 'pool',  name: 'БАССЕЙН', emoji: '🏊', color: '#1a6a9a', bg1: '#4aa8e0', bg2: '#0a2a4a', levels: LEVELS.filter(l => l.location === 'pool')  },
-    { key: 'roof',  name: 'КРЫША',   emoji: '🏠', color: '#a85030', bg1: '#d8a060', bg2: '#5a2010', levels: LEVELS.filter(l => l.location === 'roof')  },
-  ];
-
-  const cardW = 260, cardH = 440;
-  const gap = 20;
-  const totalW = cardW * 4 + gap * 3;
-  const startX = (W - totalW) / 2;
-  const cardY = 130;
-
-  S.levelNodes = [];
-
-  for (let i = 0; i < locations.length; i++) {
-    const loc = locations[i];
-    const cx = startX + i * (cardW + gap);
-    const cy = cardY;
-    const firstLevel = loc.levels[0];
-    const unlocked = firstLevel && firstLevel.id <= S.unlockedLevels;
-
-    const g = ctx.createLinearGradient(cx, cy, cx, cy + cardH);
-    g.addColorStop(0, loc.bg1);
-    g.addColorStop(1, loc.bg2);
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.roundRect(cx, cy, cardW, cardH, 16);
-    ctx.fill();
-    ctx.strokeStyle = unlocked ? loc.color : '#333';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-
-    ctx.font = 'bold 32px Impact, Arial Black, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 5;
-    ctx.strokeText(loc.emoji + ' ' + loc.name, cx + cardW / 2, cy + 35);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(loc.emoji + ' ' + loc.name, cx + cardW / 2, cy + 35);
-
-    const btnW = 60, btnH = 50;
-    const cols = 3;
-    const startBtnX = cx + (cardW - cols * btnW - (cols - 1) * 8) / 2;
-    const startBtnY = cy + 70;
-
-    for (let j = 0; j < loc.levels.length; j++) {
-      const lvl = loc.levels[j];
-      const col = j % cols;
-      const row = Math.floor(j / cols);
-      const bx = startBtnX + col * (btnW + 8);
-      const by = startBtnY + row * (btnH + 8);
-      const hover = S.cursorX >= bx && S.cursorX <= bx + btnW && S.cursorY >= by && S.cursorY <= by + btnH;
-      const lvlLocked = lvl.id > S.unlockedLevels;
-      const isBoss = !!lvl.boss;
-
-      const bg2 = ctx.createLinearGradient(0, by, 0, by + btnH);
-      if (lvlLocked) {
-        bg2.addColorStop(0, '#444'); bg2.addColorStop(1, '#222');
-      } else if (isBoss) {
-        bg2.addColorStop(0, '#d32f2f'); bg2.addColorStop(1, '#7f0000');
-      } else {
-        bg2.addColorStop(0, '#8bc34a'); bg2.addColorStop(1, '#33691e');
-      }
-      ctx.fillStyle = bg2;
-      ctx.beginPath();
-      ctx.roundRect(bx, by, btnW, btnH, 8);
-      ctx.fill();
-      ctx.strokeStyle = lvlLocked ? '#000' : (hover ? '#ffeb3b' : '#1a2a0a');
-      ctx.lineWidth = hover ? 3 : 2;
-      ctx.stroke();
-
-      ctx.fillStyle = lvlLocked ? '#666' : '#fff';
-      ctx.font = 'bold 14px Impact, Arial Black, sans-serif';
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 3;
-      const label = isBoss ? '👹' : lvl.name;
-      ctx.strokeText(label, bx + btnW / 2, by + btnH / 2);
-      ctx.fillText(label, bx + btnW / 2, by + btnH / 2);
-
-      const stars = S.levelStars[lvl.id] || 0;
-      if (!lvlLocked && stars > 0 && !isBoss) {
-        for (let s = 0; s < 3; s++) {
-          const sx = bx + btnW / 2 - 10 + s * 10;
-          const sy = by + btnH - 8;
-          drawStar(sx, sy, 4, s < stars ? '#ffeb3b' : 'rgba(0,0,0,0.4)');
-        }
-      }
-
-      if (!lvlLocked) {
-        S.levelNodes.push({ level: lvl, x: bx, y: by, w: btnW, h: btnH, locked: false, hover });
-      }
-    }
-  }
-}
-
-function drawStar(x, y, r, color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const angle = (Math.PI / 5) * i - Math.PI / 2;
-    const rad = i % 2 === 0 ? r : r * 0.5;
-    const px = x + Math.cos(angle) * rad;
-    const py = y + Math.sin(angle) * rad;
-    if (i === 0) ctx.moveTo(px, py);
-    else ctx.lineTo(px, py);
-  }
-  ctx.closePath();
-  ctx.fill();
-}
-
-function drawBackBtn(x, y, w, h) {
-  const hover = S.cursorX >= x && S.cursorX <= x + w && S.cursorY >= y && S.cursorY <= y + h;
-  const g = ctx.createLinearGradient(0, y, 0, y + h);
-  if (hover) { g.addColorStop(0, '#ff8a65'); g.addColorStop(1, '#d84315'); }
-  else { g.addColorStop(0, '#ff7043'); g.addColorStop(1, '#bf360c'); }
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.roundRect(x, y, w, h, 10);
-  ctx.fill();
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 20px Impact, Arial Black, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('← НАЗАД', x + w / 2, y + h / 2);
-  S.backBtn = { x, y, w, h };
-}
-
 // ==================== ВВОД ====================
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
@@ -3863,75 +3003,21 @@ function getPos(e) {
 
 canvas.addEventListener('mousemove', (e) => {
   const p = getPos(e);
-  S.cursorX = p.x; S.cursorY = p.y;
-
-  if (S.scene === 'seedselect') {
-    let hov = false;
-    for (const c of S.seedSelectCardRects) {
-      if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h) hov = true;
-    }
-    if (S.seedSelectBackBtn && p.x >= S.seedSelectBackBtn.x && p.x <= S.seedSelectBackBtn.x + S.seedSelectBackBtn.w &&
-        p.y >= S.seedSelectBackBtn.y && p.y <= S.seedSelectBackBtn.y + S.seedSelectBackBtn.h) hov = true;
-    if (S.seedSelectStartBtn && S.seedSelectStartBtn.enabled &&
-        p.x >= S.seedSelectStartBtn.x && p.x <= S.seedSelectStartBtn.x + S.seedSelectStartBtn.w &&
-        p.y >= S.seedSelectStartBtn.y && p.y <= S.seedSelectStartBtn.y + S.seedSelectStartBtn.h) hov = true;
-    canvas.style.cursor = hov ? 'pointer' : 'default';
-    return;
-  }
-
-  if (S.scene === 'minigames') {
-    let hov = false;
-    if (S.backBtn && p.x >= S.backBtn.x && p.x <= S.backBtn.x + S.backBtn.w &&
-        p.y >= S.backBtn.y && p.y <= S.backBtn.y + S.backBtn.h) hov = true;
-    if (S.achMenuBtn && p.x >= S.achMenuBtn.x && p.x <= S.achMenuBtn.x + S.achMenuBtn.w &&
-        p.y >= S.achMenuBtn.y && p.y <= S.achMenuBtn.y + S.achMenuBtn.h) hov = true;
-    for (const c of S.minigameCards) {
-      if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h) hov = true;
-    }
-    canvas.style.cursor = hov ? 'pointer' : 'default';
-    return;
-  }
-
-  if (S.scene === 'achievements') {
-    let hov = false;
-    if (S.backBtn && p.x >= S.backBtn.x && p.x <= S.backBtn.x + S.backBtn.w &&
-        p.y >= S.backBtn.y && p.y <= S.backBtn.y + S.backBtn.h) hov = true;
-    canvas.style.cursor = hov ? 'pointer' : 'default';
-    return;
-  }
-
-  let hov = false;
-  if (S.scene === 'menu') {
-    if (S.menuBtn && p.x >= S.menuBtn.x && p.x <= S.menuBtn.x + S.menuBtn.w &&
-        p.y >= S.menuBtn.y && p.y <= S.menuBtn.y + S.menuBtn.h) hov = true;
-    if (S.menuMinigameBtn && p.x >= S.menuMinigameBtn.x && p.x <= S.menuMinigameBtn.x + S.menuMinigameBtn.w &&
-        p.y >= S.menuMinigameBtn.y && p.y <= S.menuMinigameBtn.y + S.menuMinigameBtn.h) hov = true;
-    if (S.achMenuBtn && p.x >= S.achMenuBtn.x && p.x <= S.achMenuBtn.x + S.achMenuBtn.w &&
-        p.y >= S.achMenuBtn.y && p.y <= S.achMenuBtn.y + S.achMenuBtn.h) hov = true;
-    if (S.resetBtn && p.x >= S.resetBtn.x && p.x <= S.resetBtn.x + S.resetBtn.w &&
-        p.y >= S.resetBtn.y && p.y <= S.resetBtn.y + S.resetBtn.h) hov = true;
-  } else if (S.scene === 'levelselect') {
-    if (S.backBtn && p.x >= S.backBtn.x && p.x <= S.backBtn.x + S.backBtn.w &&
-        p.y >= S.backBtn.y && p.y <= S.backBtn.y + S.backBtn.h) hov = true;
-    for (const n of S.levelNodes) {
-      if (!n.locked && p.x >= n.x && p.x <= n.x + n.w && p.y >= n.y && p.y <= n.y + n.h) hov = true;
-    }
-  }
-  canvas.style.cursor = hov ? 'pointer' : 'default';
+  S.cursorX = p.x;
+  S.cursorY = p.y;
 });
 
 canvas.addEventListener('click', (e) => {
   const p = getPos(e);
   const x = p.x, y = p.y;
 
+  // МИНИ-ИГРЫ
   if (S.scene === 'minigames') {
-    if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w &&
-        y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
+    if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w && y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
       S.scene = 'menu';
       return;
     }
-    if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w &&
-        y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
+    if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w && y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
       S.scene = 'achievements';
       return;
     }
@@ -3944,22 +3030,25 @@ canvas.addEventListener('click', (e) => {
     return;
   }
 
+  // ДОСТИЖЕНИЯ
   if (S.scene === 'achievements') {
-    if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w &&
-        y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
+    if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w && y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
       S.scene = 'menu';
       return;
     }
     return;
   }
 
+  // ВЫБОР СЕМЯН
   if (S.scene === 'seedselect') {
+    // НАЗАД
     if (S.seedSelectBackBtn && x >= S.seedSelectBackBtn.x && x <= S.seedSelectBackBtn.x + S.seedSelectBackBtn.w &&
         y >= S.seedSelectBackBtn.y && y <= S.seedSelectBackBtn.y + S.seedSelectBackBtn.h) {
       S.scene = 'levelselect';
       S.seedSelectMode = false;
       return;
     }
+    // В БОЙ
     if (S.seedSelectStartBtn && S.seedSelectStartBtn.enabled &&
         x >= S.seedSelectStartBtn.x && x <= S.seedSelectStartBtn.x + S.seedSelectStartBtn.w &&
         y >= S.seedSelectStartBtn.y && y <= S.seedSelectStartBtn.y + S.seedSelectStartBtn.h) {
@@ -3971,6 +3060,7 @@ canvas.addEventListener('click', (e) => {
       lvl.seeds = originalSeeds;
       return;
     }
+    // Верхние слоты — убрать
     const slotSize = 90, slotGap = 12;
     const slotRowW = S.seedSelectMaxSlots * slotSize + (S.seedSelectMaxSlots - 1) * slotGap;
     const slotRowX = (W - slotRowW) / 2;
@@ -3978,29 +3068,34 @@ canvas.addEventListener('click', (e) => {
     for (let i = 0; i < S.seedSelectMaxSlots; i++) {
       const sx = slotRowX + i * (slotSize + slotGap);
       if (x >= sx && x <= sx + slotSize && y >= slotRowY && y <= slotRowY + slotSize) {
-        if (S.seedSelectChosen[i]) S.seedSelectChosen.splice(i, 1);
+        if (S.seedSelectChosen[i]) {
+          S.seedSelectChosen.splice(i, 1);
+        }
         return;
       }
     }
+    // Карточки доступных — добавить/убрать
     for (const c of S.seedSelectCardRects) {
       if (x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h) {
         const idx = S.seedSelectChosen.indexOf(c.seedId);
-        if (idx >= 0) S.seedSelectChosen.splice(idx, 1);
-        else if (S.seedSelectChosen.length < S.seedSelectMaxSlots) S.seedSelectChosen.push(c.seedId);
+        if (idx >= 0) {
+          S.seedSelectChosen.splice(idx, 1);
+        } else if (S.seedSelectChosen.length < S.seedSelectMaxSlots) {
+          S.seedSelectChosen.push(c.seedId);
+        }
         return;
       }
     }
     return;
   }
 
+  // МЕНЮ
   if (S.scene === 'menu') {
-    if (S.resetBtn && x >= S.resetBtn.x && x <= S.resetBtn.x + S.resetBtn.w &&
-        y >= S.resetBtn.y && y <= S.resetBtn.y + S.resetBtn.h) {
+    if (S.resetBtn && x >= S.resetBtn.x && x <= S.resetBtn.x + S.resetBtn.w && y >= S.resetBtn.y && y <= S.resetBtn.y + S.resetBtn.h) {
       resetProgress();
       return;
     }
-    if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w &&
-        y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
+    if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w && y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
       S.scene = 'achievements';
       return;
     }
@@ -4009,21 +3104,19 @@ canvas.addEventListener('click', (e) => {
       S.scene = 'minigames';
       return;
     }
-    if (S.menuBtn && x >= S.menuBtn.x && x <= S.menuBtn.x + S.menuBtn.w &&
-        y >= S.menuBtn.y && y <= S.menuBtn.y + S.menuBtn.h) {
+    if (S.menuBtn && x >= S.menuBtn.x && x <= S.menuBtn.x + S.menuBtn.w && y >= S.menuBtn.y && y <= S.menuBtn.y + S.menuBtn.h) {
       S.scene = 'levelselect';
     }
     return;
   }
 
+  // КАРТА УРОВНЕЙ
   if (S.scene === 'levelselect') {
-    if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w &&
-        y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
+    if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w && y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
       S.scene = 'menu';
       return;
     }
     for (const n of S.levelNodes) {
-      if (n.locked) continue;
       if (x >= n.x && x <= n.x + n.w && y >= n.y && y <= n.y + n.h) {
         startLevelWithSeedSelect(n.level);
         return;
@@ -4032,6 +3125,7 @@ canvas.addEventListener('click', (e) => {
     return;
   }
 
+  // GAME OVER
   if (S.gameOver) {
     saveProgress(true);
     S.scene = 'levelselect';
@@ -4040,6 +3134,7 @@ canvas.addEventListener('click', (e) => {
     return;
   }
 
+  // ИГРА
   const panelY = 8;
   const packetW = 62, packetH = 84;
   const sunW = 78;
@@ -4050,6 +3145,7 @@ canvas.addEventListener('click', (e) => {
     const sx = startX + i * (packetW + 4);
     if (x >= sx && x <= sx + packetW && y >= panelY && y <= panelY + packetH) {
       const seed = ALL_PLANTS[seeds[i]];
+      if (!seed) return;
       const cd = S.cooldowns[seed.id] || 0;
       const awake = isPlantAwake(seed.id);
       if (cd > 0 || S.sun < seed.cost || !awake) return;
@@ -4074,15 +3170,16 @@ canvas.addEventListener('click', (e) => {
     return;
   }
 
+  // Сбор солнца
   for (const s of S.suns) {
     if (dist(s.x, s.y, x, y) < 34) {
       S.sun += s.value;
-      addParticles(s.x, s.y, 8, '#ffeb3b', 4, 500, 4);
       s.life = 0;
       return;
     }
   }
 
+  // Сажание
   const col = Math.floor((x - GRID_X) / CELL_W);
   const row = Math.floor((y - activeTop()) / CELL_H);
   if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
@@ -4092,7 +3189,6 @@ canvas.addEventListener('click', (e) => {
     if (plant) {
       S.plants = S.plants.filter(p => p !== plant);
       S.shovelSelected = false;
-      S.usedShovelThisLevel++;
     }
     return;
   }
@@ -4104,51 +3200,22 @@ canvas.addEventListener('click', (e) => {
     if (!isPlantAwake(seed.id)) return;
     if (S.plants.find(p => p.row === row && p.col === col)) return;
 
-    if (seed.id === 'cherry') {
+    if (seed.id === 'cherry' || seed.id === 'jalapeno' || seed.id === 'doomshroom' || seed.id === 'iceshroom') {
       S.sun -= seed.cost;
       S.cooldowns[seed.id] = seed.cd;
+      S.plantedThisLevel++;
       S.shake = 16;
-      S.plantedThisLevel++;
       for (const z of S.zombies) {
         if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
-        if (Math.abs(z.row - row) <= 1 && Math.abs(z.x - cellCX(col)) < CELL_W * 1.7) {
-          z.hp -= 1800;
+        if (seed.id === 'cherry') {
+          if (Math.abs(z.row - row) <= 1 && Math.abs(z.x - cellCX(col)) < CELL_W * 1.7) z.hp -= 1800;
+        } else if (seed.id === 'jalapeno') {
+          if (z.row === row) z.hp -= 1800;
+        } else if (seed.id === 'doomshroom') {
+          z.hp -= 5000;
+        } else if (seed.id === 'iceshroom') {
+          z.slowTimer = 8000;
         }
-      }
-      S.selectedSeed = null;
-      return;
-    }
-    if (seed.id === 'jalapeno') {
-      S.sun -= seed.cost;
-      S.cooldowns[seed.id] = seed.cd;
-      S.shake = 20;
-      S.plantedThisLevel++;
-      for (const z of S.zombies) {
-        if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
-        if (z.row === row) z.hp -= 1800;
-      }
-      S.selectedSeed = null;
-      return;
-    }
-    if (seed.id === 'doomshroom') {
-      S.sun -= seed.cost;
-      S.cooldowns[seed.id] = seed.cd;
-      S.shake = 25;
-      S.plantedThisLevel++;
-      for (const z of S.zombies) {
-        if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
-        z.hp -= 5000;
-      }
-      S.selectedSeed = null;
-      return;
-    }
-    if (seed.id === 'iceshroom') {
-      S.sun -= seed.cost;
-      S.cooldowns[seed.id] = seed.cd;
-      S.plantedThisLevel++;
-      for (const z of S.zombies) {
-        if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
-        z.slowTimer = 8000;
       }
       S.selectedSeed = null;
       return;
@@ -4177,6 +3244,7 @@ document.addEventListener('keydown', (e) => {
   const n = parseInt(e.key);
   if (n >= 1 && n <= S.currentLevel.seeds.length) {
     const seed = ALL_PLANTS[S.currentLevel.seeds[n - 1]];
+    if (!seed) return;
     const cd = S.cooldowns[seed.id] || 0;
     if (cd <= 0 && S.sun >= seed.cost && isPlantAwake(seed.id)) {
       S.selectedSeed = S.selectedSeed === seed.id ? null : seed.id;
@@ -4230,11 +3298,7 @@ function startLevel(level) {
   for (let i = 0; i < 2; i++) {
     const x = rand(GRID_X + 40, GRID_X + GRID_W - 40);
     const y = rand(activeTop() + 40, activeBottom() - 40);
-    S.suns.push({
-      x, y, targetY: y,
-      life: 12000, maxLife: 12000,
-      vy: 0, phase: Math.random() * 10, value: 25
-    });
+    S.suns.push({ x, y, targetY: y, life: 12000, maxLife: 12000, vy: 0, phase: Math.random() * 10, value: 25 });
   }
 }
 
@@ -4244,11 +3308,8 @@ function loop(now) {
   S.lastTime = now;
   S.time += dt;
 
-  if (S.scene === 'playing' && !S.gameOver) {
-    update(dt);
-  } else {
-    if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 0.02);
-  }
+  if (S.scene === 'playing' && !S.gameOver) update(dt);
+  else if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 0.02);
 
   if (S.scene === 'playing') {
     S.killedZombies = Math.min(S.totalZombies,
@@ -4275,30 +3336,20 @@ function loop(now) {
 
       if (S.won) {
         ctx.font = 'bold 72px Impact, Arial Black, sans-serif';
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 8;
-        ctx.strokeText('УРОВЕНЬ ПРОЙДЕН!', W / 2, H / 2 - 120);
         ctx.fillStyle = '#ffd54f';
         ctx.fillText('УРОВЕНЬ ПРОЙДЕН!', W / 2, H / 2 - 120);
-        const stars = S.currentLevel.id > 0 ? (S.levelStars[S.currentLevel.id] || 0) : 3;
-        for (let i = 0; i < 3; i++) {
-          drawStar(W / 2 - 100 + i * 100, H / 2 - 10, 40, i < stars ? '#ffeb3b' : 'rgba(255,255,255,0.2)');
-        }
         if (S.plantedThisLevel === 0) {
           ctx.fillStyle = '#4fc3f7';
           ctx.font = 'bold 32px Impact, Arial Black, sans-serif';
-          ctx.fillText('😎 ПОФИГИЗМ АКТИВИРОВАН!', W / 2, H / 2 + 60);
+          ctx.fillText('😎 ПОФИГИЗМ АКТИВИРОВАН!', W / 2, H / 2);
         }
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 26px Arial';
-        ctx.fillText('Прогресс сохранён 💾', W / 2, H / 2 + 110);
-        ctx.fillText('Кликните для продолжения', W / 2, H / 2 + 150);
+        ctx.fillText('Прогресс сохранён 💾', W / 2, H / 2 + 60);
+        ctx.fillText('Кликните для продолжения', W / 2, H / 2 + 100);
       } else {
         ctx.font = 'bold 72px Impact, Arial Black, sans-serif';
         ctx.fillStyle = '#f44336';
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 8;
-        ctx.strokeText('ПОРАЖЕНИЕ', W / 2, H / 2 - 40);
         ctx.fillText('ПОРАЖЕНИЕ', W / 2, H / 2 - 40);
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 26px Arial';
@@ -4314,23 +3365,11 @@ function loop(now) {
       ctx.globalAlpha = 0.85;
       if (S.selectedSeed) {
         drawPlant(S.selectedSeed, S.cursorX + 18, S.cursorY + 10, S.time, 1.05, null);
-      } else {
-        ctx.translate(S.cursorX + 14, S.cursorY + 8);
-        ctx.rotate(-0.4);
-        ctx.fillStyle = '#8d6e63';
-        ctx.fillRect(-3, -28, 6, 40);
-        ctx.fillStyle = '#5d4037';
-        ctx.beginPath();
-        ctx.moveTo(-3, 12); ctx.lineTo(3, 12); ctx.lineTo(3, 30);
-        ctx.quadraticCurveTo(0, 38, -3, 30);
-        ctx.closePath(); ctx.fill();
       }
       ctx.restore();
     }
   }
-  if (S.scene === 'playing') canvas.style.cursor = 'default';
 
-  // Тост достижения поверх всего
   drawAchievementToasts();
 
   requestAnimationFrame(loop);
