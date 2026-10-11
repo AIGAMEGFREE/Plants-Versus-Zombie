@@ -581,7 +581,7 @@ function isPlantAwake(plantType) {
 }
 
 // ==================== СОХРАНЕНИЕ ====================
-const SAVE_KEY = 'pvz_save_v23';
+const SAVE_KEY = 'pvz_save_v24';
 let saveToastTimer = null;
 function showSaveToast(msg) {
   const el = document.getElementById('saveToast');
@@ -594,7 +594,7 @@ function showSaveToast(msg) {
 function saveProgress(silent = false) {
   try {
     const data = {
-      version: 23,
+      version: 24,
       unlocked: S.unlockedLevels,
       stars: S.levelStars,
       totalKills: S.totalKillsEver,
@@ -637,11 +637,11 @@ setInterval(() => { if (S.scene === 'playing' && !S.gameOver) saveProgress(true)
 window.addEventListener('beforeunload', () => { if (S.scene === 'playing' && !S.gameOver) saveProgress(true); });
 
 // ==================== ДОСТИЖЕНИЯ ====================
+// ВАЖНО: unlockAchievement НЕ вызывает saveProgress, чтобы не тормозить игру
 function unlockAchievement(id) {
   if (S.achievements[id] || !ACHIEVEMENTS[id]) return false;
   S.achievements[id] = true;
   S.achievementQueue.push({ id, ...ACHIEVEMENTS[id], time: S.time });
-  saveProgress(true);
   return true;
 }
 
@@ -671,7 +671,9 @@ function checkAchievements() {
 function drawAchievementToasts() {
   if (S.achievementQueue.length === 0) return;
   const a = S.achievementQueue[0];
+  if (!a || !Number.isFinite(a.time)) { S.achievementQueue.shift(); return; }
   const elapsed = S.time - a.time;
+  if (!Number.isFinite(elapsed)) { S.achievementQueue.shift(); return; }
   if (elapsed > 4200) { S.achievementQueue.shift(); return; }
   const slideIn = Math.min(1, elapsed / 400);
   const slideOut = Math.max(0, (elapsed - 3600) / 600);
@@ -682,6 +684,7 @@ function drawAchievementToasts() {
   const boxY = y;
 
   ctx.save();
+  ctx.globalAlpha = 1;
   ctx.fillStyle = 'rgba(0,0,0,0.6)';
   ctx.beginPath(); ctx.roundRect(boxX + 6, boxY + 6, boxW, boxH, 14); ctx.fill();
 
@@ -705,12 +708,12 @@ function drawAchievementToasts() {
   ctx.fillStyle = '#3e2723';
   ctx.strokeStyle = '#fff';
   ctx.lineWidth = 3;
-  ctx.strokeText(a.name, boxX + 110, boxY + 52);
-  ctx.fillText(a.name, boxX + 110, boxY + 52);
+  ctx.strokeText(a.name || '?', boxX + 110, boxY + 52);
+  ctx.fillText(a.name || '?', boxX + 110, boxY + 52);
 
   ctx.font = 'italic 13px Arial';
   ctx.fillStyle = '#5d4037';
-  ctx.fillText(a.desc, boxX + 110, boxY + 78);
+  ctx.fillText(a.desc || '', boxX + 110, boxY + 78);
   ctx.restore();
 }
 
@@ -2010,7 +2013,7 @@ function drawTanglekelp(t) {
   ctx.stroke();
 }
 
-// ==================== ЗОМБИ (РУКИ ВПЕРЁД ИЗ ПЛЕЧ) ====================
+// ==================== ЗОМБИ ====================
 function drawZombie(z, t) {
   const x = z.x;
   const y = (z.y_air !== undefined && z.falling) ? z.y_air : cellCY(z.row);
@@ -2043,7 +2046,7 @@ function drawZombie(z, t) {
   const legPhase1 = Math.sin(t * 0.008 + z.walkPhase);
   const legPhase2 = Math.sin(t * 0.008 + z.walkPhase + Math.PI);
 
-  // === ЗАДНЯЯ ПРАВАЯ РУКА (за торсом, видна частично) ===
+  // Задняя правая рука
   ctx.save();
   ctx.translate(16, -8);
   ctx.rotate(0.35 + Math.sin(t * 0.008 + z.walkPhase + 1) * 0.05);
@@ -2054,7 +2057,6 @@ function drawZombie(z, t) {
   ctx.roundRect(-8, -6, 24, 12, 5);
   ctx.fill();
   ctx.strokeStyle = '#1a0e05'; ctx.lineWidth = 1.5; ctx.stroke();
-  // Кисть задней руки
   ctx.fillStyle = '#7a9a3a';
   ctx.beginPath();
   ctx.arc(18, 0, 6, 0, Math.PI * 2);
@@ -2062,7 +2064,7 @@ function drawZombie(z, t) {
   ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1.5; ctx.stroke();
   ctx.restore();
 
-  // === НОГИ ===
+  // Ноги
   ctx.save();
   ctx.translate(-10, 22);
   ctx.rotate(legPhase1 * 0.12);
@@ -2093,7 +2095,7 @@ function drawZombie(z, t) {
   ctx.strokeStyle = '#2d1b08'; ctx.lineWidth = 1.5; ctx.stroke();
   ctx.restore();
 
-  // === ТОРС ===
+  // Торс
   ctx.fillStyle = '#c8c8c8';
   ctx.beginPath(); ctx.ellipse(0, -2, 18, 24, 0, 0, Math.PI * 2); ctx.fill();
   ctx.strokeStyle = '#666'; ctx.lineWidth = 1.5; ctx.stroke();
@@ -2107,7 +2109,6 @@ function drawZombie(z, t) {
   ctx.beginPath(); ctx.ellipse(0, 0, 22, 26, 0, 0, Math.PI * 2); ctx.fill();
   ctx.strokeStyle = '#1a0e05'; ctx.lineWidth = 1.5; ctx.stroke();
 
-  // Рваные края пиджака
   ctx.fillStyle = '#2a1a0a';
   for (let i = 0; i < 6; i++) {
     const rx = -20 + i * 8;
@@ -2119,7 +2120,6 @@ function drawZombie(z, t) {
     ctx.closePath(); ctx.fill();
   }
 
-  // Полы пиджака
   ctx.fillStyle = '#3a2410';
   ctx.beginPath();
   ctx.moveTo(-22, -8); ctx.lineTo(-18, 22); ctx.lineTo(-8, 22); ctx.lineTo(-6, -8);
@@ -2146,7 +2146,6 @@ function drawZombie(z, t) {
   ctx.beginPath(); ctx.ellipse(0, -24, 5, 3, 0, 0, Math.PI * 2); ctx.fill();
   ctx.strokeStyle = '#4a0000'; ctx.lineWidth = 1; ctx.stroke();
 
-  // Воротник
   ctx.fillStyle = '#e8e8e8';
   ctx.beginPath();
   ctx.moveTo(-10, -26); ctx.lineTo(-2, -18); ctx.lineTo(-6, -26);
@@ -2156,13 +2155,10 @@ function drawZombie(z, t) {
   ctx.closePath(); ctx.fill();
   ctx.strokeStyle = '#888'; ctx.lineWidth = 1; ctx.stroke();
 
-  // === ПЕРЕДНЯЯ ЛЕВАЯ РУКА (вытянута ВПЕРЁД из левого плеча) ===
+  // Левая передняя рука
   ctx.save();
-  // Крепление: левое плечо (снаружи торса, чуть ниже верха)
   ctx.translate(-20, -8);
-  // Поворот: рука идёт вправо-вниз, вперёд
   ctx.rotate(0.5 + Math.sin(t * 0.008 + z.walkPhase) * 0.05);
-  // Рукав
   const sleeveG1 = ctx.createLinearGradient(-8, -8, 8, 8);
   sleeveG1.addColorStop(0, '#8a6a3a'); sleeveG1.addColorStop(1, '#4a3020');
   ctx.fillStyle = sleeveG1;
@@ -2170,11 +2166,9 @@ function drawZombie(z, t) {
   ctx.roundRect(-8, -7, 32, 14, 5);
   ctx.fill();
   ctx.strokeStyle = '#1a0e05'; ctx.lineWidth = 1.5; ctx.stroke();
-  // Манжета
   ctx.fillStyle = '#8a5a2a';
   ctx.fillRect(20, -7, 5, 14);
   ctx.strokeRect(20, -7, 5, 14);
-  // Кисть
   const skinG1 = ctx.createRadialGradient(28, -2, 2, 30, 0, 10);
   skinG1.addColorStop(0, '#c8e88a'); skinG1.addColorStop(0.6, '#8bc34a'); skinG1.addColorStop(1, '#4a7a2a');
   ctx.fillStyle = skinG1;
@@ -2182,7 +2176,6 @@ function drawZombie(z, t) {
   ctx.arc(30, 0, 8, 0, Math.PI * 2);
   ctx.fill();
   ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1.5; ctx.stroke();
-  // Пальцы (3 штуки, направлены вперёд)
   for (let i = -1; i <= 1; i++) {
     ctx.save();
     ctx.translate(36, i * 4);
@@ -2192,7 +2185,6 @@ function drawZombie(z, t) {
     ctx.roundRect(0, -2.5, 8, 5, 2);
     ctx.fill();
     ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1; ctx.stroke();
-    // Ноготь
     ctx.fillStyle = '#e8dcc0';
     ctx.beginPath();
     ctx.ellipse(7.5, 0, 1.5, 1.8, 0, 0, Math.PI * 2);
@@ -2201,7 +2193,7 @@ function drawZombie(z, t) {
   }
   ctx.restore();
 
-  // === ПЕРЕДНЯЯ ПРАВАЯ РУКА (вытянута ВПЕРЁД из правого плеча, чуть выше) ===
+  // Правая передняя рука
   ctx.save();
   ctx.translate(20, -14);
   ctx.rotate(0.35 + Math.sin(t * 0.008 + z.walkPhase + 1) * 0.05);
@@ -2239,12 +2231,12 @@ function drawZombie(z, t) {
   }
   ctx.restore();
 
-  // === ШЕЯ ===
+  // Шея
   ctx.fillStyle = '#7a9a4a';
   ctx.beginPath(); ctx.roundRect(-7, -30, 14, 12, 3); ctx.fill();
   ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 1.5; ctx.stroke();
 
-  // === ГОЛОВА ===
+  // Голова
   const headG = ctx.createRadialGradient(-8, -24, 4, 0, -18, 26);
   if (isBoss) {
     headG.addColorStop(0, '#a0c070'); headG.addColorStop(0.5, '#6a9a3a'); headG.addColorStop(1, '#1a2a0a');
@@ -2262,14 +2254,12 @@ function drawZombie(z, t) {
   ctx.fillStyle = 'rgba(255,255,255,0.25)';
   ctx.beginPath(); ctx.ellipse(-10, -32, 8, 6, -0.5, 0, Math.PI * 2); ctx.fill();
 
-  // Шрамы
   ctx.strokeStyle = 'rgba(80,40,40,0.6)'; ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(-14, -32); ctx.lineTo(-8, -26);
   ctx.moveTo(-12, -36); ctx.lineTo(-6, -30);
   ctx.stroke();
 
-  // Волосы
   ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 2; ctx.lineCap = 'round';
   const hairWave = Math.sin(t * 0.006 + z.walkPhase) * 2;
   ctx.beginPath();
@@ -2280,7 +2270,6 @@ function drawZombie(z, t) {
   ctx.moveTo(14, -40); ctx.quadraticCurveTo(18, -46, 20 - hairWave, -50);
   ctx.stroke();
 
-  // Глаза
   ctx.fillStyle = '#f5f0d8';
   ctx.beginPath(); ctx.arc(-9, -20, 8, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(9, -20, 8, 0, Math.PI * 2); ctx.fill();
@@ -2297,14 +2286,12 @@ function drawZombie(z, t) {
   ctx.beginPath(); ctx.arc(-9, -15, 5, 0.2, Math.PI - 0.2); ctx.stroke();
   ctx.beginPath(); ctx.arc(9, -15, 5, 0.2, Math.PI - 0.2); ctx.stroke();
 
-  // Нос
   ctx.fillStyle = '#5a7a2a';
   ctx.beginPath();
   ctx.arc(-2, -16, 1.5, 0, Math.PI * 2);
   ctx.arc(2, -16, 1.5, 0, Math.PI * 2);
   ctx.fill();
 
-  // Рот
   const mouthOpen = 1 + Math.sin(t * 0.01 + z.walkPhase) * 0.2;
   ctx.fillStyle = '#3a0a0a';
   ctx.beginPath(); ctx.ellipse(0, -8, 11, 6 * mouthOpen, 0, 0, Math.PI * 2); ctx.fill();
@@ -2323,14 +2310,12 @@ function drawZombie(z, t) {
   ctx.fillStyle = 'rgba(180,200,120,0.8)';
   ctx.beginPath(); ctx.ellipse(-4, droolY, 1.8, 2.5, 0, 0, Math.PI * 2); ctx.fill();
 
-  // Брови
   ctx.strokeStyle = '#2d5a1a'; ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(-14, -28); ctx.lineTo(-5, -26);
   ctx.moveTo(14, -28); ctx.lineTo(5, -26);
   ctx.stroke();
 
-  // Аксессуары
   if (z.type === 'cone') {
     const coneG = ctx.createLinearGradient(-22, 0, 22, 0);
     coneG.addColorStop(0, '#8a3a00'); coneG.addColorStop(0.3, '#d97000'); coneG.addColorStop(0.5, '#ff9500');
@@ -2530,7 +2515,8 @@ function drawProjectile(p) {
 
 // ==================== СОЛНЦЕ ====================
 function drawSun(s) {
-  const pulse = 1 + Math.sin(S.time / 250 + s.phase) * 0.08;
+  if (!s || !Number.isFinite(s.x) || !Number.isFinite(s.y)) return;
+  const pulse = 1 + Math.sin(S.time / 250 + (s.phase || 0)) * 0.08;
   const r = 28 * pulse;
 
   const g = ctx.createRadialGradient(s.x, s.y, 4, s.x, s.y, r * 2.5);
@@ -2571,9 +2557,10 @@ function drawSun(s) {
 
 function drawParticles() {
   for (const p of S.particles) {
+    if (!p || !Number.isFinite(p.life) || !Number.isFinite(p.maxLife)) continue;
     const a = clamp(p.life / p.maxLife, 0, 1);
     ctx.globalAlpha = a;
-    ctx.fillStyle = p.color;
+    ctx.fillStyle = p.color || '#fff';
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.size * a, 0, Math.PI * 2);
     ctx.fill();
@@ -3711,13 +3698,18 @@ function update(dt) {
   S.projectiles = S.projectiles.filter(p => !p.dead);
 
   for (const s of S.suns) {
+    if (!Number.isFinite(s.life)) s.life = 10000;
+    if (!Number.isFinite(s.value)) s.value = 25;
+    if (!Number.isFinite(s.y)) s.y = 100;
+    if (!Number.isFinite(s.targetY)) s.targetY = s.y + 30;
+    if (!Number.isFinite(s.vy)) s.vy = 1;
     s.life -= dt;
     if (s.y < s.targetY) {
       s.y += s.vy * dt * 0.06;
       if (s.y > s.targetY) s.y = s.targetY;
     }
   }
-  S.suns = S.suns.filter(s => s.life > 0);
+  S.suns = S.suns.filter(s => s.life > 0 && Number.isFinite(s.x) && Number.isFinite(s.y));
 
   for (const c of S.craters) c.life -= dt;
   S.craters = S.craters.filter(c => c.life > 0);
@@ -3807,6 +3799,7 @@ function update(dt) {
     }
   }
 
+  // Единый подсчёт убийств ДО удаления трупов
   for (const z of S.zombies) {
     if (z.hp <= 0 && !z._deadCounted) {
       z._deadCounted = true;
@@ -3901,6 +3894,7 @@ function update(dt) {
     ? clamp(S.currentWave / 20, 0, 1)
     : clamp(S.killedZombies / S.totalZombies, 0, 1);
 
+  // ПОБЕДА
   if (S.minigameFlags.sunny) {
     if (S.sun >= 500) {
       S.minigameScore = Math.floor(S.sun);
@@ -3915,8 +3909,8 @@ function update(dt) {
     const allSpawned = S.spawnedZombies >= S.totalZombies;
     const bossKilled = !S.currentLevel.boss || (S.bossSpawned && !S.zombies.some(z => z.type === 'zomboss' && z.hp > 0));
     const noAliveZombies = !S.zombies.some(z => z.hp > 0);
-    const noDyingZombies = !S.zombies.some(z => z.hp <= 0 && z.dyingTimer < 800);
-    if (allSpawned && bossKilled && noAliveZombies && noDyingZombies && S.totalZombiesDead >= S.totalZombies) {
+    const noDyingZombies = !S.zombies.some(z => z.hp <= 0 && (z.dyingTimer || 0) < 800);
+    if (allSpawned && bossKilled && noAliveZombies && noDyingZombies) {
       gameOver(true);
     }
   }
@@ -4010,255 +4004,263 @@ canvas.addEventListener('wheel', (e) => {
 }, { passive: false });
 
 canvas.addEventListener('click', (e) => {
-  const p = getPos(e);
-  const x = p.x, y = p.y;
+  try {
+    const p = getPos(e);
+    const x = p.x, y = p.y;
 
-  if (S.scene === 'minigames') {
-    if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w &&
-        y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
-      S.scene = 'menu'; return;
-    }
-    if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w &&
-        y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
-      S.achScroll = 0;
-      S.scene = 'achievements'; return;
-    }
-    for (const c of S.minigameCards) {
-      if (x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h) {
-        startMinigame(c.minigame); return;
+    if (S.scene === 'minigames') {
+      if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w &&
+          y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
+        S.scene = 'menu'; return;
       }
-    }
-    return;
-  }
-
-  if (S.scene === 'achievements') {
-    if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w &&
-        y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
-      S.scene = 'menu'; return;
-    }
-    return;
-  }
-
-  if (S.scene === 'seedselect') {
-    if (S.seedSelectBackBtn && x >= S.seedSelectBackBtn.x && x <= S.seedSelectBackBtn.x + S.seedSelectBackBtn.w &&
-        y >= S.seedSelectBackBtn.y && y <= S.seedSelectBackBtn.y + S.seedSelectBackBtn.h) {
-      S.scene = 'levelselect'; S.seedSelectMode = false; return;
-    }
-    if (S.seedSelectStartBtn && S.seedSelectStartBtn.enabled &&
-        x >= S.seedSelectStartBtn.x && x <= S.seedSelectStartBtn.x + S.seedSelectStartBtn.w &&
-        y >= S.seedSelectStartBtn.y && y <= S.seedSelectStartBtn.y + S.seedSelectStartBtn.h) {
-      const lvl = S.currentLevel;
-      if (!lvl._allSeeds) lvl._allSeeds = [...lvl.seeds];
-      lvl._chosenSeeds = [...S.seedSelectChosen];
-      lvl.seeds = [...S.seedSelectChosen];
-      S.seedSelectMode = false;
-      startLevel(lvl);
+      if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w &&
+          y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
+        S.achScroll = 0;
+        S.scene = 'achievements'; return;
+      }
+      for (const c of S.minigameCards) {
+        if (x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h) {
+          startMinigame(c.minigame); return;
+        }
+      }
       return;
     }
-    const slotSize = 90, slotGap = 12;
-    const slotRowW = S.seedSelectMaxSlots * slotSize + (S.seedSelectMaxSlots - 1) * slotGap;
-    const slotRowX = (W - slotRowW) / 2;
-    const slotRowY = 150;
-    for (let i = 0; i < S.seedSelectMaxSlots; i++) {
-      const sx = slotRowX + i * (slotSize + slotGap);
-      if (x >= sx && x <= sx + slotSize && y >= slotRowY && y <= slotRowY + slotSize) {
-        if (S.seedSelectChosen[i]) S.seedSelectChosen.splice(i, 1);
-        return;
-      }
-    }
-    for (const c of S.seedSelectCardRects) {
-      if (x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h) {
-        const idx = S.seedSelectChosen.indexOf(c.seedId);
-        if (idx >= 0) S.seedSelectChosen.splice(idx, 1);
-        else if (S.seedSelectChosen.length < S.seedSelectMaxSlots) S.seedSelectChosen.push(c.seedId);
-        return;
-      }
-    }
-    return;
-  }
 
-  if (S.scene === 'menu') {
-    if (S.resetBtn && x >= S.resetBtn.x && x <= S.resetBtn.x + S.resetBtn.w &&
-        y >= S.resetBtn.y && y <= S.resetBtn.y + S.resetBtn.h) {
-      resetProgress(); return;
+    if (S.scene === 'achievements') {
+      if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w &&
+          y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
+        S.scene = 'menu'; return;
+      }
+      return;
     }
-    if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w &&
-        y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
-      S.achScroll = 0;
-      S.scene = 'achievements'; return;
+
+    if (S.scene === 'seedselect') {
+      if (S.seedSelectBackBtn && x >= S.seedSelectBackBtn.x && x <= S.seedSelectBackBtn.x + S.seedSelectBackBtn.w &&
+          y >= S.seedSelectBackBtn.y && y <= S.seedSelectBackBtn.y + S.seedSelectBackBtn.h) {
+        S.scene = 'levelselect'; S.seedSelectMode = false; return;
+      }
+      if (S.seedSelectStartBtn && S.seedSelectStartBtn.enabled &&
+          x >= S.seedSelectStartBtn.x && x <= S.seedSelectStartBtn.x + S.seedSelectStartBtn.w &&
+          y >= S.seedSelectStartBtn.y && y <= S.seedSelectStartBtn.y + S.seedSelectStartBtn.h) {
+        const lvl = S.currentLevel;
+        if (!lvl._allSeeds) lvl._allSeeds = [...lvl.seeds];
+        lvl._chosenSeeds = [...S.seedSelectChosen];
+        lvl.seeds = [...S.seedSelectChosen];
+        S.seedSelectMode = false;
+        startLevel(lvl);
+        return;
+      }
+      const slotSize = 90, slotGap = 12;
+      const slotRowW = S.seedSelectMaxSlots * slotSize + (S.seedSelectMaxSlots - 1) * slotGap;
+      const slotRowX = (W - slotRowW) / 2;
+      const slotRowY = 150;
+      for (let i = 0; i < S.seedSelectMaxSlots; i++) {
+        const sx = slotRowX + i * (slotSize + slotGap);
+        if (x >= sx && x <= sx + slotSize && y >= slotRowY && y <= slotRowY + slotSize) {
+          if (S.seedSelectChosen[i]) S.seedSelectChosen.splice(i, 1);
+          return;
+        }
+      }
+      for (const c of S.seedSelectCardRects) {
+        if (x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h) {
+          const idx = S.seedSelectChosen.indexOf(c.seedId);
+          if (idx >= 0) S.seedSelectChosen.splice(idx, 1);
+          else if (S.seedSelectChosen.length < S.seedSelectMaxSlots) S.seedSelectChosen.push(c.seedId);
+          return;
+        }
+      }
+      return;
     }
-    if (S.menuMinigameBtn && x >= S.menuMinigameBtn.x && x <= S.menuMinigameBtn.x + S.menuMinigameBtn.w &&
-        y >= S.menuMinigameBtn.y && y <= S.menuMinigameBtn.y + S.menuMinigameBtn.h) {
-      S.scene = 'minigames'; return;
+
+    if (S.scene === 'menu') {
+      if (S.resetBtn && x >= S.resetBtn.x && x <= S.resetBtn.x + S.resetBtn.w &&
+          y >= S.resetBtn.y && y <= S.resetBtn.y + S.resetBtn.h) {
+        resetProgress(); return;
+      }
+      if (S.achMenuBtn && x >= S.achMenuBtn.x && x <= S.achMenuBtn.x + S.achMenuBtn.w &&
+          y >= S.achMenuBtn.y && y <= S.achMenuBtn.y + S.achMenuBtn.h) {
+        S.achScroll = 0;
+        S.scene = 'achievements'; return;
+      }
+      if (S.menuMinigameBtn && x >= S.menuMinigameBtn.x && x <= S.menuMinigameBtn.x + S.menuMinigameBtn.w &&
+          y >= S.menuMinigameBtn.y && y <= S.menuMinigameBtn.y + S.menuMinigameBtn.h) {
+        S.scene = 'minigames'; return;
+      }
+      if (S.menuBtn && x >= S.menuBtn.x && x <= S.menuBtn.x + S.menuBtn.w &&
+          y >= S.menuBtn.y && y <= S.menuBtn.y + S.menuBtn.h) {
+        S.scene = 'levelselect';
+      }
+      return;
     }
-    if (S.menuBtn && x >= S.menuBtn.x && x <= S.menuBtn.x + S.menuBtn.w &&
-        y >= S.menuBtn.y && y <= S.menuBtn.y + S.menuBtn.h) {
+
+    if (S.scene === 'levelselect') {
+      if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w &&
+          y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
+        S.scene = 'menu'; return;
+      }
+      for (const n of S.levelNodes) {
+        if (x >= n.x && x <= n.x + n.w && y >= n.y && y <= n.y + n.h) {
+          startLevelWithSeedSelect(n.level);
+          return;
+        }
+      }
+      return;
+    }
+
+    if (S.gameOver) {
+      saveProgress(true);
       S.scene = 'levelselect';
+      S.gameOver = false;
+      S.minigameType = null;
+      S.minigameFlags = { endless: false, sunny: false, gravity: false };
+      return;
     }
-    return;
-  }
 
-  if (S.scene === 'levelselect') {
-    if (S.backBtn && x >= S.backBtn.x && x <= S.backBtn.x + S.backBtn.w &&
-        y >= S.backBtn.y && y <= S.backBtn.y + S.backBtn.h) {
-      S.scene = 'menu'; return;
-    }
-    for (const n of S.levelNodes) {
-      if (x >= n.x && x <= n.x + n.w && y >= n.y && y <= n.y + n.h) {
-        startLevelWithSeedSelect(n.level);
+    // ====== КЛИК ПО СОЛНЦУ (проверяем ДО семян/лопаты, чтобы солнце над панелью кликалось) ======
+    for (let i = S.suns.length - 1; i >= 0; i--) {
+      const s = S.suns[i];
+      if (!s || s.life <= 0) continue;
+      if (dist(s.x, s.y, x, y) < 40) {
+        const val = Number.isFinite(s.value) ? s.value : 25;
+        S.sun = Math.max(0, Math.floor((S.sun || 0) + val));
+        addParticles(s.x, s.y, 8, '#ffeb3b', 4, 500, 4);
+        S.suns.splice(i, 1);
         return;
       }
     }
-    return;
-  }
 
-  if (S.gameOver) {
-    saveProgress(true);
-    S.scene = 'levelselect';
-    S.gameOver = false;
-    S.minigameType = null;
-    S.minigameFlags = { endless: false, sunny: false, gravity: false };
-    return;
-  }
+    const panelY = 8;
+    const packetW = 62, packetH = 84;
+    const sunW = 78;
+    const startX = 8 + sunW + 4;
+    const seeds = S.currentLevel.seeds;
 
-  const panelY = 8;
-  const packetW = 62, packetH = 84;
-  const sunW = 78;
-  const startX = 8 + sunW + 4;
-  const seeds = S.currentLevel.seeds;
-
-  for (let i = 0; i < seeds.length; i++) {
-    const sx = startX + i * (packetW + 4);
-    if (x >= sx && x <= sx + packetW && y >= panelY && y <= panelY + packetH) {
-      const seed = ALL_PLANTS[seeds[i]];
-      if (!seed) return;
-      const cd = S.cooldowns[seed.id] || 0;
-      const awake = isPlantAwake(seed.id);
-      if (cd > 0 || S.sun < seed.cost || !awake) return;
-      S.selectedSeed = (S.selectedSeed === seed.id) ? null : seed.id;
-      S.shovelSelected = false;
-      return;
-    }
-  }
-
-  const shX = startX + seeds.length * (packetW + 4) + 4;
-  if (x >= shX && x <= shX + packetW && y >= panelY && y <= panelY + packetH) {
-    S.shovelSelected = !S.shovelSelected;
-    S.selectedSeed = null;
-    return;
-  }
-
-  if (x >= W - 130 && x <= W - 8 && y >= panelY && y <= panelY + 40) {
-    saveProgress(true);
-    S.scene = 'levelselect';
-    S.gameOver = false;
-    S.minigameType = null;
-    S.minigameFlags = { endless: false, sunny: false, gravity: false };
-    return;
-  }
-
-  for (const s of S.suns) {
-    if (dist(s.x, s.y, x, y) < 34) {
-      S.sun += s.value;
-      addParticles(s.x, s.y, 8, '#ffeb3b', 4, 500, 4);
-      s.life = 0;
-      return;
-    }
-  }
-
-  const col = Math.floor((x - GRID_X) / CELL_W);
-  const row = Math.floor((y - activeTop()) / CELL_H);
-  if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
-
-  if (S.shovelSelected) {
-    const plant = S.plants.find(p => p.row === row && p.col === col);
-    if (plant) {
-      S.plants = S.plants.filter(p => p !== plant);
-      addParticles(cellCX(col), cellCY(row), 12, '#8bc34a', 3, 500, 4);
-      S.shovelSelected = false;
-    }
-    return;
-  }
-
-  if (S.selectedSeed) {
-    const seed = ALL_PLANTS[S.selectedSeed];
-    if (!seed) return;
-    if (S.sun < seed.cost || (S.cooldowns[seed.id] > 0)) return;
-    if (!isPlantAwake(seed.id)) return;
-    if (S.plants.find(p => p.row === row && p.col === col)) return;
-
-    if (S.craters.find(c => c.row === row && c.col === col)) {
-      showSaveToast('🌋 Здесь кратер!');
-      return;
-    }
-
-    if (seed.id === 'cherry' || seed.id === 'jalapeno' || seed.id === 'doomshroom' || seed.id === 'iceshroom') {
-      S.sun -= seed.cost;
-      S.cooldowns[seed.id] = seed.cd;
-      S.plantedThisLevel++;
-
-      if (seed.id === 'cherry') {
-        S.shake = 16;
-        for (const z of S.zombies) {
-          if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
-          if (Math.abs(z.row - row) <= 1 && Math.abs(z.x - cellCX(col)) < CELL_W * 1.7) z.hp -= 1800;
-        }
-        addParticles(cellCX(col), cellCY(row), 50, '#ff5722', 10, 900, 6);
-        addParticles(cellCX(col), cellCY(row), 25, '#ffeb3b', 8, 700, 5);
-      } else if (seed.id === 'jalapeno') {
-        S.shake = 20;
-        for (const z of S.zombies) {
-          if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
-          if (z.row === row) z.hp -= 1800;
-        }
-        for (let c = 0; c < COLS; c++) {
-          addParticles(cellCX(c), cellCY(row), 15, '#ff5722', 8, 800, 5);
-        }
-      } else if (seed.id === 'doomshroom') {
-        S.shake = 40;
-        S.flash = 1;
-        unlockAchievement('nuclear_master');
-
-        for (const z of S.zombies) {
-          if (z.hp <= 0) continue;
-          z.hp -= 99999;
-          z.hitFlash = 300;
-        }
-
-        S.craters.push({
-          row: row, col: col,
-          x: cellCX(col), y: cellCY(row),
-          life: 5000, maxLife: 5000,
-        });
-
-        addParticles(cellCX(col), cellCY(row), 120, '#ffffff', 15, 1200, 10);
-        addParticles(cellCX(col), cellCY(row), 80, '#ffeb3b', 12, 1000, 8);
-        addParticles(cellCX(col), cellCY(row), 60, '#ff5722', 10, 900, 7);
-        addParticles(cellCX(col), cellCY(row), 40, '#000000', 8, 1500, 6);
-      } else if (seed.id === 'iceshroom') {
-        for (const z of S.zombies) {
-          if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
-          z.slowTimer = 8000;
-        }
-        addParticles(cellCX(col), cellCY(row), 50, '#4fc3f7', 10, 1000, 6);
+    for (let i = 0; i < seeds.length; i++) {
+      const sx = startX + i * (packetW + 4);
+      if (x >= sx && x <= sx + packetW && y >= panelY && y <= panelY + packetH) {
+        const seed = ALL_PLANTS[seeds[i]];
+        if (!seed) return;
+        const cd = S.cooldowns[seed.id] || 0;
+        const awake = isPlantAwake(seed.id);
+        if (cd > 0 || S.sun < seed.cost || !awake) return;
+        S.selectedSeed = (S.selectedSeed === seed.id) ? null : seed.id;
+        S.shovelSelected = false;
+        return;
       }
+    }
 
+    const shX = startX + seeds.length * (packetW + 4) + 4;
+    if (x >= shX && x <= shX + packetW && y >= panelY && y <= panelY + packetH) {
+      S.shovelSelected = !S.shovelSelected;
       S.selectedSeed = null;
       return;
     }
 
-    S.plantedThisLevel++;
-    S.plants.push({
-      type: seed.id, row, col,
-      hp: seed.id === 'wallnut' ? 4000 : seed.id === 'garlic' ? 400 : 100,
-      maxHp: seed.id === 'wallnut' ? 4000 : seed.id === 'garlic' ? 400 : 100,
-      sunTimer: 0, shootTimer: 0, armTimer: 0, armed: false, born: S.time,
-      chewing: false, chewTimer: 0,
-    });
-    S.sun -= seed.cost;
-    S.cooldowns[seed.id] = seed.cd;
-    S.selectedSeed = null;
-    addParticles(cellCX(col), cellCY(row) + 20, 6, '#8bc34a', 3, 400, 4);
+    if (x >= W - 130 && x <= W - 8 && y >= panelY && y <= panelY + 40) {
+      saveProgress(true);
+      S.scene = 'levelselect';
+      S.gameOver = false;
+      S.minigameType = null;
+      S.minigameFlags = { endless: false, sunny: false, gravity: false };
+      return;
+    }
+
+    const col = Math.floor((x - GRID_X) / CELL_W);
+    const row = Math.floor((y - activeTop()) / CELL_H);
+    if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
+
+    if (S.shovelSelected) {
+      const plant = S.plants.find(p => p.row === row && p.col === col);
+      if (plant) {
+        S.plants = S.plants.filter(p => p !== plant);
+        addParticles(cellCX(col), cellCY(row), 12, '#8bc34a', 3, 500, 4);
+        S.shovelSelected = false;
+      }
+      return;
+    }
+
+    if (S.selectedSeed) {
+      const seed = ALL_PLANTS[S.selectedSeed];
+      if (!seed) return;
+      if (S.sun < seed.cost || (S.cooldowns[seed.id] > 0)) return;
+      if (!isPlantAwake(seed.id)) return;
+      if (S.plants.find(p => p.row === row && p.col === col)) return;
+
+      if (S.craters.find(c => c.row === row && c.col === col)) {
+        showSaveToast('🌋 Здесь кратер!');
+        return;
+      }
+
+      if (seed.id === 'cherry' || seed.id === 'jalapeno' || seed.id === 'doomshroom' || seed.id === 'iceshroom') {
+        S.sun -= seed.cost;
+        S.cooldowns[seed.id] = seed.cd;
+        S.plantedThisLevel++;
+
+        if (seed.id === 'cherry') {
+          S.shake = 16;
+          for (const z of S.zombies) {
+            if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
+            if (Math.abs(z.row - row) <= 1 && Math.abs(z.x - cellCX(col)) < CELL_W * 1.7) z.hp -= 1800;
+          }
+          addParticles(cellCX(col), cellCY(row), 50, '#ff5722', 10, 900, 6);
+          addParticles(cellCX(col), cellCY(row), 25, '#ffeb3b', 8, 700, 5);
+        } else if (seed.id === 'jalapeno') {
+          S.shake = 20;
+          for (const z of S.zombies) {
+            if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
+            if (z.row === row) z.hp -= 1800;
+          }
+          for (let c = 0; c < COLS; c++) {
+            addParticles(cellCX(c), cellCY(row), 15, '#ff5722', 8, 800, 5);
+          }
+        } else if (seed.id === 'doomshroom') {
+          S.shake = 40;
+          S.flash = 1;
+          unlockAchievement('nuclear_master');
+
+          for (const z of S.zombies) {
+            if (z.hp <= 0) continue;
+            z.hp -= 99999;
+            z.hitFlash = 300;
+          }
+
+          S.craters.push({
+            row: row, col: col,
+            x: cellCX(col), y: cellCY(row),
+            life: 5000, maxLife: 5000,
+          });
+
+          addParticles(cellCX(col), cellCY(row), 120, '#ffffff', 15, 1200, 10);
+          addParticles(cellCX(col), cellCY(row), 80, '#ffeb3b', 12, 1000, 8);
+          addParticles(cellCX(col), cellCY(row), 60, '#ff5722', 10, 900, 7);
+          addParticles(cellCX(col), cellCY(row), 40, '#000000', 8, 1500, 6);
+        } else if (seed.id === 'iceshroom') {
+          for (const z of S.zombies) {
+            if (z.hp <= 0 || z.x >= YARD_RIGHT) continue;
+            z.slowTimer = 8000;
+          }
+          addParticles(cellCX(col), cellCY(row), 50, '#4fc3f7', 10, 1000, 6);
+        }
+
+        S.selectedSeed = null;
+        return;
+      }
+
+      S.plantedThisLevel++;
+      S.plants.push({
+        type: seed.id, row, col,
+        hp: seed.id === 'wallnut' ? 4000 : seed.id === 'garlic' ? 400 : 100,
+        maxHp: seed.id === 'wallnut' ? 4000 : seed.id === 'garlic' ? 400 : 100,
+        sunTimer: 0, shootTimer: 0, armTimer: 0, armed: false, born: S.time,
+        chewing: false, chewTimer: 0,
+      });
+      S.sun -= seed.cost;
+      S.cooldowns[seed.id] = seed.cd;
+      S.selectedSeed = null;
+      addParticles(cellCX(col), cellCY(row) + 20, 6, '#8bc34a', 3, 400, 4);
+    }
+  } catch (err) {
+    console.error('Click handler error:', err);
   }
 });
 
@@ -4335,56 +4337,68 @@ function startLevel(level) {
 
 // ==================== ГЛАВНЫЙ ЦИКЛ ====================
 function render() {
+  if (!Number.isFinite(S.sun)) S.sun = 75;
+  if (!Number.isFinite(S.shake)) S.shake = 0;
+  if (!Number.isFinite(S.time)) S.time = 0;
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
   ctx.save();
   if (S.shake > 0) ctx.translate(rand(-S.shake, S.shake), rand(-S.shake, S.shake));
   ctx.clearRect(-50, -50, W + 100, H + 100);
 
-  if (S.scene === 'menu') drawMenu();
-  else if (S.scene === 'levelselect') drawLevelSelect();
-  else if (S.scene === 'seedselect') drawSeedSelect();
-  else if (S.scene === 'minigames') drawMinigameMenu();
-  else if (S.scene === 'achievements') drawAchievements();
-  else {
-    drawGameScene();
-    if (S.gameOver) {
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
-      ctx.fillRect(0, 0, W, H);
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      if (S.won) {
-        ctx.font = 'bold 72px Impact, Arial Black, sans-serif';
-        ctx.strokeStyle = '#000'; ctx.lineWidth = 8;
-        ctx.strokeText('УРОВЕНЬ ПРОЙДЕН!', W / 2, H / 2 - 120);
-        const tg = ctx.createLinearGradient(0, H/2 - 160, 0, H/2 - 80);
-        tg.addColorStop(0, '#ffffff'); tg.addColorStop(0.5, '#ffe082'); tg.addColorStop(1, '#ffb300');
-        ctx.fillStyle = tg;
-        ctx.fillText('УРОВЕНЬ ПРОЙДЕН!', W / 2, H / 2 - 120);
-        const stars = S.currentLevel.id > 0 ? (S.levelStars[S.currentLevel.id] || 0) : 3;
-        for (let i = 0; i < 3; i++) {
-          ctx.fillStyle = i < stars ? '#ffeb3b' : 'rgba(255,255,255,0.2)';
-          drawStarSimple(W / 2 - 100 + i * 100, H / 2 - 10, 40, 5);
-          ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.stroke();
+  try {
+    if (S.scene === 'menu') drawMenu();
+    else if (S.scene === 'levelselect') drawLevelSelect();
+    else if (S.scene === 'seedselect') drawSeedSelect();
+    else if (S.scene === 'minigames') drawMinigameMenu();
+    else if (S.scene === 'achievements') drawAchievements();
+    else {
+      drawGameScene();
+      if (S.gameOver) {
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(0, 0, W, H);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        if (S.won) {
+          ctx.font = 'bold 72px Impact, Arial Black, sans-serif';
+          ctx.strokeStyle = '#000'; ctx.lineWidth = 8;
+          ctx.strokeText('УРОВЕНЬ ПРОЙДЕН!', W / 2, H / 2 - 120);
+          const tg = ctx.createLinearGradient(0, H/2 - 160, 0, H/2 - 80);
+          tg.addColorStop(0, '#ffffff'); tg.addColorStop(0.5, '#ffe082'); tg.addColorStop(1, '#ffb300');
+          ctx.fillStyle = tg;
+          ctx.fillText('УРОВЕНЬ ПРОЙДЕН!', W / 2, H / 2 - 120);
+          const stars = S.currentLevel.id > 0 ? (S.levelStars[S.currentLevel.id] || 0) : 3;
+          for (let i = 0; i < 3; i++) {
+            ctx.fillStyle = i < stars ? '#ffeb3b' : 'rgba(255,255,255,0.2)';
+            drawStarSimple(W / 2 - 100 + i * 100, H / 2 - 10, 40, 5);
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.stroke();
+          }
+          if (S.minigameType) {
+            ctx.fillStyle = '#ffeb3b';
+            ctx.font = 'bold 28px Arial';
+            ctx.fillText('🏅 Счёт: ' + S.minigameScore, W / 2, H / 2 + 100);
+          }
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 26px Arial';
+          ctx.fillText('Прогресс сохранён 💾', W / 2, H / 2 + 110);
+          ctx.fillText('Кликните для продолжения', W / 2, H / 2 + 150);
+        } else {
+          ctx.font = 'bold 72px Impact, Arial Black, sans-serif';
+          ctx.fillStyle = '#f44336';
+          ctx.strokeStyle = '#000'; ctx.lineWidth = 8;
+          ctx.strokeText('ПОРАЖЕНИЕ', W / 2, H / 2 - 40);
+          ctx.fillText('ПОРАЖЕНИЕ', W / 2, H / 2 - 40);
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 26px Arial';
+          ctx.fillText('Кликните, чтобы попробовать снова', W / 2, H / 2 + 40);
         }
-        if (S.minigameType) {
-          ctx.fillStyle = '#ffeb3b';
-          ctx.font = 'bold 28px Arial';
-          ctx.fillText('🏅 Счёт: ' + S.minigameScore, W / 2, H / 2 + 100);
-        }
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 26px Arial';
-        ctx.fillText('Прогресс сохранён 💾', W / 2, H / 2 + 110);
-        ctx.fillText('Кликните для продолжения', W / 2, H / 2 + 150);
-      } else {
-        ctx.font = 'bold 72px Impact, Arial Black, sans-serif';
-        ctx.fillStyle = '#f44336';
-        ctx.strokeStyle = '#000'; ctx.lineWidth = 8;
-        ctx.strokeText('ПОРАЖЕНИЕ', W / 2, H / 2 - 40);
-        ctx.fillText('ПОРАЖЕНИЕ', W / 2, H / 2 - 40);
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 26px Arial';
-        ctx.fillText('Кликните, чтобы попробовать снова', W / 2, H / 2 + 40);
       }
     }
+  } catch (err) {
+    console.error('Render error:', err);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = 1;
   }
   ctx.restore();
 
@@ -4405,15 +4419,26 @@ function render() {
   drawAchievementToasts();
 }
 
+let _loopErrLogged = false;
 function loop(now) {
-  const dt = Math.min(now - S.lastTime, 50);
-  S.lastTime = now;
-  S.time += dt;
+  try {
+    const dt = Math.min(now - S.lastTime, 50);
+    S.lastTime = now;
+    S.time += dt;
+    if (!Number.isFinite(S.time)) S.time = 0;
 
-  if (S.scene === 'playing' && !S.gameOver) update(dt);
-  else if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 0.02);
+    if (S.scene === 'playing' && !S.gameOver) update(dt);
+    else if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 0.02);
 
-  render();
+    render();
+  } catch (err) {
+    if (!_loopErrLogged) {
+      console.error('Loop error:', err);
+      _loopErrLogged = true;
+    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = 1;
+  }
   requestAnimationFrame(loop);
 }
 
