@@ -367,4 +367,786 @@ const S={
 };
 
 // [КОНЕЦ ЧАСТИ 1/10]
- 
+ // ============================================================
+// ЧАСТЬ 2/10 — СОХРАНЕНИЕ, РАСТЕНИЯ, ЗОМБИ
+// ============================================================
+
+const SAVE_KEY='pvz_save_v80';
+const LEGACY_SAVE_KEYS=['pvz_save_v70','pvz_save_v60','pvz_save_v50','pvz_save_v40','pvz_backup'];
+
+function saveProgress(silent=false){
+  try{
+    const data={
+      version:80,
+      unlocked:S.unlockedLevels,
+      stars:S.levelStars,
+      totalKills:S.totalKillsEver,
+      totalWins:S.totalWinsEver,
+      achievements:S.achievements,
+      minigameBest:S.minigameBest,
+      coins:S.coins,
+      totalCoinsEarned:S.totalCoinsEarned,
+      ownedPlants:S.ownedPlants,
+      ownedItems:S.ownedItems,
+      extraSlots:S.extraSlots||0,
+      treeLevel:S.treeLevel,
+      treeWater:S.treeWater,
+      treeWaterNeeded:S.treeWaterNeeded,
+      treeCoinsFromZombies:S.treeCoinsFromZombies,
+      zombieCoinsCollected:S.zombieCoinsCollected
+    };
+    try{
+      const prev=localStorage.getItem(SAVE_KEY);
+      if(prev)localStorage.setItem('pvz_backup',prev);
+    }catch(e){}
+    localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+    if(!silent)showSaveToast('💾 Прогресс сохранён');
+    return true;
+  }catch(e){
+    console.error('Save error:',e);
+    return false;
+  }
+}
+
+function loadProgress(){
+  try{
+    let raw=localStorage.getItem(SAVE_KEY);
+    let usedLegacy=false;
+    if(!raw){
+      for(const k of LEGACY_SAVE_KEYS){
+        raw=localStorage.getItem(k);
+        if(raw){usedLegacy=true;break;}
+      }
+    }
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    if(!d||typeof d!=='object')return;
+
+    if(typeof d.unlocked==='number'&&d.unlocked>0)S.unlockedLevels=d.unlocked;
+    if(d.stars&&typeof d.stars==='object')S.levelStars=d.stars;
+    if(typeof d.totalKills==='number')S.totalKillsEver=d.totalKills;
+    if(typeof d.totalWins==='number')S.totalWinsEver=d.totalWins;
+    if(d.achievements&&typeof d.achievements==='object')S.achievements=d.achievements;
+    if(d.minigameBest&&typeof d.minigameBest==='object')S.minigameBest=d.minigameBest;
+    if(typeof d.coins==='number')S.coins=d.coins;
+    if(typeof d.totalCoinsEarned==='number')S.totalCoinsEarned=d.totalCoinsEarned;
+    if(typeof d.extraSlots==='number')S.extraSlots=d.extraSlots;
+    if(typeof d.treeLevel==='number')S.treeLevel=d.treeLevel;
+    if(typeof d.treeWater==='number')S.treeWater=d.treeWater;
+    if(typeof d.treeWaterNeeded==='number')S.treeWaterNeeded=d.treeWaterNeeded;
+    if(typeof d.treeCoinsFromZombies==='number')S.treeCoinsFromZombies=d.treeCoinsFromZombies;
+    if(typeof d.zombieCoinsCollected==='number')S.zombieCoinsCollected=d.zombieCoinsCollected;
+
+    const basePlants=['peashooter','sunflower'];
+    if(Array.isArray(d.ownedPlants)&&d.ownedPlants.length>0){
+      const merged=[...new Set([...basePlants,...d.ownedPlants])];
+      S.ownedPlants=merged.filter(id=>typeof id==='string'&&id.length>0);
+    }else{
+      S.ownedPlants=[...basePlants];
+    }
+
+    if(Array.isArray(d.ownedItems)&&d.ownedItems.length>0){
+      S.ownedItems=[...new Set(d.ownedItems)].filter(id=>typeof id==='string');
+    }
+
+    S.seedSelectMaxSlots=6+(S.extraSlots||0);
+    S.ironSpikeOwned=S.ownedItems.includes('spikeweed_iron');
+
+    if(usedLegacy)saveProgress(true);
+  }catch(e){console.error('Load error:',e);}
+}
+
+function resetProgress(){
+  if(!confirm('Сбросить ВЕСЬ прогресс?'))return;
+  try{
+    for(const k of [SAVE_KEY,...LEGACY_SAVE_KEYS]){
+      try{localStorage.removeItem(k);}catch(e){}
+    }
+  }catch(e){}
+
+  S.unlockedLevels=1;
+  S.levelStars={};
+  S.totalKillsEver=0;
+  S.totalWinsEver=0;
+  S.achievements={};
+  S.minigameBest={};
+  S.coins=0;
+  S.totalCoinsEarned=0;
+  S.ownedPlants=['peashooter','sunflower'];
+  S.ownedItems=[];
+  S.extraSlots=0;
+  S.seedSelectMaxSlots=6;
+  S.ironSpikeOwned=false;
+  S.treeLevel=1;
+  S.treeWater=0;
+  S.treeWaterNeeded=8;
+  S.treeCoinsFromZombies=0;
+  S.zombieCoinsCollected=0;
+
+  showSaveToast('🗑 Прогресс сброшен');
+}
+
+function resetPlants(){
+  if(!confirm('Сбросить список растений к базовым?\n\nГорохострел и Подсолнух останутся.'))return;
+  S.ownedPlants=['peashooter','sunflower'];
+  S.seedSelectMaxSlots=6+(S.extraSlots||0);
+  saveProgress(true);
+  showSaveToast('🌱 Растения сброшены');
+}
+
+setInterval(()=>{
+  if(S.scene==='playing'&&!S.gameOver)saveProgress(true);
+},15000);
+
+window.addEventListener('beforeunload',()=>{
+  if(S.scene==='playing'&&!S.gameOver)saveProgress(true);
+});
+
+// ===== КЭШ РАСТЕНИЙ =====
+function rebuildPlantCache(){
+  S.plantsByCell={};
+  for(const p of S.plants){
+    S.plantsByCell[p.row+'_'+p.col]=p;
+  }
+}
+
+function getPlantAt(row,col){
+  return S.plantsByCell[row+'_'+col]||null;
+}
+
+function isPlantAwake(type){
+  const p=ALL_PLANTS[type];
+  if(!p)return true;
+  if(p.sleep==='both')return true;
+  if(S.location==='roof')return true;
+  return p.sleep===S.dayNight;
+}
+
+// ============================================================
+// РАСТЕНИЯ (60+)
+// ============================================================
+const ALL_PLANTS={
+  // ===== БАЗОВЫЕ =====
+  peashooter:{id:'peashooter',name:'Горохострел',cost:100,cd:7500,hp:100,sleep:'day'},
+  sunflower:{id:'sunflower',name:'Подсолнух',cost:50,cd:7500,hp:100,sleep:'day'},
+  wallnut:{id:'wallnut',name:'Стенорех',cost:50,cd:30000,hp:4000,sleep:'both'},
+  potato:{id:'potato',name:'Картошка',cost:25,cd:30000,hp:100,sleep:'both'},
+  cherry:{id:'cherry',name:'Вишнёвая бомба',cost:150,cd:50000,hp:9999,sleep:'both',explode:1800,radius:1.7,fuse:3000},
+  snowpea:{id:'snowpea',name:'Ледяной горох',cost:175,cd:7500,hp:100,sleep:'day'},
+  repeater:{id:'repeater',name:'Двойной горох',cost:200,cd:7500,hp:100,sleep:'day'},
+  garlic:{id:'garlic',name:'Чеснок',cost:50,cd:30000,hp:400,sleep:'both'},
+
+  // ===== НОЧНЫЕ ГРИБЫ =====
+  puffshroom:{id:'puffshroom',name:'Грибочек',cost:0,cd:7500,hp:100,sleep:'night'},
+  sunshroom:{id:'sunshroom',name:'Солнечный гриб',cost:25,cd:7500,hp:100,sleep:'night'},
+  fumeshroom:{id:'fumeshroom',name:'Дымогриб',cost:75,cd:7500,hp:100,sleep:'night'},
+  scaredy:{id:'scaredy',name:'Трусогриб',cost:25,cd:7500,hp:100,sleep:'night'},
+  hypnoshroom:{id:'hypnoshroom',name:'Гипногриб',cost:75,cd:30000,hp:100,sleep:'night'},
+  iceshroom:{id:'iceshroom',name:'Ледогриб',cost:75,cd:50000,hp:9999,sleep:'night',freezeAll:true,fuse:4000},
+  doomshroom:{id:'doomshroom',name:'Ядерный гриб',cost:350,cd:50000,hp:9999,sleep:'night',explode:99999,radius:999,fullScreen:true,fuse:5000},
+  twinmushroom:{id:'twinmushroom',name:'Двойной гриб',cost:125,cd:7500,hp:100,sleep:'night'},
+  bluemushroom:{id:'bluemushroom',name:'Синий гриб',cost:200,cd:7500,hp:100,sleep:'night'},
+
+  // ===== ВОДНЫЕ =====
+  lilypad:{id:'lilypad',name:'Кувшинка',cost:25,cd:7500,hp:100,sleep:'both'},
+  tanglekelp:{id:'tanglekelp',name:'Водоросли',cost:25,cd:30000,hp:100,sleep:'both'},
+
+  // ===== ОРУЖИЕ =====
+  threepeater:{id:'threepeater',name:'Тройной горох',cost:325,cd:7500,hp:100,sleep:'day'},
+  jalapeno:{id:'jalapeno',name:'Халапеньо',cost:125,cd:30000,hp:9999,sleep:'both',explode:1800,radius:999,rowOnly:true,fuse:3000},
+  chomper:{id:'chomper',name:'Жеватель',cost:150,cd:15000,hp:100,sleep:'both'},
+  torchwood:{id:'torchwood',name:'Огненное дерево',cost:175,cd:7500,hp:100,sleep:'day'},
+  coffee:{id:'coffee',name:'Кофе',cost:75,cd:30000,hp:100,sleep:'both'},
+  cabbage:{id:'cabbage',name:'Капустомёт',cost:100,cd:7500,hp:100,sleep:'day'},
+  kernelpult:{id:'kernelpult',name:'Кукурузомёт',cost:100,cd:7500,hp:100,sleep:'day'},
+  coinflower:{id:'coinflower',name:'Монетный цветок',cost:100,cd:7500,hp:100,sleep:'day',isCoin:true,coinValue:10},
+  spikeweed:{id:'spikeweed',name:'Шипы',cost:100,cd:7500,hp:100,sleep:'both',isSpike:true,dmg:20},
+  cobcannon:{id:'cobcannon',name:'Кукурузная пушка',cost:500,cd:30000,hp:500,sleep:'day'},
+  gloomyshroom:{id:'gloomyshroom',name:'Мрачногриб',cost:150,cd:30000,hp:100,sleep:'night'},
+  gatlingpea:{id:'gatlingpea',name:'Гатлинг-горох',cost:450,cd:30000,hp:100,sleep:'day'},
+  twinsunflower:{id:'twinsunflower',name:'Двойной подсолнух',cost:150,cd:30000,hp:100,sleep:'day'},
+  goldflower:{id:'goldflower',name:'Золотой цветок',cost:175,cd:7500,hp:100,sleep:'day',isCoin:true,coinValue:25},
+
+  // ===== ДОПОЛНИТЕЛЬНЫЕ =====
+  potatomine:{id:'potatomine',name:'Картошка-мина',cost:25,cd:30000,hp:100,sleep:'both'},
+  iceberg:{id:'iceberg',name:'Ледяной жёлудь',cost:0,cd:50000,hp:9999,sleep:'both',freezeAll:true,fuse:2000,radius:1.7},
+  lantern:{id:'lantern',name:'Фонарь',cost:25,cd:7500,hp:100,sleep:'both'},
+  cactus:{id:'cactus',name:'Кактус',cost:125,cd:7500,hp:100,sleep:'day'},
+  clover:{id:'clover',name:'Клевер',cost:100,cd:7500,hp:100,sleep:'both'},
+  starfruit:{id:'starfruit',name:'Звезда',cost:125,cd:7500,hp:100,sleep:'day'},
+  pumpkin:{id:'pumpkin',name:'Тыква',cost:125,cd:30000,hp:2000,sleep:'both'},
+  magnet:{id:'magnet',name:'Магнит-гриб',cost:100,cd:15000,hp:100,sleep:'both'},
+  pot:{id:'pot',name:'Горшок',cost:25,cd:7500,hp:100,sleep:'both'},
+  eggplant:{id:'eggplant',name:'Баклажан',cost:75,cd:7500,hp:100,sleep:'day'},
+  garlicBowed:{id:'garlicBowed',name:'Чеснок-бант',cost:50,cd:30000,hp:400,sleep:'both'},
+  umbrella:{id:'umbrella',name:'Зонтик',cost:100,cd:7500,hp:100,sleep:'both'},
+  melonpult:{id:'melonpult',name:'Арбуз-пушка',cost:300,cd:7500,hp:100,sleep:'day'},
+  helmetpea:{id:'helmetpea',name:'Шлем-горох',cost:250,cd:7500,hp:100,sleep:'day'},
+  twinBF:{id:'twinBF',name:'Гриб-гигант',cost:150,cd:30000,hp:100,sleep:'night'},
+  catmushroom:{id:'catmushroom',name:'Кошка-гриб',cost:225,cd:7500,hp:100,sleep:'both'},
+
+  // ===== МАГАЗИННЫЕ ЭКСКЛЮЗИВЫ =====
+  icemelon:{id:'icemelon',name:'Ледяной арбуз',cost:300,cd:7500,hp:100,sleep:'day',price:3000},
+  cattail:{id:'cattail',name:'Кошкамыш',cost:225,cd:7500,hp:100,sleep:'both',price:2500},
+  gatlingpea_s:{id:'gatlingpea_s',name:'Военный горох',cost:450,cd:30000,hp:100,sleep:'day',price:4000},
+  iron_spike:{id:'iron_spike',name:'Железные шипы',cost:100,cd:7500,hp:100,sleep:'both',isSpike:true,dmg:40}
+};
+
+// ============================================================
+// ЗОМБИ (10)
+// ============================================================
+const ZOMBIE_TYPES={
+  basic:{hp:100,speed:12,dmg:100,coins:5,coinType:'bronze',dropChance:0.25},
+  cone:{hp:200,speed:12,dmg:100,coins:10,coinType:'bronze',dropChance:0.30},
+  bucket:{hp:350,speed:11,dmg:100,coins:15,coinType:'silver',dropChance:0.35},
+  flag:{hp:100,speed:16,dmg:100,coins:20,coinType:'silver',dropChance:0.40},
+  football:{hp:600,speed:20,dmg:150,coins:25,coinType:'silver',dropChance:0.45},
+  dancer:{hp:300,speed:14,dmg:100,coins:20,coinType:'silver',dropChance:0.40},
+  balloon:{hp:200,speed:14,dmg:100,coins:15,coinType:'silver',dropChance:0.35},
+  gargantuar:{hp:1500,speed:6,dmg:300,coins:100,coinType:'gold',dropChance:1.00},
+  minizombie:{hp:50,speed:22,dmg:60,coins:2,coinType:'bronze',dropChance:0.15},
+  zomboss:{hp:8000,speed:4,dmg:500,coins:200,coinType:'diamond',dropChance:1.00}
+};
+
+// [КОНЕЦ ЧАСТИ 2/10]
+// ============================================================
+// ЧАСТЬ 3/10 — УРОВНИ + ДОСТИЖЕНИЯ
+// ============================================================
+
+const LEVELS=[
+  // ===== ЛОКАЦИЯ 1: ДВОР =====
+  {id:1, name:'1-1', location:'yard', rows:1, rowsOffset:2, time:'day',
+    seeds:['peashooter','sunflower'],
+    totalZombies:12, spawnInterval:6500,
+    types:['basic'], waves:1, reward:null},
+
+  {id:2, name:'1-2', location:'yard', rows:3, rowsOffset:1, time:'day',
+    seeds:['peashooter','sunflower'],
+    totalZombies:22, spawnInterval:5500,
+    types:['basic','cone'], waves:2, reward:'wallnut'},
+
+  {id:3, name:'1-3', location:'yard', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut'],
+    totalZombies:28, spawnInterval:5000,
+    types:['basic','cone'], waves:3, reward:'potato'},
+
+  {id:4, name:'1-4', location:'yard', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','potato'],
+    totalZombies:34, spawnInterval:4500,
+    types:['basic','cone','flag'], waves:3, reward:'cherry'},
+
+  {id:5, name:'1-5', location:'yard', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','potato','cherry'],
+    totalZombies:40, spawnInterval:4200,
+    types:['basic','cone','bucket'], waves:4, reward:'snowpea'},
+
+  {id:6, name:'1-6', location:'yard', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','potato','cherry','snowpea'],
+    totalZombies:48, spawnInterval:4000,
+    types:['basic','cone','bucket','flag','dancer'], waves:4, reward:'repeater'},
+
+  {id:7, name:'1-7', location:'yard', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','potato','cherry','snowpea','repeater'],
+    totalZombies:60, spawnInterval:3500,
+    types:['basic','cone','bucket','flag','football','dancer'], waves:6, reward:'garlic'},
+
+  // ===== ЛОКАЦИЯ 2: НОЧЬ =====
+  {id:8, name:'2-1', location:'night', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','wallnut'],
+    totalZombies:24, spawnInterval:5000,
+    types:['basic','cone'], waves:2, reward:'puffshroom'},
+
+  {id:9, name:'2-2', location:'night', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','wallnut'],
+    totalZombies:30, spawnInterval:4600,
+    types:['basic','cone','bucket'], waves:3, reward:'sunshroom'},
+
+  {id:10, name:'2-3', location:'night', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','wallnut'],
+    totalZombies:36, spawnInterval:4400,
+    types:['basic','cone','bucket','flag'], waves:3, reward:'fumeshroom'},
+
+  {id:11, name:'2-4', location:'night', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','fumeshroom','wallnut'],
+    totalZombies:42, spawnInterval:4200,
+    types:['basic','cone','bucket','flag','dancer'], waves:4, reward:'scaredy'},
+
+  {id:12, name:'2-5', location:'night', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','fumeshroom','scaredy','wallnut'],
+    totalZombies:50, spawnInterval:3800,
+    types:['basic','cone','bucket','flag','dancer','football'], waves:5, reward:'hypnoshroom'},
+
+  {id:13, name:'2-6', location:'night', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','fumeshroom','scaredy','hypnoshroom','wallnut'],
+    totalZombies:56, spawnInterval:3600,
+    types:['basic','cone','bucket','flag','dancer','football'], waves:5, reward:'coffee'},
+
+  {id:14, name:'2-7', location:'night', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','fumeshroom','scaredy','hypnoshroom','coffee','wallnut'],
+    totalZombies:64, spawnInterval:3400,
+    types:['basic','cone','bucket','flag','dancer','football'], waves:6, reward:'doomshroom'},
+
+  // ===== ЛОКАЦИЯ 3: БАССЕЙН ДНЁМ =====
+  {id:15, name:'3-1', location:'pool', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut'],
+    totalZombies:26, spawnInterval:5000,
+    types:['basic','cone'], waves:3, reward:'lilypad'},
+
+  {id:16, name:'3-2', location:'pool', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','lilypad'],
+    totalZombies:34, spawnInterval:4600,
+    types:['basic','cone','bucket'], waves:3, reward:'threepeater'},
+
+  {id:17, name:'3-3', location:'pool', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','lilypad','threepeater'],
+    totalZombies:40, spawnInterval:4400,
+    types:['basic','cone','bucket','flag'], waves:4, reward:'tanglekelp'},
+
+  {id:18, name:'3-4', location:'pool', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','lilypad','threepeater','tanglekelp'],
+    totalZombies:48, spawnInterval:4200,
+    types:['basic','cone','bucket','flag','dancer'], waves:4, reward:'jalapeno'},
+
+  {id:19, name:'3-5', location:'pool', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','lilypad','threepeater','tanglekelp','jalapeno'],
+    totalZombies:54, spawnInterval:4000,
+    types:['basic','cone','bucket','flag','dancer','football'], waves:5, reward:'chomper'},
+
+  {id:20, name:'3-6', location:'pool', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','lilypad','threepeater','tanglekelp','jalapeno','chomper'],
+    totalZombies:62, spawnInterval:3600,
+    types:['basic','cone','bucket','flag','football','dancer'], waves:6, reward:'torchwood'},
+
+  {id:21, name:'3-7', location:'pool', rows:5, rowsOffset:0, time:'day',
+    seeds:['peashooter','sunflower','wallnut','lilypad','threepeater','torchwood','jalapeno','chomper'],
+    totalZombies:70, spawnInterval:3400,
+    types:['basic','cone','bucket','flag','football','dancer'], waves:7, reward:'melonpult'},
+
+  // ===== ЛОКАЦИЯ 4: НОЧНОЙ БАССЕЙН =====
+  {id:22, name:'4-1', location:'nightpool', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','lilypad','wallnut'],
+    totalZombies:28, spawnInterval:5000,
+    types:['basic','cone'], waves:3, reward:'iceshroom'},
+
+  {id:23, name:'4-2', location:'nightpool', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','lilypad','wallnut','iceshroom'],
+    totalZombies:36, spawnInterval:4600,
+    types:['basic','cone','bucket'], waves:3, reward:'cabbage'},
+
+  {id:24, name:'4-3', location:'nightpool', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','lilypad','wallnut','iceshroom','cabbage'],
+    totalZombies:44, spawnInterval:4400,
+    types:['basic','cone','bucket','flag'], waves:4, reward:'kernelpult'},
+
+  {id:25, name:'4-4', location:'nightpool', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','lilypad','wallnut','iceshroom','cabbage','kernelpult'],
+    totalZombies:52, spawnInterval:4200,
+    types:['basic','cone','bucket','flag','dancer'], waves:5, reward:'starfruit'},
+
+  {id:26, name:'4-5', location:'nightpool', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','lilypad','wallnut','iceshroom','cabbage','kernelpult','starfruit'],
+    totalZombies:58, spawnInterval:4000,
+    types:['basic','cone','bucket','flag','dancer','football'], waves:5, reward:'pumpkin'},
+
+  {id:27, name:'4-6', location:'nightpool', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','lilypad','wallnut','iceshroom','cabbage','kernelpult','starfruit','pumpkin'],
+    totalZombies:60, spawnInterval:3800,
+    types:['basic','cone','bucket','flag','football','dancer'], waves:5,
+    boss:'gargantuar', reward:'coinflower'},
+
+  {id:28, name:'4-7', location:'nightpool', rows:5, rowsOffset:0, time:'night',
+    seeds:['puffshroom','sunshroom','lilypad','wallnut','iceshroom','cabbage','kernelpult','starfruit','pumpkin'],
+    totalZombies:70, spawnInterval:3600,
+    types:['basic','cone','bucket','flag','football','dancer'], waves:6, reward:null},
+
+  // ===== ЛОКАЦИЯ 5: КРЫША =====
+  {id:29, name:'5-1', location:'roof', rows:5, rowsOffset:0, time:'day',
+    seeds:['cabbage','sunflower','wallnut'],
+    totalZombies:26, spawnInterval:5000,
+    types:['basic','cone'], waves:3, reward:'spikeweed'},
+
+  {id:30, name:'5-2', location:'roof', rows:5, rowsOffset:0, time:'day',
+    seeds:['cabbage','kernelpult','sunflower','wallnut','spikeweed'],
+    totalZombies:34, spawnInterval:4600,
+    types:['basic','cone','bucket'], waves:3, reward:'cobcannon'},
+
+  {id:31, name:'5-3', location:'roof', rows:5, rowsOffset:0, time:'day',
+    seeds:['cabbage','kernelpult','sunflower','wallnut','spikeweed','cobcannon'],
+    totalZombies:42, spawnInterval:4400,
+    types:['basic','cone','bucket','flag'], waves:4, reward:'gloomyshroom'},
+
+  {id:32, name:'5-4', location:'roof', rows:5, rowsOffset:0, time:'day',
+    seeds:['cabbage','kernelpult','sunflower','wallnut','spikeweed','cobcannon','gloomyshroom'],
+    totalZombies:50, spawnInterval:4200,
+    types:['basic','cone','bucket','flag','balloon'], waves:5, reward:'gatlingpea'},
+
+  {id:33, name:'5-5', location:'roof', rows:5, rowsOffset:0, time:'day',
+    seeds:['cabbage','kernelpult','sunflower','wallnut','snowpea','gatlingpea'],
+    totalZombies:56, spawnInterval:4000,
+    types:['basic','cone','bucket','flag','balloon','football'], waves:5, reward:'twinsunflower'},
+
+  {id:34, name:'5-6', location:'roof', rows:5, rowsOffset:0, time:'day',
+    seeds:['cabbage','kernelpult','sunflower','wallnut','snowpea','gatlingpea','twinsunflower'],
+    totalZombies:64, spawnInterval:3600,
+    types:['basic','cone','bucket','flag','balloon','football','dancer'], waves:6, reward:'goldflower'},
+
+  {id:35, name:'5-7', location:'roof', rows:5, rowsOffset:0, time:'day',
+    seeds:['cabbage','kernelpult','sunflower','wallnut','snowpea','gatlingpea','twinsunflower','goldflower'],
+    totalZombies:60, spawnInterval:3800,
+    types:['basic','cone','bucket','flag','football','dancer'], waves:5,
+    boss:'zomboss', reward:null}
+];
+
+// ============================================================
+// ДОСТИЖЕНИЯ (37)
+// ============================================================
+const ACHIEVEMENTS={
+  first_blood:{name:'Первая кровь',desc:'Убить первого зомби',icon:'🩸'},
+  first_win:{name:'Первая победа',desc:'Пройти первый уровень',icon:'🏆'},
+  sunflower_farm:{name:'Солнечный магнат',desc:'Собрать 1000 солнца',icon:'☀️'},
+  no_mowers:{name:'Чисто сработано',desc:'Пройти уровень без косилок',icon:'🚜'},
+  garlic_master:{name:'Мастер чеснока',desc:'Оттолкнуть 5 зомби',icon:'🧄'},
+  night_owl:{name:'Ночная сова',desc:'Пройти ночью',icon:'🦉'},
+  roof_walker:{name:'Кровельщик',desc:'Пройти на крыше',icon:'🏠'},
+  pool_party:{name:'Водная вечеринка',desc:'Пройти в бассейне',icon:'🏊'},
+  night_swimmer:{name:'Ночной пловец',desc:'Пройти ночной бассейн',icon:'🌊'},
+  perfect_roof:{name:'🏠 Король крыши',desc:'Пройти все уровни крыши',icon:'👑'},
+  boss_slayer:{name:'Убийца боссов',desc:'Победить ЗОМБОССА',icon:'👹'},
+  gargantua_kill:{name:'Убийца Гаргантюа',desc:'Победить Гаргантюа',icon:'💪'},
+  hypno_master:{name:'Гипно-мастер',desc:'Загипнотизировать 10 зомби',icon:'🌀'},
+  ice_apocalypse:{name:'❄️ Ледяной апокалипсис',desc:'Заморозить 20 зомби',icon:'❄️'},
+  nuclear_master:{name:'☢️ Ядерная бомба',desc:'Ядерный гриб',icon:'☢️'},
+  rake_user:{name:'🧹 Садовник',desc:'Использовать грабли',icon:'🧹'},
+  collector:{name:'Коллекционер',desc:'Открыть 20 уровней',icon:'📚'},
+  master:{name:'Мастер PvZ',desc:'Открыть 35 уровней',icon:'👑'},
+  veteran:{name:'Ветеран',desc:'Убить 100 зомби',icon:'🎖️'},
+  warlord:{name:'Полководец',desc:'Убить 500 зомби',icon:'⚔️'},
+  perfectionist:{name:'Перфекционист',desc:'Получить 3 звезды',icon:'⭐'},
+  minigame_win:{name:'Игрок мини-игр',desc:'Победить в мини-игре',icon:'🎮'},
+  endless_10:{name:'Волна за волной',desc:'10 волн в бесконечном',icon:'🌊'},
+  speedrun:{name:'Спидраннер',desc:'Пройти за 60 секунд',icon:'⚡'},
+  chill_master:{name:'😎 Пофигист',desc:'Пройти без посадки',icon:'😎'},
+  rich:{name:'💰 Богач',desc:'Накопить 5000 монет',icon:'💰'},
+  millionaire:{name:'💎 Миллионер',desc:'Накопить 10000 монет',icon:'💎'},
+  coin_farmer:{name:'🪙 Монетный фермер',desc:'Собрать 100 монет с зомби',icon:'🪙'},
+  coin_tycoon:{name:'💎 Монетный магнат',desc:'Собрать 1000 монет с зомби',icon:'💎'},
+  coin_king:{name:'👑 Монетный король',desc:'Собрать 5000 монет с зомби',icon:'👑'},
+  shopaholic:{name:'🛒 Шопоголик',desc:'Купить 10 растений',icon:'🛒'},
+  slot_master:{name:'🎰 Мастер слотов',desc:'Купить +1 слот',icon:'🎰'},
+  gardner:{name:'🌻 Садовод',desc:'Собрать 30 разных растений',icon:'🌻'},
+  tree_10:{name:'🌱 Древовод',desc:'Дерево до 10 уровня',icon:'🌱'},
+  tree_25:{name:'🌿 Ботаник',desc:'Дерево до 25 уровня',icon:'🌿'},
+  tree_50:{name:'🌳 Дендролог',desc:'Дерево до 50 уровня',icon:'🌳'},
+  tree_100:{name:'🌲 Лесной царь',desc:'Дерево до 100 уровня',icon:'🌲'}
+};
+
+// [КОНЕЦ ЧАСТИ 3/10]
+ // ============================================================
+// ЧАСТЬ 4/10 — МАГАЗИН, ФРАЗЫ, МИНИ-ИГРЫ, СОВЕТЫ
+// ============================================================
+
+const SHOP_PAGES=[
+  // ===== СТРАНИЦА 1: РАСТЕНИЯ =====
+  [
+    {
+      id:'catmushroom',
+      name:'Кошкамыш',
+      price:2500,
+      desc:'Стреляет по воздуху',
+      type:'plant',
+      plantId:'catmushroom',
+      icon:'🐱'
+    },
+    {
+      id:'icemelon',
+      name:'Ледяной арбуз',
+      price:3000,
+      desc:'Замораживает всех',
+      type:'plant',
+      plantId:'icemelon',
+      icon:'🍉'
+    },
+    {
+      id:'twinsunflower',
+      name:'Двойной подсолнух',
+      price:2000,
+      desc:'2× солнца',
+      type:'plant',
+      plantId:'twinsunflower',
+      icon:'🌻'
+    },
+    {
+      id:'cobcannon',
+      name:'Кукурузная пушка',
+      price:5000,
+      desc:'Мощный залп',
+      type:'plant',
+      plantId:'cobcannon',
+      icon:'🌽'
+    }
+  ],
+
+  // ===== СТРАНИЦА 2: РАСТЕНИЯ 2 =====
+  [
+    {
+      id:'spikeweed_iron',
+      name:'Железные шипы',
+      price:1500,
+      desc:'Больше урона',
+      type:'upgrade',
+      icon:'⚙️',
+      isIronSpike:true
+    },
+    {
+      id:'gatlingpea_s',
+      name:'Военный горох',
+      price:4000,
+      desc:'4 пули за залп',
+      type:'plant',
+      plantId:'gatlingpea_s',
+      icon:'🔫'
+    },
+    {
+      id:'goldflower',
+      name:'Золотой цветок',
+      price:2500,
+      desc:'Много монет',
+      type:'plant',
+      plantId:'goldflower',
+      icon:'🌼'
+    },
+    {
+      id:'gloomyshroom',
+      name:'Мрачногриб',
+      price:2000,
+      desc:'Урон по площади',
+      type:'plant',
+      plantId:'gloomyshroom',
+      icon:'🍄'
+    }
+  ],
+
+  // ===== СТРАНИЦА 3: ПРЕДМЕТЫ =====
+  [
+    {
+      id:'glove',
+      name:'Перчатка',
+      price:500,
+      desc:'Перетаскивай растения',
+      type:'item',
+      icon:'🧤',
+      isGlove:true
+    },
+    {
+      id:'rake',
+      name:'Грабли',
+      price:3000,
+      desc:'Убивают 1 зомби',
+      type:'item',
+      icon:'🧹',
+      isRake:true
+    },
+    {
+      id:'extra_slot',
+      name:'+1 слот',
+      price:750,
+      desc:'Больше семян!',
+      type:'upgrade',
+      icon:'📦',
+      isSlot:true,
+      slotIdx:1
+    },
+    {
+      id:'magnet',
+      name:'Магнит',
+      price:800,
+      desc:'Автосбор монет',
+      type:'item',
+      icon:'🧲',
+      isMagnet:true
+    }
+  ],
+
+  // ===== СТРАНИЦА 4: УЛУЧШЕНИЯ =====
+  [
+    {
+      id:'slot_2',
+      name:'+1 слот (2)',
+      price:1500,
+      desc:'Ещё один слот',
+      type:'upgrade',
+      icon:'📦',
+      isSlot:true,
+      slotIdx:2
+    },
+    {
+      id:'slot_3',
+      name:'+1 слот (3)',
+      price:3000,
+      desc:'И ещё один!',
+      type:'upgrade',
+      icon:'📦',
+      isSlot:true,
+      slotIdx:3
+    },
+    {
+      id:'slot_4',
+      name:'+1 слот (4)',
+      price:5000,
+      desc:'Почти максимум!',
+      type:'upgrade',
+      icon:'📦',
+      isSlot:true,
+      slotIdx:4
+    },
+    {
+      id:'booster',
+      name:'Ускоритель',
+      price:1000,
+      desc:'x2 скорострельность',
+      type:'item',
+      icon:'⚡',
+      isBooster:true,
+      consumable:true
+    }
+  ],
+
+  // ===== СТРАНИЦА 5: ПОЛИВКА ДЛЯ ДЕРЕВА =====
+  [
+    {
+      id:'watering_1',
+      name:'Поливка x1',
+      price:250,
+      desc:'Полить дерево 1 раз',
+      type:'watering',
+      icon:'💧',
+      wateringCount:1
+    },
+    {
+      id:'watering_5',
+      name:'Поливка x5',
+      price:1000,
+      desc:'5 поливок со скидкой',
+      type:'watering',
+      icon:'💧',
+      wateringCount:5
+    },
+    {
+      id:'watering_20',
+      name:'Поливка x20',
+      price:3500,
+      desc:'20 поливок — выгодно!',
+      type:'watering',
+      icon:'💧',
+      wateringCount:20
+    },
+    {
+      id:'watering_100',
+      name:'Поливка x100',
+      price:15000,
+      desc:'100 поливок — ЭКОНОМИЯ!',
+      type:'watering',
+      icon:'💧',
+      wateringCount:100
+    }
+  ]
+];
+
+// ============================================================
+// ФРАЗЫ ПРОДАВЦА
+// ============================================================
+const SHOP_PHRASES=[
+  "Купи это! Или я съем твой газон!",
+  "Это выгодная сделка, я гарантирую!",
+  "Купи 2 — получи 3! Почему 3? Потому что!",
+  "Моя бабушка тестировала эти семена!",
+  "Помни: растения — твои друзья!",
+  "Я держу магазин в фургоне. Так удобнее!",
+  "Скидка только сегодня! И вчера! И завтра!",
+  "Грабли! Они работают сами! Магия!",
+  "Хочешь купить — покупай. Хочешь нет — покупай!",
+  "Я не сумасшедший! Я ГЕНИЙ!",
+  "Ледяной арбуз? Он холодный!",
+  "Железные шипы! Острее моих шуток!",
+  "Кошкамыш! Мяу! Мяу! МЯУ!",
+  "Поливай дерево — оно тебе спасибо скажет!",
+  "Монеты с зомби? Это НАЛОГ!",
+  "Собирай монеты, покупай поливку!",
+  "Дерево мудрости растёт бесконечно!",
+  "Чем выше дерево — тем больше наград!"
+];
+
+// ============================================================
+// МИНИ-ИГРЫ
+// ============================================================
+const MINIGAMES=[
+  {
+    id:'endless',
+    name:'Бесконечный',
+    desc:'Продержись как можно дольше!',
+    icon:'♾️',
+    config:{
+      endless:true,
+      seeds:['peashooter','sunflower','wallnut','snowpea','repeater','cherry']
+    }
+  },
+  {
+    id:'sunny_day',
+    name:'Солнечный день',
+    desc:'Собери 500 солнца',
+    icon:'☀️',
+    config:{
+      sunny:true,
+      seeds:['sunflower','wallnut']
+    }
+  },
+  {
+    id:'zombie_rain',
+    name:'Зомби-дождь',
+    desc:'Зомби падают с неба!',
+    icon:'🌧️',
+    config:{
+      gravity:true,
+      spawnRate:1500,
+      seeds:['peashooter','sunflower','wallnut']
+    }
+  }
+];
+
+// ============================================================
+// СОВЕТЫ ДЕРЕВА МУДРОСТИ
+// ============================================================
+const TREE_TIPS=[
+  'Горохострел — основа любой обороны!',
+  'Стенорех даёт время на реакцию.',
+  'Поливай меня, и я дам тебе силу!',
+  'Собирай монеты — они пригодятся!',
+  'Днём работают одни растения, ночью — другие.',
+  'Подсолнух окупается за 3 цикла!',
+  'Лопата убирает растения без штрафа.',
+  'Мрачногриб бьёт по 3 рядам!',
+  'Гипногриб превращает врагов в союзников!',
+  'Гаргантюа бьёт сильно, но медленный.',
+  'Косилка — последняя линия обороны!',
+  'Кофе будит ночные растения днём!',
+  'Шипы атакуют всех зомби на клетке.',
+  'Тыква защищает растение внутри!',
+  'Магнит собирает монеты автоматически!',
+  'Вода — жизнь. Даже для дерева.',
+  'Стань мудрее, поливая меня!',
+  'Дерево мудрости растёт бесконечно!',
+  'Чем выше уровень — тем больше награда!',
+  'Каждый 10-й уровень — новое растение!',
+  'Собирай монеты с зомби — это заработок!',
+  'Горохострел 100 солнца, подсолнух 50!',
+  'Арбуз-пушка бьёт по площади!',
+  'Кукурузная пушка — самая мощная!',
+  'Каждые 5 уровней дерева — бонус монет!',
+  'Зомби с ведром дают серебряную монету!',
+  'Футболист оставляет серебро после смерти!',
+  'Гаргантюа всегда роняет золото!',
+  'Зомбосс — самый дорогой трофей!',
+  'Дерево на 100 уровне — легенда!'
+];
+
+// [КОНЕЦ ЧАСТИ 4/10]
