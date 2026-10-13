@@ -8964,6 +8964,1667 @@ canvas.addEventListener('wheel',(e)=>{
 },{passive:false});
 
 // [КОНЕЦ ЧАСТИ 10.5]
+  // ============================================================
+// ЧАСТЬ 10.6 — УЛУЧШЕННЫЙ МАГАЗИН И ДЕРЕВО
+// ============================================================
+
+// ============================================================
+// МАГАЗИН — КРАСИВЫЙ
+// ============================================================
+let shopAnim=0;
+let shopFade=0;
+
+function drawShop(){
+  shopAnim+=0.02;
+  shopFade=Math.min(1,shopFade+0.05);
+
+  // Закатное небо
+  const sky=ctx.createLinearGradient(0,0,0,H*0.7);
+  sky.addColorStop(0,'#ff9a56');
+  sky.addColorStop(.3,'#ffb87a');
+  sky.addColorStop(.6,'#ffd89a');
+  sky.addColorStop(1,'#ffe9c0');
+  ctx.fillStyle=sky;
+  ctx.fillRect(0,0,W,H);
+
+  // Солнце у горизонта
+  const sunX=W*0.75;
+  const sunY=H*0.42;
+  const sunHalo=ctx.createRadialGradient(sunX,sunY,20,sunX,sunY,220);
+  sunHalo.addColorStop(0,'rgba(255,240,180,.95)');
+  sunHalo.addColorStop(.3,'rgba(255,200,120,.5)');
+  sunHalo.addColorStop(1,'rgba(255,200,120,0)');
+  ctx.fillStyle=sunHalo;
+  ctx.beginPath();
+  ctx.arc(sunX,sunY,220,0,Math.PI*2);
+  ctx.fill();
+
+  const sunG=ctx.createRadialGradient(sunX-15,sunY-15,5,sunX,sunY,90);
+  sunG.addColorStop(0,'#fffde7');
+  sunG.addColorStop(.4,'#ffd070');
+  sunG.addColorStop(1,'#e05010');
+  ctx.fillStyle=sunG;
+  ctx.beginPath();
+  ctx.arc(sunX,sunY,90,0,Math.PI*2);
+  ctx.fill();
+
+  // Облака
+  for(const c of[
+    {x:150,y:80,s:1.2},
+    {x:500,y:120,s:.9},
+    {x:900,y:90,s:1.1},
+    {x:1150,y:60,s:.8}
+  ]){
+    ctx.fillStyle='rgba(255,220,180,.7)';
+    ctx.beginPath();
+    ctx.arc(c.x,c.y,30*c.s,0,Math.PI*2);
+    ctx.arc(c.x+34*c.s,c.y-8*c.s,38*c.s,0,Math.PI*2);
+    ctx.arc(c.x+74*c.s,c.y,30*c.s,0,Math.PI*2);
+    ctx.arc(c.x+40*c.s,c.y+18*c.s,28*c.s,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle='rgba(255,245,220,.6)';
+    ctx.beginPath();
+    ctx.arc(c.x+34*c.s,c.y-20*c.s,14*c.s,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // Дальние деревья
+  for(let i=0;i<20;i++){
+    const tx=50+i*70;
+    const ty=H*0.55;
+    const tr=40+(i%3)*15;
+    ctx.fillStyle='rgba(60,100,50,.5)';
+    ctx.beginPath();
+    ctx.arc(tx,ty,tr,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // Земля
+  const groundY=H*0.62;
+  const groundG=ctx.createLinearGradient(0,groundY,0,H);
+  groundG.addColorStop(0,'#7cb342');
+  groundG.addColorStop(.4,'#558b2f');
+  groundG.addColorStop(1,'#33691e');
+  ctx.fillStyle=groundG;
+  ctx.fillRect(0,groundY,W,H-groundY);
+
+  // Травинки на земле
+  for(let i=0;i<200;i++){
+    const gx=(i*13)%W;
+    const gy=groundY+10+(i*7)%(H-groundY-20);
+    const gh=4+((i*3)%6);
+    ctx.strokeStyle=i%2===0?'rgba(40,80,20,.5)':'rgba(150,200,100,.4)';
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(gx,gy);
+    ctx.lineTo(gx+1,gy-gh);
+    ctx.stroke();
+  }
+
+  // Забор на фоне
+  const fenceY=groundY-15;
+  ctx.fillStyle='#8b6a3a';
+  ctx.fillRect(0,fenceY-3,W,4);
+  ctx.fillStyle='#a87848';
+  for(let fx=0;fx<W;fx+=40){
+    ctx.beginPath();
+    ctx.moveTo(fx,fenceY);
+    ctx.lineTo(fx+18,fenceY-28);
+    ctx.lineTo(fx+36,fenceY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle='#5d4037';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+  }
+
+  // ФУРГОН
+  drawVan(W-540,groundY-380);
+
+  // ВЫВЕСКА
+  drawShopSign();
+
+  // ДЕЙВ (продавец)
+  drawDave(180,groundY+40);
+
+  // Пузырь речи
+  if(S.shopSpeech){
+    drawSpeechBubble(180,groundY-230,S.shopSpeech);
+  }
+
+  // МОНЕТЫ — сверху справа
+  const coinX=W-270;
+  const coinY=30;
+  ctx.fillStyle='rgba(0,0,0,.7)';
+  ctx.beginPath();
+  ctx.roundRect(coinX,coinY,240,70,15);
+  ctx.fill();
+  ctx.strokeStyle='#ffd700';
+  ctx.lineWidth=4;
+  ctx.stroke();
+
+  // Монетка
+  ctx.fillStyle='#ffd700';
+  ctx.beginPath();
+  ctx.arc(coinX+40,coinY+35,22,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='#b8860b';
+  ctx.lineWidth=3;
+  ctx.stroke();
+  ctx.fillStyle='#b8860b';
+  ctx.font='bold 24px Arial';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('$',coinX+40,coinY+37);
+
+  ctx.fillStyle='#fff';
+  ctx.font='bold 32px Impact, Arial Black, sans-serif';
+  ctx.textAlign='left';
+  ctx.fillText(S.coins,coinX+80,coinY+37);
+
+  // Кнопки сверху
+  drawBackBtn(20,20,140,55);
+  drawShopResetBtn();
+
+  // КАРТОЧКИ ТОВАРОВ
+  drawShopCards();
+
+  // НАВИГАЦИЯ
+  drawShopNav();
+}
+
+// ============================================================
+// ВЫВЕСКА
+// ============================================================
+function drawShopSign(){
+  const signW=520;
+  const signH=110;
+  const signX=W/2-signW/2;
+  const signY=30;
+
+  // Тени
+  ctx.fillStyle='rgba(0,0,0,.3)';
+  ctx.beginPath();
+  ctx.roundRect(signX+8,signY+10,signW,signH,18);
+  ctx.fill();
+
+  // Дерево
+  const sg=ctx.createLinearGradient(0,signY,0,signY+signH);
+  sg.addColorStop(0,'#a87848');
+  sg.addColorStop(.4,'#8b5a2b');
+  sg.addColorStop(.7,'#6d4c21');
+  sg.addColorStop(1,'#4a3020');
+  ctx.fillStyle=sg;
+  ctx.beginPath();
+  ctx.roundRect(signX,signY,signW,signH,18);
+  ctx.fill();
+
+  // Обводка
+  ctx.strokeStyle='#3a2010';
+  ctx.lineWidth=6;
+  ctx.stroke();
+
+  // Внутренняя рамка
+  ctx.strokeStyle='#ffd700';
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.roundRect(signX+12,signY+12,signW-24,signH-24,10);
+  ctx.stroke();
+
+  // Гвозди
+  for(const[cx,cy]of[
+    [signX+25,signY+25],
+    [signX+signW-25,signY+25],
+    [signX+25,signY+signH-25],
+    [signX+signW-25,signY+signH-25]
+  ]){
+    ctx.fillStyle='#3a2010';
+    ctx.beginPath();
+    ctx.arc(cx,cy,5,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle='#666';
+    ctx.beginPath();
+    ctx.arc(cx-1,cy-1,2,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // Текст
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.font='bold 44px Impact, Arial Black, sans-serif';
+
+  // Тень текста
+  ctx.fillStyle='rgba(0,0,0,.5)';
+  ctx.fillText('🛒 МАГАЗИН',W/2+3,signY+signH/2+3);
+
+  // Основной текст
+  const tg=ctx.createLinearGradient(0,signY+30,0,signY+80);
+  tg.addColorStop(0,'#fff9c4');
+  tg.addColorStop(.5,'#ffd700');
+  tg.addColorStop(1,'#ff8f00');
+  ctx.fillStyle=tg;
+  ctx.strokeStyle='#3a2010';
+  ctx.lineWidth=5;
+  ctx.strokeText('🛒 МАГАЗИН',W/2,signY+signH/2);
+  ctx.fillText('🛒 МАГАЗИН',W/2,signY+signH/2);
+}
+
+// ============================================================
+// ФУРГОН
+// ============================================================
+function drawVan(x,y){
+  // Тень
+  ctx.fillStyle='rgba(0,0,0,.4)';
+  ctx.beginPath();
+  ctx.ellipse(x+250,y+400,280,30,0,0,Math.PI*2);
+  ctx.fill();
+
+  // Колёса
+  for(const wx of[x+80,x+380]){
+    ctx.fillStyle='#1a1a1a';
+    ctx.beginPath();
+    ctx.arc(wx,y+380,45,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle='#333';
+    ctx.beginPath();
+    ctx.arc(wx,y+380,30,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle='#666';
+    ctx.beginPath();
+    ctx.arc(wx,y+380,12,0,Math.PI*2);
+    ctx.fill();
+    // Спицы
+    ctx.strokeStyle='#888';
+    ctx.lineWidth=3;
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3;
+      ctx.beginPath();
+      ctx.moveTo(wx,y+380);
+      ctx.lineTo(wx+Math.cos(a)*28,y+380+Math.sin(a)*28);
+      ctx.stroke();
+    }
+  }
+
+  // Основной корпус
+  const bodyG=ctx.createLinearGradient(x,y+80,x,y+380);
+  bodyG.addColorStop(0,'#8ac0a0');
+  bodyG.addColorStop(.3,'#5aa878');
+  bodyG.addColorStop(.7,'#3a8858');
+  bodyG.addColorStop(1,'#205838');
+  ctx.fillStyle=bodyG;
+  ctx.beginPath();
+  ctx.roundRect(x,y+80,500,300,20);
+  ctx.fill();
+  ctx.strokeStyle='#1a4a2a';
+  ctx.lineWidth=5;
+  ctx.stroke();
+
+  // Полоска
+  ctx.fillStyle='#ffd700';
+  ctx.fillRect(x+10,y+180,480,30);
+  ctx.fillStyle='#8a6400';
+  ctx.fillRect(x+10,y+180,480,4);
+
+  // Крыша со скошенным углом
+  ctx.fillStyle='#7ac098';
+  ctx.beginPath();
+  ctx.moveTo(x,y+80);
+  ctx.lineTo(x+40,y-20);
+  ctx.lineTo(x+460,y-20);
+  ctx.lineTo(x+500,y+80);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle='#1a4a2a';
+  ctx.lineWidth=5;
+  ctx.stroke();
+
+  // Полосы на крыше
+  ctx.strokeStyle='rgba(26,74,42,.4)';
+  ctx.lineWidth=2;
+  for(let i=0;i<10;i++){
+    ctx.beginPath();
+    ctx.moveTo(x+50+i*45,y-20);
+    ctx.lineTo(x+i*50+5,y+80);
+    ctx.stroke();
+  }
+
+  // Окно фургона
+  ctx.fillStyle='rgba(180,220,240,.7)';
+  ctx.beginPath();
+  ctx.roundRect(x+30,y+110,120,80,8);
+  ctx.fill();
+  ctx.strokeStyle='#1a4a2a';
+  ctx.lineWidth=4;
+  ctx.stroke();
+  // Блик
+  ctx.fillStyle='rgba(255,255,255,.4)';
+  ctx.beginPath();
+  ctx.moveTo(x+40,y+120);
+  ctx.lineTo(x+70,y+120);
+  ctx.lineTo(x+40,y+180);
+  ctx.closePath();
+  ctx.fill();
+
+  // Второе окно
+  ctx.fillStyle='rgba(180,220,240,.7)';
+  ctx.beginPath();
+  ctx.roundRect(x+350,y+110,120,80,8);
+  ctx.fill();
+  ctx.strokeStyle='#1a4a2a';
+  ctx.lineWidth=4;
+  ctx.stroke();
+
+  // Открытая часть (полки с товарами)
+  ctx.fillStyle='#2a1a10';
+  ctx.beginPath();
+  ctx.roundRect(x+170,y+110,170,160,5);
+  ctx.fill();
+  ctx.strokeStyle='#1a0e05';
+  ctx.lineWidth=4;
+  ctx.stroke();
+
+  // Полки
+  ctx.fillStyle='#5d4037';
+  ctx.fillRect(x+175,y+170,160,8);
+  ctx.fillRect(x+175,y+220,160,8);
+
+  // Мини-товары на полках
+  for(let i=0;i<4;i++){
+    const ix=x+185+i*40;
+    // Баночки
+    ctx.fillStyle=['#e53935','#4caf50','#2196f3','#ffb300'][i];
+    ctx.beginPath();
+    ctx.roundRect(ix,y+130,28,38,4);
+    ctx.fill();
+    ctx.strokeStyle='#000';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.4)';
+    ctx.fillRect(ix+4,y+134,8,30);
+
+    // Баночки на 2 полке
+    ctx.fillStyle=['#9c27b0','#ff5722','#00bcd4','#8bc34a'][i];
+    ctx.beginPath();
+    ctx.roundRect(ix,y+180,28,38,4);
+    ctx.fill();
+    ctx.strokeStyle='#000';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+  }
+
+  // Надпись на фургоне
+  ctx.font='bold 24px Impact, Arial Black, sans-serif';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillStyle='#3a2010';
+  ctx.fillText("CRAZY DAVE'S",x+250,y+255);
+  ctx.strokeStyle='#fff';
+  ctx.lineWidth=1;
+  ctx.strokeText("CRAZY DAVE'S",x+250,y+255);
+}
+
+// ============================================================
+// ДЕЙВ
+// ============================================================
+function drawDave(x,y){
+  const bob=Math.sin(shopAnim*2)*4;
+  const wave=Math.sin(shopAnim*3)*15;
+
+  // Тень
+  ctx.fillStyle='rgba(0,0,0,.4)';
+  ctx.beginPath();
+  ctx.ellipse(x,y+20,60,12,0,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.save();
+  ctx.translate(x,y+bob);
+
+  // Ноги
+  ctx.fillStyle='#3a4a8a';
+  ctx.fillRect(-28,-5,22,60);
+  ctx.fillRect(6,-5,22,60);
+  ctx.strokeStyle='#1a2a5a';
+  ctx.lineWidth=2;
+  ctx.strokeRect(-28,-5,22,60);
+  ctx.strokeRect(6,-5,22,60);
+
+  // Ботинки
+  ctx.fillStyle='#3a2010';
+  ctx.beginPath();
+  ctx.roundRect(-32,50,30,18,4);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.roundRect(2,50,30,18,4);
+  ctx.fill();
+
+  // Торс (рубашка)
+  const bodyG=ctx.createLinearGradient(-50,-80,50,0);
+  bodyG.addColorStop(0,'#f0f0f0');
+  bodyG.addColorStop(.5,'#e8e8e8');
+  bodyG.addColorStop(1,'#c8c8c8');
+  ctx.fillStyle=bodyG;
+  ctx.beginPath();
+  ctx.moveTo(-45,0);
+  ctx.quadraticCurveTo(-52,-50,-35,-75);
+  ctx.lineTo(35,-75);
+  ctx.quadraticCurveTo(52,-50,45,0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle='#888';
+  ctx.lineWidth=2.5;
+  ctx.stroke();
+
+  // Пуговицы
+  ctx.fillStyle='#666';
+  for(let i=0;i<3;i++){
+    ctx.beginPath();
+    ctx.arc(0,-15-i*20,3,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // Пояс
+  ctx.fillStyle='#5d4037';
+  ctx.fillRect(-45,-5,90,12);
+  ctx.strokeStyle='#3a2010';
+  ctx.lineWidth=2;
+  ctx.strokeRect(-45,-5,90,12);
+
+  // Пряжка
+  ctx.fillStyle='#ffd700';
+  ctx.fillRect(-8,-8,16,18);
+  ctx.strokeStyle='#8a6400';
+  ctx.lineWidth=2;
+  ctx.strokeRect(-8,-8,16,18);
+
+  // Левая рука (машет)
+  ctx.save();
+  ctx.translate(-45,-55);
+  ctx.rotate(-.3+wave*0.01);
+  ctx.fillStyle='#f0d0b0';
+  ctx.beginPath();
+  ctx.ellipse(0,0,14,26,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='#8a6a4a';
+  ctx.lineWidth=2;
+  ctx.stroke();
+  // Пальцы
+  for(let i=0;i<4;i++){
+    ctx.beginPath();
+    ctx.ellipse(-5+i*4,-28,4,7,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Правая рука
+  ctx.save();
+  ctx.translate(45,-55);
+  ctx.rotate(.3-wave*0.01);
+  ctx.fillStyle='#f0d0b0';
+  ctx.beginPath();
+  ctx.ellipse(0,0,14,26,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='#8a6a4a';
+  ctx.lineWidth=2;
+  ctx.stroke();
+  for(let i=0;i<4;i++){
+    ctx.beginPath();
+    ctx.ellipse(5-i*4,-28,4,7,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Шея
+  ctx.fillStyle='#f0d0b0';
+  ctx.fillRect(-12,-88,24,15);
+
+  // ГОЛОВА
+  const headG=ctx.createRadialGradient(-8,-125,5,0,-115,45);
+  headG.addColorStop(0,'#ffe0c0');
+  headG.addColorStop(.6,'#f0d0b0');
+  headG.addColorStop(1,'#d0b090');
+  ctx.fillStyle=headG;
+  ctx.beginPath();
+  ctx.arc(0,-115,38,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='#8a6a4a';
+  ctx.lineWidth=2.5;
+  ctx.stroke();
+
+  // Уши
+  ctx.fillStyle='#f0d0b0';
+  ctx.beginPath();
+  ctx.ellipse(-38,-115,8,12,0,0,Math.PI*2);
+  ctx.ellipse(38,-115,8,12,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='#8a6a4a';
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  // БОРОДА
+  const beardG=ctx.createRadialGradient(0,-95,5,0,-75,50);
+  beardG.addColorStop(0,'#e0b080');
+  beardG.addColorStop(.5,'#c89060');
+  beardG.addColorStop(1,'#a06840');
+  ctx.fillStyle=beardG;
+  ctx.beginPath();
+  ctx.moveTo(-32,-95);
+  ctx.quadraticCurveTo(-35,-50,0,-45);
+  ctx.quadraticCurveTo(35,-50,32,-95);
+  ctx.quadraticCurveTo(20,-90,0,-88);
+  ctx.quadraticCurveTo(-20,-90,-32,-95);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle='#8a5030';
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  // Усы
+  ctx.fillStyle='#d0a070';
+  ctx.beginPath();
+  ctx.ellipse(-15,-98,12,5,-.2,0,Math.PI*2);
+  ctx.ellipse(15,-98,12,5,.2,0,Math.PI*2);
+  ctx.fill();
+
+  // Брови
+  ctx.fillStyle='#a06830';
+  ctx.beginPath();
+  ctx.ellipse(-14,-128,12,5,-.1,0,Math.PI*2);
+  ctx.ellipse(14,-128,12,5,.1,0,Math.PI*2);
+  ctx.fill();
+
+  // ГЛАЗА
+  ctx.fillStyle='#fff';
+  ctx.beginPath();
+  ctx.arc(-14,-117,10,0,Math.PI*2);
+  ctx.arc(14,-117,10,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='#333';
+  ctx.lineWidth=1.5;
+  ctx.stroke();
+
+  // Зрачки следят за курсором
+  const lookX=clamp((S.cursorX-x)/40,-2,2);
+  const lookY=clamp((S.cursorY-y)/40,-2,2);
+  ctx.fillStyle='#000';
+  ctx.beginPath();
+  ctx.arc(-14+lookX,-117+lookY,5,0,Math.PI*2);
+  ctx.arc(14+lookX,-117+lookY,5,0,Math.PI*2);
+  ctx.fill();
+
+  // Блики
+  ctx.fillStyle='#fff';
+  ctx.beginPath();
+  ctx.arc(-16+lookX,-119+lookY,2,0,Math.PI*2);
+  ctx.arc(12+lookX,-119+lookY,2,0,Math.PI*2);
+  ctx.fill();
+
+  // Нос
+  ctx.fillStyle='#e0b090';
+  ctx.beginPath();
+  ctx.ellipse(0,-105,8,10,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='#8a6a4a';
+  ctx.lineWidth=1.5;
+  ctx.stroke();
+
+  // Рот (улыбка)
+  ctx.strokeStyle='#5a3010';
+  ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.arc(0,-90,10,.15,Math.PI-.15);
+  ctx.stroke();
+
+  // КАСТРЮЛЯ НА ГОЛОВЕ
+  const potG=ctx.createLinearGradient(-42,-160,42,-140);
+  potG.addColorStop(0,'#888');
+  potG.addColorStop(.3,'#c8c8c8');
+  potG.addColorStop(.6,'#a0a0a0');
+  potG.addColorStop(1,'#606060');
+  ctx.fillStyle=potG;
+  ctx.beginPath();
+  ctx.arc(0,-150,42,Math.PI,0);
+  ctx.lineTo(42,-145);
+  ctx.lineTo(-42,-145);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle='#444';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  // Блик на кастрюле
+  ctx.fillStyle='rgba(255,255,255,.5)';
+  ctx.beginPath();
+  ctx.ellipse(-15,-158,10,7,-.5,0,Math.PI*2);
+  ctx.fill();
+
+  // Обод кастрюли
+  ctx.fillStyle='#777';
+  ctx.fillRect(-42,-148,84,6);
+  ctx.strokeStyle='#333';
+  ctx.lineWidth=2;
+  ctx.strokeRect(-42,-148,84,6);
+
+  // Ручка кастрюли
+  ctx.fillStyle='#666';
+  ctx.beginPath();
+  ctx.roundRect(-52,-165,20,7,3);
+  ctx.fill();
+  ctx.strokeStyle='#333';
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+// ============================================================
+// ПУЗЫРЬ РЕЧИ
+// ============================================================
+function drawSpeechBubble(x,y,text){
+  ctx.font='bold 20px Trebuchet MS, Arial';
+  const metrics=ctx.measureText(text);
+  const tw=Math.max(metrics.width+50,280);
+  const th=70;
+  const bx=x-tw/2;
+  const by=y-th;
+
+  // Тень
+  ctx.fillStyle='rgba(0,0,0,.3)';
+  ctx.beginPath();
+  ctx.roundRect(bx+5,by+5,tw,th,20);
+  ctx.fill();
+
+  // Пузырь
+  const bg=ctx.createLinearGradient(bx,by,bx,by+th);
+  bg.addColorStop(0,'#fff');
+  bg.addColorStop(1,'#f0f0f0');
+  ctx.fillStyle=bg;
+  ctx.beginPath();
+  ctx.roundRect(bx,by,tw,th,20);
+  ctx.fill();
+  ctx.strokeStyle='#333';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  // Хвостик
+  ctx.fillStyle='#fff';
+  ctx.beginPath();
+  ctx.moveTo(x-15,by+th-5);
+  ctx.lineTo(x,by+th+30);
+  ctx.lineTo(x+15,by+th-5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle='#333';
+  ctx.beginPath();
+  ctx.moveTo(x-15,by+th-5);
+  ctx.lineTo(x,by+th+30);
+  ctx.lineTo(x+15,by+th-5);
+  ctx.stroke();
+
+  // Текст
+  ctx.fillStyle='#000';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(text,x,by+th/2);
+}
+
+// ============================================================
+// КАРТОЧКИ ТОВАРОВ
+// ============================================================
+function drawShopCards(){
+  const page=SHOP_PAGES[S.shopPage]||[];
+  const startX=W/2-280;
+  const startY=180;
+  const cardW=560;
+  const cardH=110;
+  const gapY=18;
+
+  S.shopCards=[];
+
+  for(let i=0;i<page.length;i++){
+    const item=page[i];
+    const ix=startX;
+    const iy=startY+i*(cardH+gapY);
+    const iw=cardW;
+    const ih=cardH;
+
+    let owned=false;
+    if(item.type==='plant')owned=S.ownedPlants.includes(item.plantId);
+    else if(item.type==='item')owned=S.ownedItems.includes(item.id);
+    else if(item.type==='upgrade'&&item.isSlot)owned=S.extraSlots>=(item.slotIdx||1);
+    else if(item.type==='upgrade'&&item.isIronSpike)owned=S.ownedItems.includes('spikeweed_iron');
+
+    const canAfford=S.coins>=item.price;
+    S.shopCards.push({x:ix,y:iy,w:iw,h:ih,item:item,owned:owned,canAfford:canAfford});
+
+    const cardHover=S.cursorX>=ix&&S.cursorX<=ix+iw&&S.cursorY>=iy&&S.cursorY<=iy+ih;
+
+    // Тень карточки
+    ctx.fillStyle='rgba(0,0,0,.35)';
+    ctx.beginPath();
+    ctx.roundRect(ix+5,iy+6,iw,ih,15);
+    ctx.fill();
+
+    // Основной фон
+    const bg=ctx.createLinearGradient(ix,iy,ix,iy+ih);
+    if(owned){
+      bg.addColorStop(0,'rgba(100,180,100,.95)');
+      bg.addColorStop(1,'rgba(60,120,60,.95)');
+    }else if(cardHover){
+      bg.addColorStop(0,'#fffde7');
+      bg.addColorStop(1,'#ffe082');
+    }else{
+      bg.addColorStop(0,'#fffef8');
+      bg.addColorStop(.5,'#f5e8c8');
+      bg.addColorStop(1,'#e0d0a0');
+    }
+    ctx.fillStyle=bg;
+    ctx.beginPath();
+    ctx.roundRect(ix,iy,iw,ih,15);
+    ctx.fill();
+
+    // Обводка
+    ctx.strokeStyle=owned?'#2e7d32':(cardHover?'#ffd700':'#8b5a2b');
+    ctx.lineWidth=cardHover?4:3;
+    ctx.stroke();
+
+    // Внутренняя золотая рамка (если можно купить и не куплено)
+    if(!owned&&canAfford){
+      ctx.strokeStyle='rgba(255,215,0,.5)';
+      ctx.lineWidth=1.5;
+      ctx.beginPath();
+      ctx.roundRect(ix+6,iy+6,iw-12,ih-12,10);
+      ctx.stroke();
+    }
+
+    // ИКОНКА — круглая рамка
+    const iconX=ix+70;
+    const iconY=iy+ih/2;
+    const iconR=42;
+
+    // Круглая подложка
+    const circleG=ctx.createRadialGradient(iconX-10,iconY-10,5,iconX,iconY,iconR);
+    if(owned){
+      circleG.addColorStop(0,'#c8e6c9');
+      circleG.addColorStop(1,'#4caf50');
+    }else{
+      circleG.addColorStop(0,'#fff9c4');
+      circleG.addColorStop(.7,'#ffd54f');
+      circleG.addColorStop(1,'#f9a825');
+    }
+    ctx.fillStyle=circleG;
+    ctx.beginPath();
+    ctx.arc(iconX,iconY,iconR,0,Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle=owned?'#1b5e20':'#8a6400';
+    ctx.lineWidth=3;
+    ctx.stroke();
+
+    // Растение или иконка
+    if(item.type==='plant'&&ALL_PLANTS[item.plantId]){
+      ctx.save();
+      ctx.translate(iconX,iconY+10);
+      ctx.scale(.75,.75);
+      drawPlant(item.plantId,0,0,S.time,1,null);
+      ctx.restore();
+    }else if(item.icon){
+      ctx.font='bold 48px Arial';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(item.icon,iconX,iconY);
+    }
+
+    // НАЗВАНИЕ
+    ctx.textAlign='left';
+    ctx.textBaseline='middle';
+    ctx.font='bold 22px Impact, Arial Black, sans-serif';
+    ctx.fillStyle=owned?'#1b5e20':'#3e2723';
+    ctx.fillText(item.name,ix+130,iy+32);
+
+    // ОПИСАНИЕ
+    ctx.font='italic 15px Trebuchet MS, Arial';
+    ctx.fillStyle=owned?'#2e7d32':'#5d4037';
+    ctx.fillText(item.desc,ix+130,iy+60);
+
+    // ЦЕНА
+    if(owned){
+      // Галочка "КУПЛЕНО"
+      ctx.fillStyle='#1b5e20';
+      ctx.font='bold 22px Impact, Arial Black, sans-serif';
+      ctx.textAlign='right';
+      ctx.fillText('✓ КУПЛЕНО',ix+iw-25,iy+ih/2);
+    }else{
+      // Монетка + цена
+      const priceX=ix+iw-180;
+      const priceY=iy+ih/2;
+
+      // Монетка
+      const coinG=ctx.createRadialGradient(priceX-3,priceY-3,3,priceX,priceY,18);
+      coinG.addColorStop(0,'#fff59d');
+      coinG.addColorStop(.5,'#ffd700');
+      coinG.addColorStop(1,'#b8860b');
+      ctx.fillStyle=coinG;
+      ctx.beginPath();
+      ctx.arc(priceX,priceY,18,0,Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle=canAfford?'#8a6400':'#5a0000';
+      ctx.lineWidth=2;
+      ctx.stroke();
+      ctx.fillStyle='#8a6400';
+      ctx.font='bold 18px Arial';
+      ctx.textAlign='center';
+      ctx.fillText('$',priceX,priceY+1);
+
+      // Цена
+      ctx.textAlign='left';
+      ctx.font='bold 24px Impact, Arial Black, sans-serif';
+      ctx.fillStyle=canAfford?'#8a6400':'#a02020';
+      ctx.fillText(item.price,priceX+25,priceY+2);
+
+      // Кнопка "КУПИТЬ" если можно
+      if(cardHover&&canAfford){
+        ctx.fillStyle='rgba(76,175,80,.95)';
+        ctx.beginPath();
+        ctx.roundRect(ix+iw-70,iy+ih-35,60,28,6);
+        ctx.fill();
+        ctx.strokeStyle='#2e7d32';
+        ctx.lineWidth=2;
+        ctx.stroke();
+        ctx.fillStyle='#fff';
+        ctx.font='bold 12px Arial';
+        ctx.textAlign='center';
+        ctx.fillText('КУПИТЬ',ix+iw-40,iy+ih-20);
+      }
+    }
+  }
+}
+
+// ============================================================
+// КНОПКА СБРОСА РАСТЕНИЙ
+// ============================================================
+function drawShopResetBtn(){
+  const bx=180;
+  const by=20;
+  const bw=190;
+  const bh=55;
+  const hover=S.cursorX>=bx&&S.cursorX<=bx+bw&&S.cursorY>=by&&S.cursorY<=by+bh;
+
+  const bg=ctx.createLinearGradient(0,by,0,by+bh);
+  if(hover){bg.addColorStop(0,'#ef5350');bg.addColorStop(1,'#c62828');}
+  else{bg.addColorStop(0,'#e53935');bg.addColorStop(1,'#8a1a1a');}
+  ctx.fillStyle=bg;
+  ctx.beginPath();
+  ctx.roundRect(bx,by,bw,bh,12);
+  ctx.fill();
+  ctx.strokeStyle='#5a0000';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  // Блик
+  ctx.fillStyle='rgba(255,255,255,.2)';
+  ctx.beginPath();
+  ctx.roundRect(bx+6,by+6,bw-12,bh/2-6,8);
+  ctx.fill();
+
+  ctx.fillStyle='#fff';
+  ctx.font='bold 16px Impact, Arial Black, sans-serif';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('🔄 СБРОС РАСТЕНИЙ',bx+bw/2,by+bh/2);
+
+  S.resetPlantsBtn={x:bx,y:by,w:bw,h:bh};
+}
+
+// ============================================================
+// НАВИГАЦИЯ МАГАЗИНА
+// ============================================================
+function drawShopNav(){
+  const btnW=180;
+  const btnH=70;
+  const btnY=H-95;
+  const prevX=W/2-btnW-20;
+  const nextX=W/2+20;
+
+  // ПРЕД
+  const prevHover=S.cursorX>=prevX&&S.cursorX<=prevX+btnW&&S.cursorY>=btnY&&S.cursorY<=btnY+btnH;
+  const prevBg=ctx.createLinearGradient(0,btnY,0,btnY+btnH);
+  if(prevHover){prevBg.addColorStop(0,'#ef5350');prevBg.addColorStop(1,'#c62828');}
+  else{prevBg.addColorStop(0,'#e53935');prevBg.addColorStop(1,'#8a1a1a');}
+  ctx.fillStyle=prevBg;
+  ctx.beginPath();
+  ctx.roundRect(prevX,btnY,btnW,btnH,14);
+  ctx.fill();
+  ctx.strokeStyle='#5a0000';
+  ctx.lineWidth=4;
+  ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.2)';
+  ctx.beginPath();
+  ctx.roundRect(prevX+6,btnY+6,btnW-12,btnH/2-6,10);
+  ctx.fill();
+  ctx.fillStyle='#fff';
+  ctx.font='bold 28px Impact, Arial Black, sans-serif';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('◄ НАЗАД',prevX+btnW/2,btnY+btnH/2);
+  S.shopPageBtns.prev={x:prevX,y:btnY,w:btnW,h:btnH};
+
+  // СЛЕД
+  const nextHover=S.cursorX>=nextX&&S.cursorX<=nextX+btnW&&S.cursorY>=btnY&&S.cursorY<=btnY+btnH;
+  const nextBg=ctx.createLinearGradient(0,btnY,0,btnY+btnH);
+  if(nextHover){nextBg.addColorStop(0,'#66bb6a');nextBg.addColorStop(1,'#2e7d32');}
+  else{nextBg.addColorStop(0,'#4caf50');nextBg.addColorStop(1,'#1b5e20');}
+  ctx.fillStyle=nextBg;
+  ctx.beginPath();
+  ctx.roundRect(nextX,btnY,btnW,btnH,14);
+  ctx.fill();
+  ctx.strokeStyle='#1b5e20';
+  ctx.lineWidth=4;
+  ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.2)';
+  ctx.beginPath();
+  ctx.roundRect(nextX+6,btnY+6,btnW-12,btnH/2-6,10);
+  ctx.fill();
+  ctx.fillStyle='#fff';
+  ctx.font='bold 28px Impact, Arial Black, sans-serif';
+  ctx.fillText('ВПЕРЁД ►',nextX+btnW/2,btnY+btnH/2);
+  S.shopPageBtns.next={x:nextX,y:btnY,w:btnW,h:btnH};
+
+  // Индикатор страниц (точки)
+  const dotsY=btnY-25;
+  const dotsX=W/2;
+  for(let i=0;i<SHOP_PAGES.length;i++){
+    const dx=dotsX-(SHOP_PAGES.length-1)*15/2+i*15;
+    ctx.fillStyle=i===S.shopPage?'#ffd700':'rgba(255,255,255,.4)';
+    ctx.beginPath();
+    ctx.arc(dx,dotsY,i===S.shopPage?8:6,0,Math.PI*2);
+    ctx.fill();
+    if(i===S.shopPage){
+      ctx.strokeStyle='#8a6400';
+      ctx.lineWidth=2;
+      ctx.stroke();
+    }
+  }
+}
+
+// ============================================================
+// ДЕРЕВО МУДРОСТИ — КРАСИВОЕ
+// ============================================================
+let treeAnim=0;
+
+function drawTreeScreen(){
+  treeAnim+=0.02;
+
+  // Небо (градиент)
+  const sky=ctx.createLinearGradient(0,0,0,H*0.7);
+  sky.addColorStop(0,'#4a90d9');
+  sky.addColorStop(.3,'#7ab8e8');
+  sky.addColorStop(.6,'#b8d8f0');
+  sky.addColorStop(1,'#e0eef8');
+  ctx.fillStyle=sky;
+  ctx.fillRect(0,0,W,H);
+
+  // Солнце
+  const sunX=W-180;
+  const sunY=100;
+  const sunHalo=ctx.createRadialGradient(sunX,sunY,20,sunX,sunY,160);
+  sunHalo.addColorStop(0,'rgba(255,250,200,.9)');
+  sunHalo.addColorStop(.4,'rgba(255,230,150,.4)');
+  sunHalo.addColorStop(1,'rgba(255,230,150,0)');
+  ctx.fillStyle=sunHalo;
+  ctx.beginPath();
+  ctx.arc(sunX,sunY,160,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#fff8c4';
+  ctx.beginPath();
+  ctx.arc(sunX,sunY,48,0,Math.PI*2);
+  ctx.fill();
+
+  // Облака
+  for(let i=0;i<3;i++){
+    const cx=150+i*380+Math.sin(treeAnim*0.5+i)*20;
+    const cy=70+i*20;
+    ctx.fillStyle='rgba(255,255,255,.7)';
+    ctx.beginPath();
+    ctx.arc(cx,cy,35,0,Math.PI*2);
+    ctx.arc(cx+35,cy-12,45,0,Math.PI*2);
+    ctx.arc(cx+80,cy,35,0,Math.PI*2);
+    ctx.arc(cx+45,cy+15,32,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // Дальние холмы
+  ctx.fillStyle='rgba(120,180,100,.5)';
+  ctx.beginPath();
+  ctx.moveTo(0,H-200);
+  for(let x=0;x<=W;x+=50){
+    const h=H-200-Math.sin(x*0.005)*60-Math.cos(x*0.01)*30;
+    ctx.lineTo(x,h);
+  }
+  ctx.lineTo(W,H);
+  ctx.lineTo(0,H);
+  ctx.closePath();
+  ctx.fill();
+
+  // Земля
+  const groundY=H-200;
+  const groundG=ctx.createLinearGradient(0,groundY,0,H);
+  groundG.addColorStop(0,'#7cb342');
+  groundG.addColorStop(.3,'#689f38');
+  groundG.addColorStop(1,'#33691e');
+  ctx.fillStyle=groundG;
+  ctx.fillRect(0,groundY,W,H-groundY);
+
+  // Травинки
+  for(let i=0;i<150;i++){
+    const gx=(i*17)%W;
+    const gy=groundY+5+(i*11)%(H-groundY-15);
+    const gh=5+((i*3)%7);
+    ctx.strokeStyle=i%2===0?'rgba(40,80,20,.6)':'rgba(180,220,120,.5)';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(gx,gy);
+    ctx.lineTo(gx+1,gy-gh);
+    ctx.stroke();
+  }
+
+  // Цветочки
+  for(let i=0;i<12;i++){
+    const fx=50+i*100+Math.sin(i*1.5)*20;
+    const fy=groundY+40+(i%3)*30;
+    ctx.fillStyle=['#ff5252','#ffeb3b','#ff80ab','#ba68c8'][i%4];
+    for(let j=0;j<5;j++){
+      const a=j*Math.PI*2/5+treeAnim;
+      ctx.beginPath();
+      ctx.arc(fx+Math.cos(a)*5,fy+Math.sin(a)*5,4,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.fillStyle='#ffd700';
+    ctx.beginPath();
+    ctx.arc(fx,fy,3,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // ЗАГОЛОВОК
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.font='bold 52px Impact, Arial Black, sans-serif';
+  ctx.strokeStyle='#000';
+  ctx.lineWidth=8;
+  ctx.strokeText('🌳 ДЕРЕВО МУДРОСТИ 🌳',W/2,50);
+  const tg=ctx.createLinearGradient(0,20,0,80);
+  tg.addColorStop(0,'#ffffff');
+  tg.addColorStop(.5,'#a5d66a');
+  tg.addColorStop(1,'#2e7d32');
+  ctx.fillStyle=tg;
+  ctx.fillText('🌳 ДЕРЕВО МУДРОСТИ 🌳',W/2,50);
+
+  // ДЕРЕВО в центре
+  drawTreeCanvas(W/2,H-120,S.treeLevel,1);
+
+  // ЛЕВАЯ ПАНЕЛЬ
+  drawTreeLeftPanel();
+
+  // ПРАВАЯ ПАНЕЛЬ
+  drawTreeRightPanel();
+
+  // Совет над деревом
+  drawTreeTip();
+
+  // Кнопка назад
+  drawBackBtn(20,H-80,140,55);
+}
+
+// ============================================================
+// ЛЕВАЯ ПАНЕЛЬ (УРОВЕНЬ)
+// ============================================================
+function drawTreeLeftPanel(){
+  const px=30;
+  const py=110;
+  const pw=260;
+  const ph=320;
+
+  // Тень
+  ctx.fillStyle='rgba(0,0,0,.4)';
+  ctx.beginPath();
+  ctx.roundRect(px+6,py+8,pw,ph,20);
+  ctx.fill();
+
+  // Основа
+  const bg=ctx.createLinearGradient(px,py,px,py+ph);
+  bg.addColorStop(0,'#5d4037');
+  bg.addColorStop(.3,'#4a3020');
+  bg.addColorStop(1,'#2a1a10');
+  ctx.fillStyle=bg;
+  ctx.beginPath();
+  ctx.roundRect(px,py,pw,ph,20);
+  ctx.fill();
+  ctx.strokeStyle='#8b5a2b';
+  ctx.lineWidth=5;
+  ctx.stroke();
+
+  // Внутренняя рамка
+  ctx.strokeStyle='rgba(255,215,0,.3)';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.roundRect(px+10,py+10,pw-20,ph-20,14);
+  ctx.stroke();
+
+  // Заголовок
+  ctx.font='bold 26px Impact, Arial Black, sans-serif';
+  ctx.fillStyle='#ffd700';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('УРОВЕНЬ',px+pw/2,py+35);
+
+  // Большое число
+  ctx.font='bold 96px Impact, Arial Black, sans-serif';
+  ctx.strokeStyle='#000';
+  ctx.lineWidth=8;
+  ctx.strokeText(S.treeLevel,px+pw/2,py+130);
+  const numGrad=ctx.createLinearGradient(0,py+80,0,py+180);
+  numGrad.addColorStop(0,'#fff59d');
+  numGrad.addColorStop(.5,'#ffd700');
+  numGrad.addColorStop(1,'#b8860b');
+  ctx.fillStyle=numGrad;
+  ctx.fillText(S.treeLevel,px+pw/2,py+130);
+
+  // Прогресс
+  ctx.font='bold 18px Arial';
+  ctx.fillStyle='#fff';
+  ctx.fillText('💧 Прогресс поливки',px+pw/2,py+185);
+
+  const barW=pw-50;
+  const barH=32;
+  const barX=px+25;
+  const barY=py+205;
+
+  // Фон бара
+  ctx.fillStyle='rgba(0,0,0,.6)';
+  ctx.beginPath();
+  ctx.roundRect(barX,barY,barW,barH,10);
+  ctx.fill();
+  ctx.strokeStyle='#4fc3f7';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  // Заполнение
+  const progress=clamp(S.treeWater/S.treeWaterNeeded,0,1);
+  if(progress>0){
+    const fillG=ctx.createLinearGradient(barX,0,barX+barW*progress,0);
+    fillG.addColorStop(0,'#4fc3f7');
+    fillG.addColorStop(.5,'#29b6f6');
+    fillG.addColorStop(1,'#0288d1');
+    ctx.fillStyle=fillG;
+    ctx.beginPath();
+    ctx.roundRect(barX+3,barY+3,(barW-6)*progress,barH-6,8);
+    ctx.fill();
+
+    // Блик
+    ctx.fillStyle='rgba(255,255,255,.3)';
+    ctx.beginPath();
+    ctx.roundRect(barX+3,barY+3,(barW-6)*progress,10,8);
+    ctx.fill();
+  }
+
+  // Текст на баре
+  ctx.font='bold 18px Impact, Arial Black, sans-serif';
+  ctx.fillStyle='#fff';
+  ctx.strokeStyle='#000';
+  ctx.lineWidth=3;
+  ctx.strokeText(S.treeWater+' / '+S.treeWaterNeeded,px+pw/2,barY+barH/2);
+  ctx.fillText(S.treeWater+' / '+S.treeWaterNeeded,px+pw/2,barY+barH/2);
+
+  // КНОПКА ПОЛИТЬ
+  const btnX=px+25;
+  const btnY=py+255;
+  const btnW=pw-50;
+  const btnH=50;
+
+  if(S.treeWater>0){
+    const hover=S.cursorX>=btnX&&S.cursorX<=btnX+btnW&&S.cursorY>=btnY&&S.cursorY<=btnY+btnH;
+
+    // Тень
+    ctx.fillStyle='rgba(0,0,0,.4)';
+    ctx.beginPath();
+    ctx.roundRect(btnX+4,btnY+4,btnW,btnH,12);
+    ctx.fill();
+
+    // Кнопка
+    const bg2=ctx.createLinearGradient(0,btnY,0,btnY+btnH);
+    if(hover){bg2.addColorStop(0,'#66bb6a');bg2.addColorStop(1,'#2e7d32');}
+    else{bg2.addColorStop(0,'#4caf50');bg2.addColorStop(1,'#1b5e20');}
+    ctx.fillStyle=bg2;
+    ctx.beginPath();
+    ctx.roundRect(btnX,btnY,btnW,btnH,12);
+    ctx.fill();
+    ctx.strokeStyle='#1b5e20';
+    ctx.lineWidth=3;
+    ctx.stroke();
+
+    // Блик
+    ctx.fillStyle='rgba(255,255,255,.25)';
+    ctx.beginPath();
+    ctx.roundRect(btnX+6,btnY+6,btnW-12,btnH/2-6,8);
+    ctx.fill();
+
+    // Текст
+    ctx.fillStyle='#fff';
+    ctx.font='bold 22px Impact, Arial Black, sans-serif';
+    ctx.strokeStyle='#000';
+    ctx.lineWidth=3;
+    ctx.strokeText('💧 ПОЛИТЬ',btnX+btnW/2,btnY+btnH/2);
+    ctx.fillText('💧 ПОЛИТЬ',btnX+btnW/2,btnY+btnH/2);
+
+    S.treeWaterBtn={x:btnX,y:btnY,w:btnW,h:btnH};
+  }else{
+    // Заблокированная кнопка
+    ctx.fillStyle='rgba(60,60,60,.8)';
+    ctx.beginPath();
+    ctx.roundRect(btnX,btnY,btnW,btnH,12);
+    ctx.fill();
+    ctx.strokeStyle='#333';
+    ctx.lineWidth=3;
+    ctx.stroke();
+    ctx.fillStyle='#888';
+    ctx.font='bold 20px Impact, Arial Black, sans-serif';
+    ctx.fillText('❌ НЕТ ПОЛИВКИ',btnX+btnW/2,btnY+btnH/2);
+    S.treeWaterBtn=null;
+  }
+}
+
+// ============================================================
+// ПРАВАЯ ПАНЕЛЬ (МАГАЗИН ПОЛИВКИ)
+// ============================================================
+function drawTreeRightPanel(){
+  const px=W-320;
+  const py=110;
+  const pw=290;
+  const ph=420;
+
+  // Тень
+  ctx.fillStyle='rgba(0,0,0,.4)';
+  ctx.beginPath();
+  ctx.roundRect(px+6,py+8,pw,ph,20);
+  ctx.fill();
+
+  // Основа
+  const bg=ctx.createLinearGradient(px,py,px,py+ph);
+  bg.addColorStop(0,'#3a5a8a');
+  bg.addColorStop(.3,'#2a4a70');
+  bg.addColorStop(1,'#1a2a40');
+  ctx.fillStyle=bg;
+  ctx.beginPath();
+  ctx.roundRect(px,py,pw,ph,20);
+  ctx.fill();
+  ctx.strokeStyle='#4fc3f7';
+  ctx.lineWidth=5;
+  ctx.stroke();
+
+  // Внутренняя рамка
+  ctx.strokeStyle='rgba(79,195,247,.3)';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.roundRect(px+10,py+10,pw-20,ph-20,14);
+  ctx.stroke();
+
+  // Заголовок
+  ctx.font='bold 22px Impact, Arial Black, sans-serif';
+  ctx.fillStyle='#4fc3f7';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('💧 КУПИТЬ ПОЛИВКУ',px+pw/2,py+30);
+
+  // Баланс монет
+  ctx.font='bold 18px Arial';
+  ctx.fillStyle='#ffd700';
+  ctx.fillText('💰 '+S.coins,px+pw/2,py+60);
+
+  const waterPacks=[
+    {count:1,price:250},
+    {count:5,price:1000},
+    {count:20,price:3500},
+    {count:100,price:15000}
+  ];
+
+  S.treeShopRects=[];
+
+  for(let i=0;i<waterPacks.length;i++){
+    const wp=waterPacks[i];
+    const bx=px+20;
+    const by=py+85+i*80;
+    const bw=pw-40;
+    const bh=68;
+
+    const canAfford=S.coins>=wp.price;
+    const hover=S.cursorX>=bx&&S.cursorX<=bx+bw&&S.cursorY>=by&&S.cursorY<=by+bh;
+
+    // Тень
+    ctx.fillStyle='rgba(0,0,0,.4)';
+    ctx.beginPath();
+    ctx.roundRect(bx+4,by+4,bw,bh,12);
+    ctx.fill();
+
+    // Фон
+    const bg2=ctx.createLinearGradient(0,by,0,by+bh);
+    if(!canAfford){bg2.addColorStop(0,'#444');bg2.addColorStop(1,'#222');}
+    else if(hover){bg2.addColorStop(0,'#66d9ff');bg2.addColorStop(1,'#0288d1');}
+    else{bg2.addColorStop(0,'#4fc3f7');bg2.addColorStop(1,'#1565c0');}
+    ctx.fillStyle=bg2;
+    ctx.beginPath();
+    ctx.roundRect(bx,by,bw,bh,12);
+    ctx.fill();
+    ctx.strokeStyle=canAfford?(hover?'#ffd700':'#01579b'):'#222';
+    ctx.lineWidth=3;
+    ctx.stroke();
+
+    // Блик
+    if(canAfford){
+      ctx.fillStyle='rgba(255,255,255,.25)';
+      ctx.beginPath();
+      ctx.roundRect(bx+6,by+6,bw-12,bh/2-6,8);
+      ctx.fill();
+    }
+
+    // Иконка капли
+    ctx.font='bold 38px Arial';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillStyle='#fff';
+    ctx.fillText('💧',bx+42,by+bh/2);
+
+    // Количество
+    ctx.textAlign='left';
+    ctx.font='bold 22px Impact, Arial Black, sans-serif';
+    ctx.fillStyle='#fff';
+    ctx.fillText('x'+wp.count,bx+80,by+24);
+
+    // Цена
+    ctx.font='bold 20px Arial';
+    ctx.fillStyle=canAfford?'#ffeb3b':'#aa0000';
+    ctx.fillText('💰 '+wp.price,bx+80,by+48);
+
+    S.treeShopRects.push({pack:wp,x:bx,y:by,w:bw,h:bh,canAfford:canAfford});
+  }
+}
+
+// ============================================================
+// ОТРИСОВКА ДЕРЕВА
+// ============================================================
+function drawTreeCanvas(x,y,level,scale=1){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(scale,scale);
+
+  const levelScale=1+Math.min(level,100)*0.015;
+  ctx.scale(levelScale,levelScale);
+
+  // Тень на земле
+  const shadowG=ctx.createRadialGradient(0,0,20,0,0,120);
+  shadowG.addColorStop(0,'rgba(0,0,0,.5)');
+  shadowG.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=shadowG;
+  ctx.beginPath();
+  ctx.ellipse(0,10,120,25,0,0,Math.PI*2);
+  ctx.fill();
+
+  // Корни
+  ctx.fillStyle='#4e342e';
+  for(let i=0;i<6;i++){
+    const a=Math.PI*(0.15+i*0.14);
+    const rootLen=25+Math.min(level,50)*0.6;
+    const wave=Math.sin(treeAnim*2+i)*3;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.quadraticCurveTo(
+      Math.cos(a)*rootLen*0.5, Math.sin(a)*-5+wave,
+      Math.cos(a)*rootLen, Math.sin(a)*3+wave
+    );
+    ctx.lineTo(Math.cos(a)*rootLen+8, Math.sin(a)*3+3+wave);
+    ctx.quadraticCurveTo(
+      Math.cos(a)*rootLen*0.5+5, Math.sin(a)*-2+wave,
+      8,0
+    );
+    ctx.fill();
+  }
+
+  // СТВОЛ
+  const trunkW=35+Math.min(level,100)*0.5;
+  const trunkH=200+Math.min(level,100)*0.7;
+
+  // Тень ствола
+  ctx.fillStyle='rgba(0,0,0,.3)';
+  ctx.beginPath();
+  ctx.moveTo(-trunkW*0.35+8,10);
+  ctx.lineTo(-trunkW*0.3,-trunkH);
+  ctx.lineTo(trunkW*0.35,-trunkH);
+  ctx.lineTo(trunkW*0.4,10);
+  ctx.closePath();
+  ctx.fill();
+
+  // Основной ствол
+  const trunkG=ctx.createLinearGradient(-trunkW/2,0,trunkW/2,0);
+  trunkG.addColorStop(0,'#3e2723');
+  trunkG.addColorStop(.2,'#5a3a20');
+  trunkG.addColorStop(.5,'#8b5a2b');
+  trunkG.addColorStop(.8,'#5a3a20');
+  trunkG.addColorStop(1,'#3e2723');
+  ctx.fillStyle=trunkG;
+  ctx.beginPath();
+  ctx.moveTo(-trunkW/2,0);
+  ctx.quadraticCurveTo(-trunkW*0.4,-trunkH*0.5,-trunkW*0.3,-trunkH);
+  ctx.lineTo(trunkW*0.3,-trunkH);
+  ctx.quadraticCurveTo(trunkW*0.4,-trunkH*0.5,trunkW/2,0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle='#2d1b12';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  // Текстура коры
+  ctx.strokeStyle='rgba(45,27,18,.5)';
+  ctx.lineWidth=1.5;
+  for(let i=0;i<10;i++){
+    const ty=-trunkH*(0.05+i*0.09);
+    ctx.beginPath();
+    ctx.moveTo(-trunkW*0.3,ty);
+    ctx.quadraticCurveTo(0,ty+6,trunkW*0.3,ty);
+    ctx.stroke();
+  }
+
+  // ВЕТКИ
+  const leafClusters=3+Math.floor(level/10);
+  const leafBaseR=50+Math.min(level,100)*0.6;
+
+  const branches=[
+    {x:-80,y:-trunkH*0.7,r:leafBaseR*0.7},
+    {x:80,y:-trunkH*0.75,r:leafBaseR*0.75},
+    {x:-40,y:-trunkH*0.9,r:leafBaseR*0.85},
+    {x:40,y:-trunkH*0.85,r:leafBaseR*0.9},
+    {x:0,y:-trunkH-40,r:leafBaseR*1.1},
+    {x:-70,y:-trunkH*0.55,r:leafBaseR*0.65},
+    {x:70,y:-trunkH*0.5,r:leafBaseR*0.65}
+  ];
+
+  // Рисуем ветки
+  for(let i=0;i<Math.min(branches.length,leafClusters+2);i++){
+    const b=branches[i];
+    const wave=Math.sin(treeAnim*1.5+i)*2;
+    ctx.strokeStyle='#5d4037';
+    ctx.lineWidth=8-i*0.6;
+    ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(0,-trunkH+30);
+    ctx.quadraticCurveTo(b.x*0.5,-trunkH*0.5+20,b.x,b.y+15+wave);
+    ctx.stroke();
+  }
+
+  // ЛИСТВА — многослойные круги
+  for(let i=0;i<Math.min(branches.length,leafClusters+2);i++){
+    const b=branches[i];
+    const wave=Math.sin(treeAnim*1.5+i)*2;
+    const bx=b.x;
+    const by=b.y+wave;
+
+    // Тёмная основа
+    ctx.fillStyle='#1b5e20';
+    ctx.beginPath();
+    ctx.arc(bx,by,b.r*1.05,0,Math.PI*2);
+    ctx.fill();
+
+    // Основной слой
+    const lg=ctx.createRadialGradient(bx-b.r*0.3,by-b.r*0.3,b.r*0.2,bx,by,b.r);
+    lg.addColorStop(0,'#a5d66a');
+    lg.addColorStop(.3,'#81c784');
+    lg.addColorStop(.6,'#4caf50');
+    lg.addColorStop(.85,'#2e7d32');
+    lg.addColorStop(1,'#1b5e20');
+    ctx.fillStyle=lg;
+    ctx.beginPath();
+    ctx.arc(bx,by,b.r,0,Math.PI*2);
+    ctx.fill();
+
+    // Блики листьев (пузырьки)
+    for(let j=0;j<5;j++){
+      const la=j*1.3+treeAnim+i;
+      const lx=bx+Math.cos(la)*b.r*0.5;
+      const ly=by+Math.sin(la)*b.r*0.5;
+      ctx.fillStyle='rgba(200,240,150,.4)';
+      ctx.beginPath();
+      ctx.arc(lx,ly,b.r*0.15,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    // Блик сверху
+    ctx.fillStyle='rgba(255,255,255,.2)';
+    ctx.beginPath();
+    ctx.ellipse(bx-b.r*0.3,by-b.r*0.4,b.r*0.4,b.r*0.2,-0.5,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // ПЛОДЫ (золотые яблоки) с 10 уровня
+  if(level>=10){
+    const fruitCount=Math.min(Math.floor(level/10),12);
+    for(let i=0;i<fruitCount;i++){
+      const a=(i/fruitCount)*Math.PI*2+treeAnim*0.3;
+      const r=leafBaseR*0.8;
+      const fx=Math.cos(a)*r;
+      const fy=-trunkH*0.7+Math.sin(a)*r*0.6;
+
+      // Свечение
+      const glowG=ctx.createRadialGradient(fx,fy,2,fx,fy,20);
+      glowG.addColorStop(0,'rgba(255,215,0,.6)');
+      glowG.addColorStop(1,'rgba(255,215,0,0)');
+      ctx.fillStyle=glowG;
+      ctx.beginPath();
+      ctx.arc(fx,fy,20,0,Math.PI*2);
+      ctx.fill();
+
+      // Яблоко
+      const appleG=ctx.createRadialGradient(fx-3,fy-3,2,fx,fy,12);
+      appleG.addColorStop(0,'#fff59d');
+      appleG.addColorStop(.5,'#ffd700');
+      appleG.addColorStop(1,'#b8860b');
+      ctx.fillStyle=appleG;
+      ctx.beginPath();
+      ctx.arc(fx,fy,10,0,Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle='#7a5a08';
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+
+      // Блик
+      ctx.fillStyle='rgba(255,255,255,.7)';
+      ctx.beginPath();
+      ctx.arc(fx-3,fy-3,3,0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  // ПАРЯЩИЕ ЛЕПЕСТКИ (эффект для высоких уровней)
+  if(level>=20){
+    for(let i=0;i<5;i++){
+      const a=treeAnim+i*1.2;
+      const px=Math.cos(a)*leafBaseR*1.3;
+      const py=-trunkH*0.7+Math.sin(a*0.7)*leafBaseR*0.8+Math.sin(treeAnim*3+i)*10;
+
+      ctx.fillStyle='rgba(255,235,150,.6)';
+      ctx.beginPath();
+      ctx.ellipse(px,py,4,7,a,0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  ctx.restore();
+}
+
+// ============================================================
+// СОВЕТ НАД ДЕРЕВОМ
+// ============================================================
+function drawTreeTip(){
+  if(!S.treeLastTip||S.time-S.treeLastTip>=4000)return;
+
+  const elapsed=S.time-S.treeLastTip;
+  const alpha=elapsed<300?elapsed/300:(elapsed>3500?(4000-elapsed)/500:1);
+
+  const tipIdx=Math.floor(S.treeLevel*7)%TREE_TIPS.length;
+  const tip=TREE_TIPS[tipIdx];
+
+  ctx.save();
+  ctx.globalAlpha=alpha;
+
+  ctx.font='bold 20px Trebuchet MS, Arial';
+  const metrics=ctx.measureText(tip);
+  const tw=Math.max(metrics.width+50,320);
+  const th=70;
+  const tx=W/2-tw/2;
+  const ty=130;
+
+  // Тень
+  ctx.fillStyle='rgba(0,0,0,.4)';
+  ctx.beginPath();
+  ctx.roundRect(tx+6,ty+6,tw,th,25);
+  ctx.fill();
+
+  // Пузырь
+  const bg=ctx.createLinearGradient(tx,ty,tx,ty+th);
+  bg.addColorStop(0,'#fffde7');
+  bg.addColorStop(1,'#fff9c4');
+  ctx.fillStyle=bg;
+  ctx.beginPath();
+  ctx.roundRect(tx,ty,tw,th,25);
+  ctx.fill();
+  ctx.strokeStyle='#2e7d32';
+  ctx.lineWidth=4;
+  ctx.stroke();
+
+  // Хвостик
+  ctx.fillStyle='#fff9c4';
+  ctx.beginPath();
+  ctx.moveTo(W/2-18,ty+th-5);
+  ctx.lineTo(W/2,ty+th+30);
+  ctx.lineTo(W/2+18,ty+th-5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle='#2e7d32';
+  ctx.lineWidth=4;
+  ctx.beginPath();
+  ctx.moveTo(W/2-18,ty+th-5);
+  ctx.lineTo(W/2,ty+th+30);
+  ctx.lineTo(W/2+18,ty+th-5);
+  ctx.stroke();
+
+  // Текст
+  ctx.fillStyle='#2e7d32';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.font='bold 20px Trebuchet MS, Arial';
+  ctx.fillText(tip,W/2,ty+th/2);
+
+  ctx.restore();
+}
+
+// [КОНЕЦ ЧАСТИ 10.6]
 })();
 </script>
 </body>
