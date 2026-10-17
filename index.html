@@ -8558,13 +8558,32 @@ function loop(now){
     S.time+=dt;
     if(!Number.isFinite(S.time))S.time=0;
 
-    // FPS счётчик
+        // FPS счётчик
     S.fpsFrames++;
     S.fpsTimer+=dt;
     if(S.fpsTimer>=500){
       S.fps=Math.round(S.fpsFrames*1000/S.fpsTimer);
       S.fpsFrames=0;S.fpsTimer=0;
     }
+
+    // Отрисовка FPS (вставь перед render)
+    if(S.showFPS){
+      ctx.save();
+      ctx.setTransform(1,0,0,1,0,0);
+      ctx.fillStyle='rgba(0,0,0,.7)';
+      ctx.beginPath();
+      ctx.roundRect(W-90,H-50,80,32,6);
+      ctx.fill();
+      ctx.strokeStyle='#4fc3f7';ctx.lineWidth=2;ctx.stroke();
+      ctx.fillStyle=S.fps>=50?'#4caf50':S.fps>=30?'#ffeb3b':'#f44336';
+      ctx.font='bold 16px Consolas, monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('FPS '+S.fps,W-50,H-34);
+      ctx.restore();
+    }
+
+    // Вызов отрисовки игры
+    render();
 
     if(S.scene==='playing'&&!S.gameOver)update(dt);
 
