@@ -7892,9 +7892,27 @@ function drawSettings(){
     rowIdx++;
   };
 
-  addToggle('🎵 Музыка',()=>S.musicOn,v=>{S.musicOn=v;Sound.setMusicEnabled(v);saveProgress(true);});
+   addToggle('🎵 Музыка',()=>S.musicOn,v=>{
+    S.musicOn=v;
+    Sound.setMusicEnabled(v);
+    if(v){
+      Sound.init();
+      Sound.resume();
+    }
+    saveProgress(true);
+  });
   addSlider('🔊 Громкость музыки',()=>S.musicVolume,v=>{S.musicVolume=v;Sound.setMusicVolume(v);});
-  addToggle('🔔 Звуки',()=>S.soundOn,v=>{S.soundOn=v;Sound.setSfxEnabled(v);if(v)Sound.play('click');saveProgress(true);});
+    addToggle('🔔 Звуки',()=>S.soundOn,v=>{
+    S.soundOn=v;
+    Sound.setSfxEnabled(v);
+    // Принудительно инициализируем контекст при включении
+    if(v){
+      Sound.init();
+      Sound.resume();
+      Sound.play('click');
+    }
+    saveProgress(true);
+  });
   addSlider('🔊 Громкость звуков',()=>S.soundVolume,v=>{S.soundVolume=v;Sound.setVolume(v);});
   addToggle('📊 Показывать FPS',()=>S.showFPS,v=>{S.showFPS=v;saveProgress(true);});
   addToggle('📏 Показывать сетку',()=>S.showGrid,v=>{S.showGrid=v;bgCacheKey='';saveProgress(true);});
@@ -7977,22 +7995,34 @@ canvas.addEventListener('click',(e)=>{
     const x=p.x;
     const y=p.y;
 
-    // === НАСТРОЙКИ ===
+        // === НАСТРОЙКИ ===
     if(S.scene==='settings'){
       if(S.backBtn&&x>=S.backBtn.x&&x<=S.backBtn.x+S.backBtn.w&&y>=S.backBtn.y&&y<=S.backBtn.y+S.backBtn.h){
         Sound.play('click');
         S.scene='menu';
         return;
       }
+      // Сначала проверяем тумблеры и кнопки
       for(const t of S.settingsToggles){
+        if(!t)continue;
+        
+        // Кнопка "Проверить звук"
         if(t.testSound){
           if(x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h){
+            // Принудительно включаем звук для теста
+            const wasEnabled=Sound.sfxEnabled;
+            Sound.setSfxEnabled(true);
             Sound.play('win');
+            if(!wasEnabled)Sound.setSfxEnabled(S.soundOn);
             return;
           }
           continue;
         }
+        
+        // Слайдеры обрабатываются в mousedown, тут пропускаем
         if(t.slider)continue;
+        
+        // Тумблер
         if(x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h){
           t.action();
           return;
