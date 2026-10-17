@@ -595,6 +595,108 @@ const ACHIEVEMENTS={
 };
 
 // [КОНЕЦ ЧАСТИ 3/13]
+// [КОНЕЦ ЧАСТИ 3/13]
+// ============================================================
+// ЧАСТЬ 4/13 — МАГАЗИН, ФРАЗЫ, МИНИ-ИГРЫ, СОВЕТЫ
+// ============================================================
+
+const SHOP_PAGES=[
+  [
+    {id:'catmushroom',name:'Кошкамыш',price:2500,desc:'Стреляет по воздуху, только на воду',type:'plant',plantId:'cattail',icon:'🐱'},
+    {id:'icemelon',name:'Ледяной арбуз',price:3000,desc:'Замораживает всех в зоне',type:'plant',plantId:'icemelon',icon:'🍉'},
+    {id:'twinsunflower',name:'Двойной подсолнух',price:2000,desc:'2× солнца',type:'plant',plantId:'twinsunflower',icon:'🌻'},
+    {id:'cobcannon',name:'Кукурузная пушка',price:5000,desc:'Занимает 3 клетки, ядерный залп',type:'plant',plantId:'cobcannon',icon:'🌽'}
+  ],
+  [
+    {id:'spikeweed_iron',name:'Железные шипы',price:1500,desc:'Больше урона',type:'upgrade',icon:'⚙️',isIronSpike:true},
+    {id:'gatlingpea_s',name:'Военный горох',price:4000,desc:'4 пули за залп',type:'plant',plantId:'gatlingpea_s',icon:'🔫'},
+    {id:'goldflower',name:'Золотой цветок',price:2500,desc:'Много монет',type:'plant',plantId:'goldflower',icon:'🌼'},
+    {id:'gloomyshroom',name:'Мрачногриб',price:2000,desc:'Урон по площади вокруг',type:'plant',plantId:'gloomyshroom',icon:'🍄'}
+  ],
+  [
+    {id:'glove',name:'Перчатка',price:500,desc:'Перетаскивай растения',type:'item',icon:'🧤',isGlove:true},
+    {id:'rake',name:'Грабли',price:3000,desc:'Убивают 1 зомби',type:'item',icon:'🧹',isRake:true},
+    {id:'extra_slot',name:'+1 слот',price:750,desc:'Больше семян!',type:'upgrade',icon:'📦',isSlot:true,slotIdx:1},
+    {id:'magnet',name:'Магнит',price:800,desc:'Автосбор монет',type:'item',icon:'🧲',isMagnet:true}
+  ],
+  [
+    {id:'slot_2',name:'+1 слот (2)',price:1500,desc:'Ещё один слот',type:'upgrade',icon:'📦',isSlot:true,slotIdx:2},
+    {id:'slot_3',name:'+1 слот (3)',price:3000,desc:'И ещё один!',type:'upgrade',icon:'📦',isSlot:true,slotIdx:3},
+    {id:'slot_4',name:'+1 слот (4)',price:5000,desc:'Почти максимум!',type:'upgrade',icon:'📦',isSlot:true,slotIdx:4},
+    {id:'booster',name:'Ускоритель',price:1000,desc:'x2 скорострельность',type:'item',icon:'⚡',isBooster:true,consumable:true}
+  ],
+  [
+    {id:'watering_1',name:'Поливка x1',price:250,desc:'Полить дерево 1 раз',type:'watering',icon:'💧',wateringCount:1},
+    {id:'watering_5',name:'Поливка x5',price:1000,desc:'5 поливок со скидкой',type:'watering',icon:'💧',wateringCount:5},
+    {id:'watering_20',name:'Поливка x20',price:3500,desc:'20 поливок — выгодно!',type:'watering',icon:'💧',wateringCount:20},
+    {id:'watering_100',name:'Поливка x100',price:15000,desc:'100 поливок — ЭКОНОМИЯ!',type:'watering',icon:'💧',wateringCount:100}
+  ]
+];
+
+const SHOP_PHRASES=[
+  "Купи это! Или я съем твой газон!",
+  "Это выгодная сделка, я гарантирую!",
+  "Купи 2 — получи 3! Почему 3? Потому что!",
+  "Моя бабушка тестировала эти семена!",
+  "Помни: растения — твои друзья!",
+  "Я держу магазин в фургоне. Так удобнее!",
+  "Скидка только сегодня! И вчера! И завтра!",
+  "Грабли! Они работают сами! Магия!",
+  "Хочешь купить — покупай. Хочешь нет — покупай!",
+  "Я не сумасшедший! Я ГЕНИЙ!",
+  "Ледяной арбуз? Он холодный!",
+  "Железные шипы! Острее моих шуток!",
+  "Кошкамыш! Мяу! Мяу! МЯУ!",
+  "Поливай дерево — оно тебе спасибо скажет!",
+  "Монеты с зомби? Это НАЛОГ!",
+  "Собирай монеты, покупай поливку!",
+  "Дерево мудрости растёт бесконечно!",
+  "Чем выше дерево — тем больше наград!"
+];
+
+const MINIGAMES=[
+  {id:'endless',name:'Бесконечный',desc:'Продержись как можно дольше!',icon:'♾️',
+   config:{endless:true,seeds:['peashooter','sunflower','wallnut','snowpea','repeater','cherry']}},
+  {id:'sunny_day',name:'Солнечный день',desc:'Собери 500 солнца',icon:'☀️',
+   config:{sunny:true,seeds:['sunflower','wallnut']}},
+  {id:'zombie_rain',name:'Зомби-дождь',desc:'Зомби падают с неба!',icon:'🌧️',
+   config:{gravity:true,spawnRate:1500,seeds:['peashooter','sunflower','wallnut']}}
+];
+
+const TREE_TIPS=[
+  'Горохострел — основа любой обороны!',
+  'Стенорех даёт время на реакцию.',
+  'Поливай меня, и я дам тебе силу!',
+  'Собирай монеты — они пригодятся!',
+  'Днём работают одни растения, ночью — другие.',
+  'Подсолнух окупается за 3 цикла!',
+  'Лопата убирает растения без штрафа.',
+  'Мрачногриб бьёт по 3 рядам!',
+  'Гипногриб превращает врагов в союзников!',
+  'Гаргантюа бьёт сильно, но медленный.',
+  'Косилка — последняя линия обороны!',
+  'Кофе будит ночные растения днём!',
+  'Шипы атакуют всех зомби на клетке.',
+  'Тыква защищает растение внутри!',
+  'Магнит собирает монеты автоматически!',
+  'Вода — жизнь. Даже для дерева.',
+  'Стань мудрее, поливая меня!',
+  'Дерево мудрости растёт бесконечно!',
+  'Чем выше уровень — тем больше награда!',
+  'Каждый 10-й уровень — новое растение!',
+  'Собирай монеты с зомби — это заработок!',
+  'Горохострел 100 солнца, подсолнух 50!',
+  'Арбуз-пушка бьёт по площади!',
+  'Кукурузная пушка — самая мощная!',
+  'Каждые 5 уровней дерева — бонус монет!',
+  'Зомби с ведром дают серебряную монету!',
+  'Футболист оставляет серебро после смерти!',
+  'Гаргантюа всегда роняет золото!',
+  'Зомбосс — самый дорогой трофей!',
+  'Дерево на 100 уровне — легенда!'
+];
+
+// [КОНЕЦ ЧАСТИ 4/13]
 // [КОНЕЦ ЧАСТИ 4/13]
 // ============================================================
 // ЧАСТЬ 5/13 — ФОНЫ: НЕБО, ДЕРЕВЬЯ, ГАЗОН, ДОРОГА, ДОМ
@@ -5061,1119 +5163,6 @@ function drawGameOverScreen(){
 }
 
 // [КОНЕЦ ЧАСТИ 10/13]
-// [КОНЕЦ ЧАСТИ 11/13]
-// ============================================================
-// ЧАСТЬ 12/13 — UPDATE, МЕХАНИКИ, СПАВН, ЭФФЕКТЫ
-// ============================================================
-
-function triggerExplosion(plant){
-  const def=ALL_PLANTS[plant.type];
-  if(!def)return;
-  const px=cellCX(plant.col);
-  const py=cellCY(plant.row);
-  Sound.play('explosion');
-
-  if(def.freezeAll){
-    let frozenCount=0;
-    for(const z of S.zombies){
-      if(z.hp<=0)continue;
-      z.slowTimer=8000;
-      z.frozenStop=true;
-      setTimeout(()=>{z.frozenStop=false;},8000);
-      frozenCount++;
-    }
-    S.shake=25;
-    S.flash=.6;
-    for(let r=0;r<ROWS;r++){
-      for(let c=0;c<COLS;c++){
-        for(let i=0;i<3;i++)addParticles(cellCX(c),cellCY(r),1,'#4fc3f7',2,800,4);
-      }
-    }
-    if(frozenCount>=20)unlockAchievement('ice_apocalypse');
-    Sound.play('freeze');
-  }else if(def.fullScreen){
-    S.shake=40;
-    S.flash=1;
-    unlockAchievement('nuclear_master');
-    for(const z of S.zombies){
-      if(z.hp<=0)continue;
-      z.hp-=99999;
-      z.hitFlash=300;
-    }
-    S.craters.push({row:plant.row,col:plant.col,x:px,y:py,life:5000,maxLife:5000});
-    addParticles(px,py,60,'#ffffff',10,1000,8);
-    addParticles(px,py,40,'#ff5722',8,900,6);
-  }else if(def.rowOnly){
-    S.shake=25;
-    for(const z of S.zombies){
-      if(z.hp<=0||z.row!==plant.row)continue;
-      z.hp-=def.explode;
-    }
-    for(let c=0;c<COLS;c++)addParticles(cellCX(c),cellCY(plant.row),8,'#ff5722',6,700,5);
-  }else{
-    S.shake=18;
-    const radiusPx=(def.radius||1.7)*CELL_W;
-    for(const z of S.zombies){
-      if(z.hp<=0)continue;
-      const dx=z.x-px;
-      if(Math.abs(dx)<radiusPx&&Math.abs(z.row-plant.row)<=1)z.hp-=def.explode;
-    }
-    for(let i=0;i<25;i++)addParticles(px,py,1,'#ff5722',8,800,6);
-  }
-
-  S.plants=S.plants.filter(p=>p!==plant);
-  rebuildPlantCache();
-}
-
-function explodePotato(plant){
-  S.shake=10;
-  Sound.play('explosion');
-  addParticles(cellCX(plant.col),cellCY(plant.row),20,'#ff5722',6,700,5);
-  for(const z of S.zombies){
-    if(z.hp<=0)continue;
-    if(Math.abs(z.x-cellCX(plant.col))<60&&Math.abs(z.row-plant.row)<1)z.hp-=1800;
-  }
-}
-
-function unlockAchievement(id){
-  if(S.achievements[id]||!ACHIEVEMENTS[id])return false;
-  S.achievements[id]=true;
-  S.achievementQueue.push({id,...ACHIEVEMENTS[id],time:S.time});
-  Sound.play('achievement');
-  return true;
-}
-
-function checkAchievements(){
-  if(S.totalZombiesDead>0)unlockAchievement('first_blood');
-  if(S.totalKillsEver>=100)unlockAchievement('veteran');
-  if(S.totalKillsEver>=500)unlockAchievement('warlord');
-  if(S.sun>=1000)unlockAchievement('sunflower_farm');
-  if(S.unlockedLevels>=20)unlockAchievement('collector');
-  if(S.unlockedLevels>=35)unlockAchievement('master');
-  if(S.garlicPushes>=5)unlockAchievement('garlic_master');
-  if(S.hypnoCount>=10)unlockAchievement('hypno_master');
-  if(S.coins>=5000)unlockAchievement('rich');
-  if(S.coins>=10000)unlockAchievement('millionaire');
-  if(S.ownedPlants.length>=12)unlockAchievement('shopaholic');
-  if(S.ownedPlants.length>=30)unlockAchievement('gardner');
-  if(S.extraSlots>=1)unlockAchievement('slot_master');
-  if(S.rakesUsed>=1)unlockAchievement('rake_user');
-  if(S.zombieCoinsCollected>=100)unlockAchievement('coin_farmer');
-  if(S.zombieCoinsCollected>=1000)unlockAchievement('coin_tycoon');
-  if(S.zombieCoinsCollected>=5000)unlockAchievement('coin_king');
-  if(S.treeLevel>=10)unlockAchievement('tree_10');
-  if(S.treeLevel>=25)unlockAchievement('tree_25');
-  if(S.treeLevel>=50)unlockAchievement('tree_50');
-  if(S.treeLevel>=100)unlockAchievement('tree_100');
-
-  if(S.gameOver&&S.won){
-    const mowersUsed=S.mowers.filter(m=>m.used).length;
-    if(mowersUsed===0)unlockAchievement('no_mowers');
-    if(S.location==='night')unlockAchievement('night_owl');
-    if(S.location==='roof')unlockAchievement('roof_walker');
-    if(S.location==='pool')unlockAchievement('pool_party');
-    if(S.location==='nightpool')unlockAchievement('night_swimmer');
-    if(S.currentLevel.boss==='zomboss')unlockAchievement('boss_slayer');
-    if(S.currentLevel.boss==='gargantuar')unlockAchievement('gargantua_kill');
-    const stars=S.levelStars[S.currentLevel.id]||0;
-    if(stars===3)unlockAchievement('perfectionist');
-    if(S.levelStartTime&&S.time-S.levelStartTime<60000)unlockAchievement('speedrun');
-    if(S.unlockedLevels>=2)unlockAchievement('first_win');
-    if(S.plantedThisLevel===0)unlockAchievement('chill_master');
-    const roofLevels=LEVELS.filter(l=>l.location==='roof');
-    if(roofLevels.every(l=>S.levelStars[l.id]>0))unlockAchievement('perfect_roof');
-  }
-
-  if(S.minigameType&&S.gameOver&&S.won)unlockAchievement('minigame_win');
-  if(S.minigameType==='endless'&&S.currentWave>=10)unlockAchievement('endless_10');
-}
-
-function drawAchievementToasts(){
-  if(S.achievementQueue.length===0)return;
-  const a=S.achievementQueue[0];
-  if(!a||!Number.isFinite(a.time)){S.achievementQueue.shift();return;}
-  const elapsed=S.time-a.time;
-  if(!Number.isFinite(elapsed)){S.achievementQueue.shift();return;}
-  if(elapsed>4200){S.achievementQueue.shift();return;}
-
-  const slideIn=Math.min(1,elapsed/400);
-  const slideOut=Math.max(0,(elapsed-3600)/600);
-  const y=-120+slideIn*130-slideOut*130;
-  const boxW=460;
-  const boxH=100;
-  const boxX=W/2-boxW/2;
-
-  ctx.save();
-  ctx.fillStyle='rgba(0,0,0,.6)';
-  ctx.beginPath();
-  ctx.roundRect(boxX+6,y+6,boxW,boxH,14);
-  ctx.fill();
-
-  const g=ctx.createLinearGradient(boxX,y,boxX,y+boxH);
-  g.addColorStop(0,'#ffd54f');
-  g.addColorStop(.5,'#ffb300');
-  g.addColorStop(1,'#e65100');
-  ctx.fillStyle=g;
-  ctx.beginPath();
-  ctx.roundRect(boxX,y,boxW,boxH,14);
-  ctx.fill();
-  ctx.strokeStyle='#4a2000';
-  ctx.lineWidth=3;
-  ctx.stroke();
-
-  ctx.font='bold 50px Arial';
-  ctx.textAlign='center';
-  ctx.textBaseline='middle';
-  ctx.fillText(a.icon||'🏆',boxX+60,y+boxH/2);
-
-  ctx.textAlign='left';
-  ctx.font='bold 14px Arial';
-  ctx.fillStyle='#5d4037';
-  ctx.fillText('🏆 ДОСТИЖЕНИЕ',boxX+110,y+25);
-
-  ctx.font='bold 22px Impact, Arial Black, sans-serif';
-  ctx.fillStyle='#3e2723';
-  ctx.strokeStyle='#fff';
-  ctx.lineWidth=3;
-  ctx.strokeText(a.name||'?',boxX+110,y+52);
-  ctx.fillText(a.name||'?',boxX+110,y+52);
-
-  ctx.font='italic 13px Arial';
-  ctx.fillStyle='#5d4037';
-  ctx.fillText(a.desc||'',boxX+110,y+78);
-
-  ctx.restore();
-}
-
-function startWave(waveNum){
-  S.currentWave=waveNum;
-  const totalWaves=S.currentLevel.waves||5;
-  const isBig=waveNum===totalWaves;
-  const isBoss=S.currentLevel.boss&&waveNum===totalWaves;
-  const remaining=S.totalZombies-S.spawnedZombies;
-  const zombiesInWave=Math.min(remaining,Math.ceil(S.totalZombies/totalWaves));
-  S.waveZombiesPerWave=zombiesInWave;
-  S.waveZombiesRemaining=zombiesInWave;
-  S.waveBannerTimer=2500;
-  S.bigWave=isBig;
-
-  if(isBoss){
-    if(S.currentLevel.boss==='gargantuar'){
-      S.waveBannerText='БОСС: ГАРГАНТЮА!';
-      S.waveBannerSub='Держись изо всех сил!';
-    }else{
-      S.waveBannerText='БОСС: ЗОМБОСС!';
-      S.waveBannerSub='Финальная битва!';
-    }
-  }else if(isBig){
-    S.waveBannerText='ОГРОМНАЯ ВОЛНА!';
-    S.waveBannerSub='Волна '+waveNum+' из '+totalWaves;
-  }else{
-    S.waveBannerText='ВОЛНА '+waveNum;
-    S.waveBannerSub='из '+totalWaves;
-  }
-  S.betweenWaves=false;
-  S.betweenWavesTimer=0;
-  S.zombieSpawnTimer=0;
-  Sound.play(isBig||isBoss?'bigwave':'wave');
-}
-
-function spawnZombie(){
-  const lvl=S.currentLevel;
-  const row=Math.floor(Math.random()*ROWS);
-  let type='basic';
-  const available=lvl.types;
-  if(available.length===1)type=available[0];
-  else type=available[Math.floor(Math.random()*available.length)];
-  const def=ZOMBIE_TYPES[type];
-
-  const z={
-    type,row,x:ZOMBIE_SPAWN_X+Math.random()*40,
-    hp:def.hp,maxHp:def.hp,speed:def.speed,dmg:def.dmg,
-    walkPhase:Math.random()*Math.PI*2,
-    slowTimer:0,hitFlash:0,dyingTimer:0,attackTimer:0,
-    garlicPushTimer:0,hypnotized:false,y_air:undefined,falling:false,frozenStop:false,
-    spikeTimer:0,threwMinions:false
-  };
-
-  if(S.minigameFlags.gravity){
-    z.y_air=-100;
-    z.falling=true;
-  }
-
-  S.zombies.push(z);
-  S.spawnedZombies++;
-}
-
-function gameOver(won){
-  if(S.gameOver)return;
-  S.gameOver=true;
-  S.won=won;
-  Sound.play(won?'win':'lose');
-
-  if(won){
-    const mowersUsed=S.mowers.filter(m=>m.used).length;
-    let stars=1;
-    if(mowersUsed===0)stars=3;
-    else if(mowersUsed<=2)stars=2;
-
-    const lvlId=S.currentLevel.id;
-    if(lvlId>0){
-      const prevStars=S.levelStars[lvlId]||0;
-      if(stars>prevStars)S.levelStars[lvlId]=stars;
-      if(S.unlockedLevels===lvlId&&lvlId<LEVELS.length)S.unlockedLevels=lvlId+1;
-
-      if(S.currentLevel.reward&&ALL_PLANTS[S.currentLevel.reward]&&!S.ownedPlants.includes(S.currentLevel.reward)){
-        S.ownedPlants.push(S.currentLevel.reward);
-        showSaveToast('🎁 Новое растение: '+ALL_PLANTS[S.currentLevel.reward].name);
-      }
-    }
-    S.totalWinsEver++;
-    S.totalKillsEver+=S.totalZombiesDead;
-
-    if(S.minigameType){
-      if(S.minigameScore===0)S.minigameScore=S.totalZombiesDead;
-      const best=S.minigameBest[S.minigameType]||0;
-      if(S.minigameScore>best)S.minigameBest[S.minigameType]=S.minigameScore;
-    }
-
-    checkAchievements();
-    saveProgress();
-  }else{
-    S.shake=30;
-    S.totalKillsEver+=S.totalZombiesDead;
-    saveProgress(true);
-  }
-}
-
-// ============================================================
-// ГЛАВНЫЙ ЦИКЛ ОБНОВЛЕНИЯ (МЕХАНИКИ)
-// ============================================================
-function update(dt){
-  if(dt>100)dt=100;
-  const dts=dt/1000;
-
-  if(S.waveBannerTimer>0)S.waveBannerTimer-=dt;
-  for(const k in S.cooldowns)S.cooldowns[k]=Math.max(0,S.cooldowns[k]-dt);
-  if(S.particles.length>250)S.particles=S.particles.slice(-250);
-  if(S.boosterTimer>0)S.boosterTimer-=dt;
-
-  // Магнит собирает монеты
-  if(S.magnetActive){
-    for(let i=S.coinsOnGround.length-1;i>=0;i--){
-      const c=S.coinsOnGround[i];
-      S.coins+=c.value||10;
-      S.totalCoinsEarned+=c.value||10;
-      S.zombieCoinsCollected+=c.value||10;
-      addParticles(c.x,c.y,4,'#ffd700',3,300,3);
-      S.coinsOnGround.splice(i,1);
-      Sound.play('coin');
-    }
-  }
-
-  // Падение солнца
-  if(!S.minigameFlags.sunny){
-    S.sunTimer+=dt;
-    if(S.sunTimer>6500){
-      S.sunTimer=0;
-      const x=rand(GRID_X+20,GRID_X+GRID_W-20);
-      const targetY=rand(activeTop()+40,activeBottom()-40);
-      S.suns.push({x,y:-30,targetY,life:10000,maxLife:10000,vy:1.4,phase:Math.random()*10,value:25});
-    }
-  }
-
-  // === ЛОГИКА РАСТЕНИЙ ===
-  for(const p of S.plants){
-    const def=ALL_PLANTS[p.type];
-    if(!def)continue;
-
-    // Взрывы
-    if(def.explode!==undefined||def.freezeAll||def.fullScreen){
-      p.growTimer=(p.growTimer||0)+dt;
-      p.fuseDuration=p.fuseDuration||def.fuse||3000;
-      if(p.growTimer>=p.fuseDuration)triggerExplosion(p);
-      continue;
-    }
-
-    if(!isPlantAwake(p.type))continue;
-    const boost=S.boosterTimer>0?.5:1;
-
-    // Солнце
-    if(p.type==='sunflower'||p.type==='sunshroom'){
-      p.sunTimer+=dt;
-      const interval=(p.type==='sunshroom'?7000:5500)*boost;
-      const amount=p.type==='sunshroom'?15:25;
-      if(p.sunTimer>interval){
-        p.sunTimer=0;
-        S.suns.push({x:cellCX(p.col)+rand(-15,15),y:cellCY(p.row),targetY:cellCY(p.row)+30,life:10000,maxLife:10000,vy:.8,phase:Math.random()*10,value:amount});
-      }
-    }
-    if(p.type==='twinsunflower'){
-      p.sunTimer+=dt;
-      if(p.sunTimer>5500*boost){
-        p.sunTimer=0;
-        for(let i=0;i<2;i++){
-          S.suns.push({x:cellCX(p.col)+rand(-25,25),y:cellCY(p.row),targetY:cellCY(p.row)+30,life:10000,maxLife:10000,vy:.8,phase:Math.random()*10,value:25});
-        }
-      }
-    }
-    if(def.isCoin){
-      p.sunTimer+=dt;
-      if(p.sunTimer>7000*boost){
-        p.sunTimer=0;
-        S.coinsOnGround.push({x:cellCX(p.col)+rand(-15,15),y:cellCY(p.row),targetY:cellCY(p.row)+30,life:12000,maxLife:12000,vy:.8,phase:Math.random()*10,value:def.coinValue||10,coinType:'bronze'});
-      }
-    }
-
-    // Картошка
-    if((p.type==='potato'||p.type==='potatomine')&&!p.armed){
-      p.armTimer=(p.armTimer||0)+dt;
-      if(p.armTimer>15000)p.armed=true;
-    }
-
-    // Жеватель (Chomper) — съедает зомби
-    if(p.type==='chomper'){
-      if(p.chewing){
-        p.chewTimer-=dt;
-        if(p.chewTimer<=0)p.chewing=false;
-      }else{
-        p.shootTimer+=dt;
-        const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&z.x<YARD_RIGHT&&Math.abs(z.x-cellCX(p.col))<60&&!z.hypnotized);
-        if(target&&p.shootTimer>3000*boost){
-          p.shootTimer=0;
-          p.chewing=true;
-          p.chewTimer=6000;
-          target.hp-=3000;
-          Sound.play('hit');
-        }
-      }
-    }
-
-    // === СТРЕЛКИ (Peashooter, Repeater, etc) ===
-    if(['peashooter','snowpea','repeater','threepeater','helmetpea'].includes(p.type)){
-      p.shootTimer+=dt;
-      const cooldown=(p.type==='snowpea'?1400:1500)*boost;
-      let target=null;
-      if(p.type==='threepeater'){
-        target=S.zombies.find(z=>Math.abs(z.row-p.row)<=1&&z.x<ZOMBIE_ENTER_YARD_X+5&&z.x>cellCX(p.col)&&z.hp>0&&!z.hypnotized);
-      }else{
-        target=S.zombies.find(z=>z.row===p.row&&z.x<ZOMBIE_ENTER_YARD_X+5&&z.x>cellCX(p.col)&&z.hp>0&&!z.hypnotized);
-      }
-      if(target&&p.shootTimer>cooldown){
-        p.shootTimer=0;
-        Sound.play('shoot');
-        if(p.type==='threepeater'){
-          for(let dr=-1;dr<=1;dr++){
-            const row=p.row+dr;
-            if(row<0||row>=ROWS)continue;
-            S.projectiles.push({x:cellCX(p.col)+22,y:cellCY(row)-14,row,vx:500,damage:20,trail:[]});
-          }
-        }else{
-          const shots=p.type==='repeater'?2:1;
-          for(let i=0;i<shots;i++){
-            S.projectiles.push({x:cellCX(p.col)+22,y:cellCY(p.row)-14,row:p.row,vx:500,damage:p.type==='snowpea'?20:25,ice:p.type==='snowpea',delay:i*150,trail:[]});
-          }
-        }
-      }
-    }
-
-    // Гатлинг — 4 пули
-    if(p.type==='gatlingpea'||p.type==='gatlingpea_s'){
-      p.shootTimer+=dt;
-      const target=S.zombies.find(z=>z.row===p.row&&z.x<ZOMBIE_ENTER_YARD_X+5&&z.x>cellCX(p.col)&&z.hp>0&&!z.hypnotized);
-      if(target&&p.shootTimer>1500*boost){
-        p.shootTimer=0;
-        Sound.play('shoot');
-        const shots=p.type==='gatlingpea_s'?4:4;
-        for(let i=0;i<shots;i++){
-          S.projectiles.push({x:cellCX(p.col)+22,y:cellCY(p.row)-14,row:p.row,vx:600,damage:p.type==='gatlingpea_s'?25:20,delay:i*100,trail:[]});
-        }
-      }
-    }
-
-    // Гипногриб — гипнотизирует при съедании
-    if(p.type==='hypnoshroom'){
-      // Если съеден — обрабатывается в блоке зомби (ниже)
-    }
-
-    // Кукурузная пушка (Cob Cannon) — ядерный залп по площади
-    if(p.type==='cobcannon'){
-      p.shootTimer+=dt;
-      const target=S.zombies.find(z=>Math.abs(z.row-p.row)<=1&&z.x<YARD_RIGHT&&z.x>cellCX(p.col)&&z.hp>0&&!z.hypnotized);
-      if(target&&p.shootTimer>30000*boost){
-        p.shootTimer=0;
-        Sound.play('explosion');
-        for(const z of S.zombies){
-          if(z.hp<=0||z.hypnotized)continue;
-          if(Math.abs(z.row-p.row)<=1&&Math.abs(z.x-cellCX(p.col))<500)z.hp-=1800;
-        }
-        S.shake=20;
-        addParticles(cellCX(p.col)+100,cellCY(p.row),50,'#ffeb3b',12,1000,8);
-      }
-    }
-
-    // Кошкамыш (Cattail) — зенитка, бьёт по воздуху и по земле
-    if(p.type==='cattail'||p.type==='catmushroom'||p.type==='bluemushroom'){
-      p.shootTimer+=dt;
-      if(p.shootTimer>1500*boost){
-        p.shootTimer=0;
-        const candidates=S.zombies.filter(z=>z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT);
-        if(candidates.length>0){
-          const target=candidates.reduce((a,b)=>Math.abs(a.x-cellCX(p.col))<Math.abs(b.x-cellCX(p.col))?a:b);
-          const angle=Math.atan2(cellCY(target.row)-cellCY(p.row),target.x-cellCX(p.col));
-          S.projectiles.push({x:cellCX(p.col),y:cellCY(p.row)-14,row:p.row,vx:Math.cos(angle)*500,vy:Math.sin(angle)*500,damage:25,trail:[],cattail:true});
-          Sound.play('shoot');
-        }
-      }
-    }
-
-    // Шипы
-    if(p.type==='spikeweed'||p.type==='iron_spike'){
-      const dmgVal=p.type==='iron_spike'?40:(def.dmg||20);
-      for(const z of S.zombies){
-        if(z.hp<=0||z.hypnotized)continue;
-        if(z.row===p.row&&Math.abs(z.x-cellCX(p.col))<40){
-          z.spikeTimer=(z.spikeTimer||0)+dt;
-          if(z.spikeTimer>500){
-            z.spikeTimer=0;
-            z.hp-=dmgVal;
-            z.hitFlash=150;
-          }
-        }
-      }
-    }
-
-    // Магнит
-    if(p.type==='magnet')S.magnetActive=true;
-
-    // Дымогриб — урон всем в ряду
-    if(p.type==='fumeshroom'){
-      p.shootTimer+=dt;
-      if(p.shootTimer>1500*boost){
-        p.shootTimer=0;
-        S.zombies.forEach(z=>{
-          if(z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x>cellCX(p.col)-30&&z.x<cellCX(p.col)+120){
-            z.hp-=20;
-            z.hitFlash=150;
-          }
-        });
-      }
-    }
-
-    // Мрачногриб — по 3 рядам
-    if(p.type==='gloomyshroom'||p.type==='twinBF'){
-      p.shootTimer+=dt;
-      if(p.shootTimer>1500*boost){
-        p.shootTimer=0;
-        for(const z of S.zombies){
-          if(z.hp<=0||z.hypnotized)continue;
-          if(Math.abs(z.row-p.row)<=1&&Math.abs(z.x-cellCX(p.col))<120){
-            z.hp-=20;
-            z.hitFlash=150;
-          }
-        }
-        addParticles(cellCX(p.col),cellCY(p.row),8,'#a040a0',4,400,5);
-      }
-    }
-
-    // Грибочек / Трусогриб
-    if(p.type==='puffshroom'||p.type==='scaredy'){
-      if(p.type==='scaredy'){
-        const closeZ=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&Math.abs(z.x-cellCX(p.col))<50);
-        if(closeZ)continue;
-      }
-      p.shootTimer+=dt;
-      const range=p.type==='puffshroom'?220:200;
-      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<cellCX(p.col)+range&&z.x>cellCX(p.col));
-      if(target&&p.shootTimer>1500*boost){
-        p.shootTimer=0;
-        S.projectiles.push({x:cellCX(p.col)+20,y:cellCY(p.row)-14,row:p.row,vx:500,damage:20,spore:true,trail:[]});
-        Sound.play('shoot');
-      }
-    }
-
-    // Кактус — колючки
-    if(p.type==='cactus'){
-      p.shootTimer+=dt;
-      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT&&z.x>cellCX(p.col));
-      if(target&&p.shootTimer>1500*boost){
-        p.shootTimer=0;
-        S.projectiles.push({x:cellCX(p.col)+20,y:cellCY(p.row)-14,row:p.row,vx:600,damage:30,trail:[]});
-        Sound.play('shoot');
-      }
-    }
-
-    // Клевер — сбивает воздух
-    if(p.type==='clover'){
-      p.shootTimer+=dt;
-      if(p.shootTimer>3000*boost){
-        p.shootTimer=0;
-        S.zombies.forEach(z=>{
-          if(z.type==='balloon'&&z.hp>0){
-            z.type='basic';
-            addParticles(z.x,cellCY(z.row)-60,10,'#e91e63',5,600,5);
-          }
-        });
-      }
-    }
-
-    // Звезда — стреляет по 5 направлениям
-    if(p.type==='starfruit'){
-      p.shootTimer+=dt;
-      if(p.shootTimer>1500*boost){
-        p.shootTimer=0;
-        const dirs=[0,Math.PI/4,-Math.PI/4,Math.PI/2,-Math.PI/2];
-        for(const angle of dirs){
-          S.projectiles.push({x:cellCX(p.col),y:cellCY(p.row)-14,row:p.row,vx:Math.cos(angle)*500,vy:Math.sin(angle)*500,damage:20,trail:[],cattail:true});
-        }
-        Sound.play('shoot');
-      }
-    }
-
-    // Арбуз-пушка — по площади
-    if(p.type==='melonpult'){
-      p.shootTimer+=dt;
-      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT&&z.x>cellCX(p.col));
-      if(target&&p.shootTimer>2000*boost){
-        p.shootTimer=0;
-        for(const z of S.zombies){
-          if(z.hp<=0||z.hypnotized)continue;
-          if(Math.abs(z.row-p.row)<=1&&Math.abs(z.x-target.x)<CELL_W*1.5){
-            z.hp-=80;
-            z.hitFlash=200;
-          }
-        }
-        addParticles(target.x,cellCY(target.row),15,'#4caf50',6,600,5);
-        Sound.play('hit');
-      }
-    }
-
-    // Ледяной арбуз — по площади + заморозка
-    if(p.type==='icemelon'){
-      p.shootTimer+=dt;
-      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT&&z.x>cellCX(p.col));
-      if(target&&p.shootTimer>2500*boost){
-        p.shootTimer=0;
-        for(const z of S.zombies){
-          if(z.hp<=0||z.hypnotized)continue;
-          if(Math.abs(z.row-p.row)<=1&&Math.abs(z.x-target.x)<CELL_W*1.5){
-            z.hp-=60;
-            z.hitFlash=200;
-            z.slowTimer=5000;
-            z.frozenStop=true;
-            setTimeout(()=>{z.frozenStop=false;},3000);
-          }
-        }
-        addParticles(target.x,cellCY(target.row),20,'#4fc3f7',6,600,5);
-        Sound.play('freeze');
-      }
-    }
-
-    // Кукурузомёт — шанс оглушить
-    if(p.type==='kernelpult'){
-      p.shootTimer+=dt;
-      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT&&z.x>cellCX(p.col));
-      if(target&&p.shootTimer>1500*boost){
-        p.shootTimer=0;
-        const isButter=Math.random()<0.25;
-        target.hp-=isButter?40:20;
-        if(isButter){
-          target.slowTimer=3000;
-          target.frozenStop=true;
-          setTimeout(()=>{z.frozenStop=false;},3000);
-        }
-        Sound.play('shoot');
-      }
-    }
-
-    // Зонтик — сбивает парашюты
-    if(p.type==='umbrella'){
-      S.zombies.forEach(z=>{
-        if(z.type==='balloon'&&z.row===p.row&&Math.abs(z.x-cellCX(p.col))<100){
-          z.type='basic';
-          addParticles(z.x,cellCY(z.row)-60,8,'#e91e63',5,600,5);
-        }
-      });
-    }
-  }
-
-  // === СНАРЯДЫ ===
-  for(const pr of S.projectiles){
-    if(pr.delay>0){pr.delay-=dt;continue;}
-    if(pr.cattail){
-      pr.x+=(pr.vx||0)*dts;
-      pr.y+=(pr.vy||0)*dts;
-    }else{
-      pr.x+=pr.vx*dts;
-    }
-
-    for(let zi=0;zi<S.zombies.length;zi++){
-      const z=S.zombies[zi];
-      if(z.hp<=0||z.hypnotized)continue;
-      if(!pr.cattail&&z.row!==pr.row)continue;
-      if(z.x>=YARD_RIGHT)continue;
-
-      const zy=(z.y_air!==undefined&&z.falling)?z.y_air-20:cellCY(z.row)-20;
-      if(Math.abs(pr.x-z.x)<28&&Math.abs(pr.y-zy)<55){
-        z.hp-=pr.damage;
-        z.hitFlash=180;
-        if(pr.ice)z.slowTimer=5000;
-        if(pr.icemelon){
-          z.slowTimer=5000;
-          z.frozenStop=true;
-          setTimeout(()=>{z.frozenStop=false;},3000);
-        }
-        addParticles(pr.x,pr.y,4,pr.ice?'#4fc3f7':pr.spore?'#c8a2d8':pr.icemelon?'#4fc3f7':'#8bc34a',3,300,3);
-        pr.dead=true;
-        break;
-      }
-    }
-
-    if(pr.x>W+40||pr.x>YARD_RIGHT+5)pr.dead=true;
-    if(pr.y<-50||pr.y>H+50)pr.dead=true;
-  }
-  S.projectiles=S.projectiles.filter(p=>!p.dead);
-
-  // === СОЛНЦЕ / МОНЕТЫ ===
-  for(const s of S.suns){
-    s.life-=dt;
-    if(s.y<s.targetY){
-      s.y+=s.vy*dt*.06;
-      if(s.y>s.targetY)s.y=s.targetY;
-    }
-  }
-  S.suns=S.suns.filter(s=>s.life>0);
-
-  for(const c of S.coinsOnGround){
-    c.life-=dt;
-    if(c.y<c.targetY){
-      c.y+=c.vy*dt*.06;
-      if(c.y>c.targetY)c.y=c.targetY;
-    }
-  }
-  S.coinsOnGround=S.coinsOnGround.filter(c=>c.life>0);
-
-  for(const c of S.craters)c.life-=dt;
-  S.craters=S.craters.filter(c=>c.life>0);
-
-  // === ЗОМБИ ===
-  for(const z of S.zombies){
-    if(z.hp<=0){z.dyingTimer=(z.dyingTimer||0)+dt;continue;}
-    if(z.hitFlash>0)z.hitFlash-=dt;
-    if(z.slowTimer>0)z.slowTimer-=dt;
-    if(z.garlicPushTimer>0)z.garlicPushTimer-=dt;
-    z.walkPhase+=dt*.008;
-
-    if(z.hypnotized){
-      z.x+=Math.abs(z.speed)*dts*.7;
-      if(z.x>ROAD_RIGHT+50||z.x<GRID_X-50){
-        z.hp=0;
-        z.dyingTimer=800;
-        continue;
-      }
-      for(const other of S.zombies){
-        if(other===z||other.hypnotized||other.hp<=0)continue;
-        if(other.row===z.row&&Math.abs(other.x-z.x)<40){
-          z.attackTimer=(z.attackTimer||0)+dt;
-          if(z.attackTimer>800){
-            z.attackTimer=0;
-            other.hp-=z.dmg;
-          }
-        }
-      }
-      continue;
-    }
-
-    const col=Math.floor((z.x-GRID_X)/CELL_W);
-    const plant=getPlantAt(z.row,col);
-    let attacking=false;
-
-    // Грабли
-    if(z.x<GRID_X+CELL_W&&S.rakes.length>0){
-      for(let i=S.rakes.length-1;i>=0;i--){
-        const rk=S.rakes[i];
-        if(rk.row===z.row&&Math.abs(rk.x-z.x)<30){
-          z.hp=0;
-          z.dyingTimer=800;
-          S.rakes.splice(i,1);
-          S.rakesUsed=(S.rakesUsed||0)+1;
-          addParticles(rk.x,rk.y,15,'#8d6e63',5,600,5);
-          Sound.play('hit');
-          break;
-        }
-      }
-    }
-
-    if(plant&&z.x<YARD_RIGHT&&z.x-cellCX(col)<38&&z.x-cellCX(col)>-15){
-      if(plant.type==='hypnoshroom'){
-        z.attackTimer=(z.attackTimer||0)+dt;
-        if(z.attackTimer>800){
-          z.attackTimer=0;
-          plant.hp-=z.dmg;
-          if(plant.hp<=0){
-            z.hypnotized=true;
-            z.hp=100;
-            z.maxHp=100;
-            z.attackTimer=0;
-            S.hypnoCount=(S.hypnoCount||0)+1;
-            addParticles(z.x,cellCY(z.row),20,'#e040a0',6,700,6);
-            S.plants=S.plants.filter(p=>p!==plant);
-            rebuildPlantCache();
-            Sound.play('reward');
-          }
-        }
-        attacking=true;
-      }
-      else if(plant.type==='spikeweed'||plant.type==='iron_spike'){
-        attacking=false;
-      }
-      else if(plant.type==='garlic'&&!(z.garlicPushTimer>0)){
-        plant.hp-=z.dmg;
-        if(plant.hp<=0){
-          S.plants=S.plants.filter(p=>p!==plant);
-          rebuildPlantCache();
-        }
-        let targetRow=z.row;
-        const canUp=z.row>0;
-        const canDown=z.row<ROWS-1;
-        if(canUp&&canDown)targetRow=Math.random()<.5?z.row-1:z.row+1;
-        else if(canUp)targetRow=z.row-1;
-        else if(canDown)targetRow=z.row+1;
-        if(targetRow!==z.row){
-          z.row=targetRow;
-          z.x+=15;
-          z.garlicPushTimer=500;
-          S.shake=5;
-          S.garlicPushes=(S.garlicPushes||0)+1;
-        }
-        attacking=true;
-      }
-      else{
-        attacking=true;
-        z.attackTimer=(z.attackTimer||0)+dt;
-        if(z.attackTimer>800){
-          z.attackTimer=0;
-          plant.hp-=z.dmg;
-          if(plant.hp<=0){
-            if((plant.type==='potato'||plant.type==='potatomine')&&plant.armed)explodePotato(plant);
-            S.plants=S.plants.filter(p=>p!==plant);
-            rebuildPlantCache();
-          }
-        }
-      }
-    }
-
-    if(!attacking&&!z.falling){
-      let speedMul=1;
-      if(z.slowTimer>0)speedMul=.5;
-      if(z.frozenStop)speedMul=0;
-      z.x-=z.speed*speedMul*dts;
-    }
-
-    // Косилка
-    if(z.x<GRID_X-15&&!z.falling){
-      const mower=S.mowers[z.row];
-      if(mower&&!mower.used){
-        mower.used=true;
-        mower.active=true;
-        mower.x=GRID_X-30;
-        Sound.play('mower');
-      }else{
-        gameOver(false);
-        return;
-      }
-    }
-
-    // Гаргантюа бросает мини-зомби
-    if(z.type==='gargantuar'&&!z.threwMinions&&z.hp<z.maxHp*.5){
-      z.threwMinions=true;
-      for(let i=0;i<3;i++){
-        const row=Math.floor(Math.random()*ROWS);
-        S.zombies.push({
-          type:'minizombie',row,x:z.x-Math.random()*40,
-          hp:50,maxHp:50,speed:22,dmg:60,
-          walkPhase:Math.random()*Math.PI*2,
-          slowTimer:0,hitFlash:0,dyingTimer:0,attackTimer:0,
-          garlicPushTimer:0,hypnotized:false,y_air:undefined,falling:false,frozenStop:false,
-          spikeTimer:0,threwMinions:false
-        });
-      }
-      S.shake=15;
-      addParticles(z.x,cellCY(z.row),25,'#7a3a8a',8,800,6);
-    }
-  }
-
-  // Косилки
-  for(const m of S.mowers){
-    if(m.active){
-      m.x+=700*dts;
-      for(const z of S.zombies){
-        if(z.row===m.row&&z.hp>0&&z.x<m.x+40&&z.x>m.x-60)z.hp=0;
-      }
-      if(m.x>W+60)m.active=false;
-    }
-  }
-
-  // Смерть зомби
-  for(const z of S.zombies){
-    if(z.hp<=0&&!z._deadCounted){
-      z._deadCounted=true;
-      S.totalZombiesDead++;
-      S.killedZombies++;
-      Sound.play('zombieDie');
-      const def=ZOMBIE_TYPES[z.type];
-      if(def){
-        if(def.coins){
-          S.coins+=def.coins;
-          S.totalCoinsEarned+=def.coins;
-          S.zombieCoinsCollected+=def.coins;
-        }
-        if(def.dropChance&&Math.random()<def.dropChance){
-          S.coinsOnGround.push({
-            x:z.x,
-            y:cellCY(z.row)-20,
-            targetY:cellCY(z.row)+20,
-            life:12000,maxLife:12000,vy:.8,
-            phase:Math.random()*10,
-            value:def.coins||10,
-            coinType:def.coinType||'bronze'
-          });
-        }
-      }
-    }
-  }
-  S.zombies=S.zombies.filter(z=>!(z.hp<=0&&z.dyingTimer>800));
-
-  // Частицы
-  for(const p of S.particles){
-    p.x+=p.vx;
-    p.y+=p.vy;
-    p.vy+=p.gravity;
-    p.vx*=.98;
-    p.life-=dt;
-  }
-  S.particles=S.particles.filter(p=>p.life>0);
-
-  // === СПАВН ЗОМБИ ===
-  const totalWaves=S.currentLevel.waves||5;
-  S.zombieSpawnTimer+=dt;
-  const spawnInterval=S.currentLevel.spawnInterval||5000;
-  let effectiveInterval=spawnInterval;
-  if(S.minigameFlags.endless)effectiveInterval=Math.max(800,spawnInterval*Math.pow(.92,S.currentWave-1));
-
-  if(S.minigameFlags.endless||S.minigameFlags.sunny){
-    const aliveZ=S.zombies.filter(z=>z.hp>0).length;
-    if(aliveZ<MAX_ALIVE_ZOMBIES&&S.zombieSpawnTimer>effectiveInterval){
-      S.zombieSpawnTimer=0;
-      spawnZombie();
-    }
-  }else if(S.betweenWaves){
-    S.betweenWavesTimer-=dt;
-    if(S.betweenWavesTimer<=0){
-      S.betweenWaves=false;
-      if(S.currentWave<totalWaves)startWave(S.currentWave+1);
-    }
-  }else{
-    const aliveZ=S.zombies.filter(z=>z.hp>0&&z.type!=='zomboss'&&z.type!=='gargantuar').length;
-    if(S.waveZombiesRemaining>0&&aliveZ<MAX_ALIVE_ZOMBIES&&S.zombieSpawnTimer>effectiveInterval){
-      S.zombieSpawnTimer=0;
-      spawnZombie();
-      S.waveZombiesRemaining--;
-    }
-    const noWaveSpawnRemaining=S.waveZombiesRemaining<=0;
-    const aliveInWave=S.zombies.filter(z=>z.hp>0&&z.type!=='zomboss'&&z.type!=='gargantuar').length;
-    if(noWaveSpawnRemaining&&aliveInWave===0&&S.currentWave<totalWaves){
-      S.betweenWaves=true;
-      S.betweenWavesTimer=4000;
-      S.zombieSpawnTimer=0;
-    }
-  }
-
-  // Босс
-  if(S.currentLevel.boss&&!S.bossSpawned&&S.currentWave===totalWaves&&(S.spawnedZombies>=S.totalZombies-1||S.waveZombiesRemaining<=0)){
-    S.bossSpawned=true;
-    const row=Math.floor(Math.random()*ROWS);
-    const bossType=S.currentLevel.boss;
-    const def=ZOMBIE_TYPES[bossType];
-    S.zombies.push({
-      type:bossType,row,x:ZOMBIE_SPAWN_X+40,
-      hp:def.hp,maxHp:def.hp,speed:def.speed,dmg:def.dmg,
-      walkPhase:0,slowTimer:0,hitFlash:0,dyingTimer:0,attackTimer:0,
-      garlicPushTimer:0,hypnotized:false,y_air:undefined,falling:false,frozenStop:false,
-      threwMinions:false,spikeTimer:0
-    });
-    S.shake=30;
-  }
-
-  // Гравитация
-  if(S.minigameFlags.gravity){
-    for(const z of S.zombies){
-      if(z.falling&&z.y_air!==undefined){
-        z.y_air+=400*dts;
-        const groundY=cellCY(z.row);
-        if(z.y_air>=groundY){
-          z.y_air=groundY;
-          z.falling=false;
-          S.shake=4;
-        }
-      }
-    }
-  }
-
-  // Прогресс
-  S.levelProgress=clamp(
-    (S.currentWave-1)/totalWaves+
-    (S.waveZombiesPerWave>0?(1-S.waveZombiesRemaining/S.waveZombiesPerWave)/totalWaves:0),
-    0,1
-  );
-
-  // Победа/поражение
-  if(S.minigameFlags.sunny&&S.sun>=500){
-    S.minigameScore=Math.floor(S.sun);
-    gameOver(true);
-  }else if(S.minigameFlags.endless&&S.currentWave>20){
-    S.minigameScore=S.killedZombies;
-    gameOver(true);
-  }else{
-    const allSpawned=S.spawnedZombies>=S.totalZombies;
-    const bossKilled=!S.currentLevel.boss||(S.bossSpawned&&!S.zombies.some(z=>z.type===S.currentLevel.boss&&z.hp>0));
-    const noAlive=!S.zombies.some(z=>z.hp>0);
-    const noDying=!S.zombies.some(z=>z.hp<=0&&(z.dyingTimer||0)<800);
-    if(allSpawned&&bossKilled&&noAlive&&noDying&&S.currentWave>=totalWaves)gameOver(true);
-  }
-
-  if(S.shake>0)S.shake=Math.max(0,S.shake-dt*.02);
-  if(Math.floor(S.time/1000)!==Math.floor((S.time-dt)/1000))checkAchievements();
-}
-
-function startLevel(level){
-  Sound.init();Sound.resume();
-  if(S.musicOn)Sound.startMusic();
-  ROWS=level.rows||5;
-  ROW_START=level.rowsOffset||0;
-  S.dayNight=level.time||'day';
-  S.location=level.location||'yard';
-  bgCacheKey='';
-  bushesCacheKey='';
-  ensureBackgrounds();
-  ensureBushes();
-
-  S.currentLevel=level;
-  S.scene='playing';
-  S.sun=75;
-  S.plants=[];
-  S.zombies=[];
-  S.projectiles=[];
-  S.suns=[];
-  S.coinsOnGround=[];
-  S.particles=[];
-  S.craters=[];
-  S.rakes=[];
-  S.flash=0;
-  S.selectedSeed=null;
-  S.shovelSelected=false;
-  S.gloveSelected=false;
-  S.gloveHolding=null;
-  S.cooldowns={};
-  S.sunTimer=0;
-  S.zombieSpawnTimer=0;
-  S.spawnedZombies=0;
-  S.killedZombies=0;
-  S.totalZombiesDead=0;
-  S.totalZombies=level.totalZombies;
-  S.spawnInterval=level.spawnInterval;
-  S.currentWave=0;
-  S.gameOver=false;
-  S.won=false;
-  S.shake=0;
-  S.levelProgress=0;
-  S.bossSpawned=false;
-  S.plantedThisLevel=0;
-  S.usedShovelThisLevel=0;
-  S.garlicPushes=0;
-  S.hypnoCount=0;
-  S.rakesUsed=0;
-  S.levelStartTime=S.time;
-  S.minigameTime=0;
-  S.boosterTimer=0;
-  S.mowers=[];
-  S.magnetActive=false;
-  S.seedSelectMaxSlots=6+(S.extraSlots||0);
-  S.ironSpikeOwned=S.ownedItems.includes('spikeweed_iron');
-
-  for(let r=0;r<ROWS;r++){
-    const isPool=(S.location==='pool'||S.location==='nightpool')&&r>=2&&r<4;
-    S.mowers.push({row:r,x:GRID_X-32,used:false,active:false,isPool:isPool});
-  }
-
-  if(S.ownedItems.includes('rake')){
-    S.rakes.push({row:Math.floor(ROWS/2),x:GRID_X+CELL_W/2,y:cellCY(Math.floor(ROWS/2))});
-  }
-
-  for(let i=0;i<2;i++){
-    const x=rand(GRID_X+40,GRID_X+GRID_W-40);
-    const y=rand(activeTop()+40,activeBottom()-40);
-    S.suns.push({x,y,targetY:y,life:12000,maxLife:12000,vy:0,phase:Math.random()*10,value:25});
-  }
-
-  S.waveBannerTimer=0;
-  S.betweenWaves=true;
-  S.betweenWavesTimer=2000;
-  S.waveZombiesRemaining=0;
-  S.waveZombiesPerWave=0;
-  rebuildPlantCache();
-}
-
-function startMinigame(mg){
-  S.minigameType=mg.id;
-  S.minigameScore=0;
-  S.minigameTime=0;
-  S.minigameFlags={endless:false,sunny:false,gravity:false};
-  if(mg.config.endless)S.minigameFlags.endless=true;
-  if(mg.config.sunny)S.minigameFlags.sunny=true;
-  if(mg.config.gravity)S.minigameFlags.gravity=true;
-  const lvl={
-    id:-1,name:mg.name.slice(0,6),location:'yard',rows:5,rowsOffset:0,time:'day',
-    seeds:mg.config.seeds||['peashooter','sunflower','wallnut'],
-    totalZombies:mg.config.endless?9999:30,
-    spawnInterval:mg.config.spawnRate||5000,
-    types:['basic','cone','bucket','flag','football','dancer'],
-    waves:mg.config.endless?999:5,
-    reward:null
-  };
-  startLevel(lvl);
-  S.minigameType=mg.id;
-}
-
-function startLevelWithSeedSelect(level){
-  S.currentLevel=level;
-  S.seedSelectMode=true;
-  const ownedAvailable=S.ownedPlants.slice();
-  const prioritySeeds=[];
-  for(const lvl of LEVELS){
-    for(const s of lvl.seeds){
-      if(ownedAvailable.includes(s)&&!prioritySeeds.includes(s))prioritySeeds.push(s);
-    }
-  }
-  for(const s of ownedAvailable){
-    if(!prioritySeeds.includes(s))prioritySeeds.push(s);
-  }
-  S.seedSelectAvailable=prioritySeeds.filter(s=>ALL_PLANTS[s]);
-
-  const preChosen=[];
-  const maxSlots=6+(S.extraSlots||0);
-  for(const s of level.seeds){
-    if(S.ownedPlants.includes(s)&&preChosen.length<maxSlots)preChosen.push(s);
-  }
-  for(const s of S.seedSelectAvailable){
-    if(preChosen.length>=maxSlots)break;
-    if(!preChosen.includes(s))preChosen.push(s);
-  }
-  S.seedSelectChosen=preChosen;
-  S.scene='seedselect';
-}
-
-// [КОНЕЦ ЧАСТИ 12/13]
 // [КОНЕЦ ЧАСТИ 10/13]
 // ============================================================
 // ЧАСТЬ 11/13 — ВСЕ ЭКРАНЫ
@@ -7674,6 +6663,1119 @@ function drawCredits(){
 }
 
 // [КОНЕЦ ЧАСТИ 11/13]
+// [КОНЕЦ ЧАСТИ 11/13]
+// ============================================================
+// ЧАСТЬ 12/13 — UPDATE, МЕХАНИКИ, СПАВН, ЭФФЕКТЫ
+// ============================================================
+
+function triggerExplosion(plant){
+  const def=ALL_PLANTS[plant.type];
+  if(!def)return;
+  const px=cellCX(plant.col);
+  const py=cellCY(plant.row);
+  Sound.play('explosion');
+
+  if(def.freezeAll){
+    let frozenCount=0;
+    for(const z of S.zombies){
+      if(z.hp<=0)continue;
+      z.slowTimer=8000;
+      z.frozenStop=true;
+      setTimeout(()=>{z.frozenStop=false;},8000);
+      frozenCount++;
+    }
+    S.shake=25;
+    S.flash=.6;
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        for(let i=0;i<3;i++)addParticles(cellCX(c),cellCY(r),1,'#4fc3f7',2,800,4);
+      }
+    }
+    if(frozenCount>=20)unlockAchievement('ice_apocalypse');
+    Sound.play('freeze');
+  }else if(def.fullScreen){
+    S.shake=40;
+    S.flash=1;
+    unlockAchievement('nuclear_master');
+    for(const z of S.zombies){
+      if(z.hp<=0)continue;
+      z.hp-=99999;
+      z.hitFlash=300;
+    }
+    S.craters.push({row:plant.row,col:plant.col,x:px,y:py,life:5000,maxLife:5000});
+    addParticles(px,py,60,'#ffffff',10,1000,8);
+    addParticles(px,py,40,'#ff5722',8,900,6);
+  }else if(def.rowOnly){
+    S.shake=25;
+    for(const z of S.zombies){
+      if(z.hp<=0||z.row!==plant.row)continue;
+      z.hp-=def.explode;
+    }
+    for(let c=0;c<COLS;c++)addParticles(cellCX(c),cellCY(plant.row),8,'#ff5722',6,700,5);
+  }else{
+    S.shake=18;
+    const radiusPx=(def.radius||1.7)*CELL_W;
+    for(const z of S.zombies){
+      if(z.hp<=0)continue;
+      const dx=z.x-px;
+      if(Math.abs(dx)<radiusPx&&Math.abs(z.row-plant.row)<=1)z.hp-=def.explode;
+    }
+    for(let i=0;i<25;i++)addParticles(px,py,1,'#ff5722',8,800,6);
+  }
+
+  S.plants=S.plants.filter(p=>p!==plant);
+  rebuildPlantCache();
+}
+
+function explodePotato(plant){
+  S.shake=10;
+  Sound.play('explosion');
+  addParticles(cellCX(plant.col),cellCY(plant.row),20,'#ff5722',6,700,5);
+  for(const z of S.zombies){
+    if(z.hp<=0)continue;
+    if(Math.abs(z.x-cellCX(plant.col))<60&&Math.abs(z.row-plant.row)<1)z.hp-=1800;
+  }
+}
+
+function unlockAchievement(id){
+  if(S.achievements[id]||!ACHIEVEMENTS[id])return false;
+  S.achievements[id]=true;
+  S.achievementQueue.push({id,...ACHIEVEMENTS[id],time:S.time});
+  Sound.play('achievement');
+  return true;
+}
+
+function checkAchievements(){
+  if(S.totalZombiesDead>0)unlockAchievement('first_blood');
+  if(S.totalKillsEver>=100)unlockAchievement('veteran');
+  if(S.totalKillsEver>=500)unlockAchievement('warlord');
+  if(S.sun>=1000)unlockAchievement('sunflower_farm');
+  if(S.unlockedLevels>=20)unlockAchievement('collector');
+  if(S.unlockedLevels>=35)unlockAchievement('master');
+  if(S.garlicPushes>=5)unlockAchievement('garlic_master');
+  if(S.hypnoCount>=10)unlockAchievement('hypno_master');
+  if(S.coins>=5000)unlockAchievement('rich');
+  if(S.coins>=10000)unlockAchievement('millionaire');
+  if(S.ownedPlants.length>=12)unlockAchievement('shopaholic');
+  if(S.ownedPlants.length>=30)unlockAchievement('gardner');
+  if(S.extraSlots>=1)unlockAchievement('slot_master');
+  if(S.rakesUsed>=1)unlockAchievement('rake_user');
+  if(S.zombieCoinsCollected>=100)unlockAchievement('coin_farmer');
+  if(S.zombieCoinsCollected>=1000)unlockAchievement('coin_tycoon');
+  if(S.zombieCoinsCollected>=5000)unlockAchievement('coin_king');
+  if(S.treeLevel>=10)unlockAchievement('tree_10');
+  if(S.treeLevel>=25)unlockAchievement('tree_25');
+  if(S.treeLevel>=50)unlockAchievement('tree_50');
+  if(S.treeLevel>=100)unlockAchievement('tree_100');
+
+  if(S.gameOver&&S.won){
+    const mowersUsed=S.mowers.filter(m=>m.used).length;
+    if(mowersUsed===0)unlockAchievement('no_mowers');
+    if(S.location==='night')unlockAchievement('night_owl');
+    if(S.location==='roof')unlockAchievement('roof_walker');
+    if(S.location==='pool')unlockAchievement('pool_party');
+    if(S.location==='nightpool')unlockAchievement('night_swimmer');
+    if(S.currentLevel.boss==='zomboss')unlockAchievement('boss_slayer');
+    if(S.currentLevel.boss==='gargantuar')unlockAchievement('gargantua_kill');
+    const stars=S.levelStars[S.currentLevel.id]||0;
+    if(stars===3)unlockAchievement('perfectionist');
+    if(S.levelStartTime&&S.time-S.levelStartTime<60000)unlockAchievement('speedrun');
+    if(S.unlockedLevels>=2)unlockAchievement('first_win');
+    if(S.plantedThisLevel===0)unlockAchievement('chill_master');
+    const roofLevels=LEVELS.filter(l=>l.location==='roof');
+    if(roofLevels.every(l=>S.levelStars[l.id]>0))unlockAchievement('perfect_roof');
+  }
+
+  if(S.minigameType&&S.gameOver&&S.won)unlockAchievement('minigame_win');
+  if(S.minigameType==='endless'&&S.currentWave>=10)unlockAchievement('endless_10');
+}
+
+function drawAchievementToasts(){
+  if(S.achievementQueue.length===0)return;
+  const a=S.achievementQueue[0];
+  if(!a||!Number.isFinite(a.time)){S.achievementQueue.shift();return;}
+  const elapsed=S.time-a.time;
+  if(!Number.isFinite(elapsed)){S.achievementQueue.shift();return;}
+  if(elapsed>4200){S.achievementQueue.shift();return;}
+
+  const slideIn=Math.min(1,elapsed/400);
+  const slideOut=Math.max(0,(elapsed-3600)/600);
+  const y=-120+slideIn*130-slideOut*130;
+  const boxW=460;
+  const boxH=100;
+  const boxX=W/2-boxW/2;
+
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.6)';
+  ctx.beginPath();
+  ctx.roundRect(boxX+6,y+6,boxW,boxH,14);
+  ctx.fill();
+
+  const g=ctx.createLinearGradient(boxX,y,boxX,y+boxH);
+  g.addColorStop(0,'#ffd54f');
+  g.addColorStop(.5,'#ffb300');
+  g.addColorStop(1,'#e65100');
+  ctx.fillStyle=g;
+  ctx.beginPath();
+  ctx.roundRect(boxX,y,boxW,boxH,14);
+  ctx.fill();
+  ctx.strokeStyle='#4a2000';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  ctx.font='bold 50px Arial';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(a.icon||'🏆',boxX+60,y+boxH/2);
+
+  ctx.textAlign='left';
+  ctx.font='bold 14px Arial';
+  ctx.fillStyle='#5d4037';
+  ctx.fillText('🏆 ДОСТИЖЕНИЕ',boxX+110,y+25);
+
+  ctx.font='bold 22px Impact, Arial Black, sans-serif';
+  ctx.fillStyle='#3e2723';
+  ctx.strokeStyle='#fff';
+  ctx.lineWidth=3;
+  ctx.strokeText(a.name||'?',boxX+110,y+52);
+  ctx.fillText(a.name||'?',boxX+110,y+52);
+
+  ctx.font='italic 13px Arial';
+  ctx.fillStyle='#5d4037';
+  ctx.fillText(a.desc||'',boxX+110,y+78);
+
+  ctx.restore();
+}
+
+function startWave(waveNum){
+  S.currentWave=waveNum;
+  const totalWaves=S.currentLevel.waves||5;
+  const isBig=waveNum===totalWaves;
+  const isBoss=S.currentLevel.boss&&waveNum===totalWaves;
+  const remaining=S.totalZombies-S.spawnedZombies;
+  const zombiesInWave=Math.min(remaining,Math.ceil(S.totalZombies/totalWaves));
+  S.waveZombiesPerWave=zombiesInWave;
+  S.waveZombiesRemaining=zombiesInWave;
+  S.waveBannerTimer=2500;
+  S.bigWave=isBig;
+
+  if(isBoss){
+    if(S.currentLevel.boss==='gargantuar'){
+      S.waveBannerText='БОСС: ГАРГАНТЮА!';
+      S.waveBannerSub='Держись изо всех сил!';
+    }else{
+      S.waveBannerText='БОСС: ЗОМБОСС!';
+      S.waveBannerSub='Финальная битва!';
+    }
+  }else if(isBig){
+    S.waveBannerText='ОГРОМНАЯ ВОЛНА!';
+    S.waveBannerSub='Волна '+waveNum+' из '+totalWaves;
+  }else{
+    S.waveBannerText='ВОЛНА '+waveNum;
+    S.waveBannerSub='из '+totalWaves;
+  }
+  S.betweenWaves=false;
+  S.betweenWavesTimer=0;
+  S.zombieSpawnTimer=0;
+  Sound.play(isBig||isBoss?'bigwave':'wave');
+}
+
+function spawnZombie(){
+  const lvl=S.currentLevel;
+  const row=Math.floor(Math.random()*ROWS);
+  let type='basic';
+  const available=lvl.types;
+  if(available.length===1)type=available[0];
+  else type=available[Math.floor(Math.random()*available.length)];
+  const def=ZOMBIE_TYPES[type];
+
+  const z={
+    type,row,x:ZOMBIE_SPAWN_X+Math.random()*40,
+    hp:def.hp,maxHp:def.hp,speed:def.speed,dmg:def.dmg,
+    walkPhase:Math.random()*Math.PI*2,
+    slowTimer:0,hitFlash:0,dyingTimer:0,attackTimer:0,
+    garlicPushTimer:0,hypnotized:false,y_air:undefined,falling:false,frozenStop:false,
+    spikeTimer:0,threwMinions:false
+  };
+
+  if(S.minigameFlags.gravity){
+    z.y_air=-100;
+    z.falling=true;
+  }
+
+  S.zombies.push(z);
+  S.spawnedZombies++;
+}
+
+function gameOver(won){
+  if(S.gameOver)return;
+  S.gameOver=true;
+  S.won=won;
+  Sound.play(won?'win':'lose');
+
+  if(won){
+    const mowersUsed=S.mowers.filter(m=>m.used).length;
+    let stars=1;
+    if(mowersUsed===0)stars=3;
+    else if(mowersUsed<=2)stars=2;
+
+    const lvlId=S.currentLevel.id;
+    if(lvlId>0){
+      const prevStars=S.levelStars[lvlId]||0;
+      if(stars>prevStars)S.levelStars[lvlId]=stars;
+      if(S.unlockedLevels===lvlId&&lvlId<LEVELS.length)S.unlockedLevels=lvlId+1;
+
+      if(S.currentLevel.reward&&ALL_PLANTS[S.currentLevel.reward]&&!S.ownedPlants.includes(S.currentLevel.reward)){
+        S.ownedPlants.push(S.currentLevel.reward);
+        showSaveToast('🎁 Новое растение: '+ALL_PLANTS[S.currentLevel.reward].name);
+      }
+    }
+    S.totalWinsEver++;
+    S.totalKillsEver+=S.totalZombiesDead;
+
+    if(S.minigameType){
+      if(S.minigameScore===0)S.minigameScore=S.totalZombiesDead;
+      const best=S.minigameBest[S.minigameType]||0;
+      if(S.minigameScore>best)S.minigameBest[S.minigameType]=S.minigameScore;
+    }
+
+    checkAchievements();
+    saveProgress();
+  }else{
+    S.shake=30;
+    S.totalKillsEver+=S.totalZombiesDead;
+    saveProgress(true);
+  }
+}
+
+// ============================================================
+// ГЛАВНЫЙ ЦИКЛ ОБНОВЛЕНИЯ (МЕХАНИКИ)
+// ============================================================
+function update(dt){
+  if(dt>100)dt=100;
+  const dts=dt/1000;
+
+  if(S.waveBannerTimer>0)S.waveBannerTimer-=dt;
+  for(const k in S.cooldowns)S.cooldowns[k]=Math.max(0,S.cooldowns[k]-dt);
+  if(S.particles.length>250)S.particles=S.particles.slice(-250);
+  if(S.boosterTimer>0)S.boosterTimer-=dt;
+
+  // Магнит собирает монеты
+  if(S.magnetActive){
+    for(let i=S.coinsOnGround.length-1;i>=0;i--){
+      const c=S.coinsOnGround[i];
+      S.coins+=c.value||10;
+      S.totalCoinsEarned+=c.value||10;
+      S.zombieCoinsCollected+=c.value||10;
+      addParticles(c.x,c.y,4,'#ffd700',3,300,3);
+      S.coinsOnGround.splice(i,1);
+      Sound.play('coin');
+    }
+  }
+
+  // Падение солнца
+  if(!S.minigameFlags.sunny){
+    S.sunTimer+=dt;
+    if(S.sunTimer>6500){
+      S.sunTimer=0;
+      const x=rand(GRID_X+20,GRID_X+GRID_W-20);
+      const targetY=rand(activeTop()+40,activeBottom()-40);
+      S.suns.push({x,y:-30,targetY,life:10000,maxLife:10000,vy:1.4,phase:Math.random()*10,value:25});
+    }
+  }
+
+  // === ЛОГИКА РАСТЕНИЙ ===
+  for(const p of S.plants){
+    const def=ALL_PLANTS[p.type];
+    if(!def)continue;
+
+    // Взрывы
+    if(def.explode!==undefined||def.freezeAll||def.fullScreen){
+      p.growTimer=(p.growTimer||0)+dt;
+      p.fuseDuration=p.fuseDuration||def.fuse||3000;
+      if(p.growTimer>=p.fuseDuration)triggerExplosion(p);
+      continue;
+    }
+
+    if(!isPlantAwake(p.type))continue;
+    const boost=S.boosterTimer>0?.5:1;
+
+    // Солнце
+    if(p.type==='sunflower'||p.type==='sunshroom'){
+      p.sunTimer+=dt;
+      const interval=(p.type==='sunshroom'?7000:5500)*boost;
+      const amount=p.type==='sunshroom'?15:25;
+      if(p.sunTimer>interval){
+        p.sunTimer=0;
+        S.suns.push({x:cellCX(p.col)+rand(-15,15),y:cellCY(p.row),targetY:cellCY(p.row)+30,life:10000,maxLife:10000,vy:.8,phase:Math.random()*10,value:amount});
+      }
+    }
+    if(p.type==='twinsunflower'){
+      p.sunTimer+=dt;
+      if(p.sunTimer>5500*boost){
+        p.sunTimer=0;
+        for(let i=0;i<2;i++){
+          S.suns.push({x:cellCX(p.col)+rand(-25,25),y:cellCY(p.row),targetY:cellCY(p.row)+30,life:10000,maxLife:10000,vy:.8,phase:Math.random()*10,value:25});
+        }
+      }
+    }
+    if(def.isCoin){
+      p.sunTimer+=dt;
+      if(p.sunTimer>7000*boost){
+        p.sunTimer=0;
+        S.coinsOnGround.push({x:cellCX(p.col)+rand(-15,15),y:cellCY(p.row),targetY:cellCY(p.row)+30,life:12000,maxLife:12000,vy:.8,phase:Math.random()*10,value:def.coinValue||10,coinType:'bronze'});
+      }
+    }
+
+    // Картошка
+    if((p.type==='potato'||p.type==='potatomine')&&!p.armed){
+      p.armTimer=(p.armTimer||0)+dt;
+      if(p.armTimer>15000)p.armed=true;
+    }
+
+    // Жеватель (Chomper) — съедает зомби
+    if(p.type==='chomper'){
+      if(p.chewing){
+        p.chewTimer-=dt;
+        if(p.chewTimer<=0)p.chewing=false;
+      }else{
+        p.shootTimer+=dt;
+        const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&z.x<YARD_RIGHT&&Math.abs(z.x-cellCX(p.col))<60&&!z.hypnotized);
+        if(target&&p.shootTimer>3000*boost){
+          p.shootTimer=0;
+          p.chewing=true;
+          p.chewTimer=6000;
+          target.hp-=3000;
+          Sound.play('hit');
+        }
+      }
+    }
+
+    // === СТРЕЛКИ (Peashooter, Repeater, etc) ===
+    if(['peashooter','snowpea','repeater','threepeater','helmetpea'].includes(p.type)){
+      p.shootTimer+=dt;
+      const cooldown=(p.type==='snowpea'?1400:1500)*boost;
+      let target=null;
+      if(p.type==='threepeater'){
+        target=S.zombies.find(z=>Math.abs(z.row-p.row)<=1&&z.x<ZOMBIE_ENTER_YARD_X+5&&z.x>cellCX(p.col)&&z.hp>0&&!z.hypnotized);
+      }else{
+        target=S.zombies.find(z=>z.row===p.row&&z.x<ZOMBIE_ENTER_YARD_X+5&&z.x>cellCX(p.col)&&z.hp>0&&!z.hypnotized);
+      }
+      if(target&&p.shootTimer>cooldown){
+        p.shootTimer=0;
+        Sound.play('shoot');
+        if(p.type==='threepeater'){
+          for(let dr=-1;dr<=1;dr++){
+            const row=p.row+dr;
+            if(row<0||row>=ROWS)continue;
+            S.projectiles.push({x:cellCX(p.col)+22,y:cellCY(row)-14,row,vx:500,damage:20,trail:[]});
+          }
+        }else{
+          const shots=p.type==='repeater'?2:1;
+          for(let i=0;i<shots;i++){
+            S.projectiles.push({x:cellCX(p.col)+22,y:cellCY(p.row)-14,row:p.row,vx:500,damage:p.type==='snowpea'?20:25,ice:p.type==='snowpea',delay:i*150,trail:[]});
+          }
+        }
+      }
+    }
+
+    // Гатлинг — 4 пули
+    if(p.type==='gatlingpea'||p.type==='gatlingpea_s'){
+      p.shootTimer+=dt;
+      const target=S.zombies.find(z=>z.row===p.row&&z.x<ZOMBIE_ENTER_YARD_X+5&&z.x>cellCX(p.col)&&z.hp>0&&!z.hypnotized);
+      if(target&&p.shootTimer>1500*boost){
+        p.shootTimer=0;
+        Sound.play('shoot');
+        const shots=p.type==='gatlingpea_s'?4:4;
+        for(let i=0;i<shots;i++){
+          S.projectiles.push({x:cellCX(p.col)+22,y:cellCY(p.row)-14,row:p.row,vx:600,damage:p.type==='gatlingpea_s'?25:20,delay:i*100,trail:[]});
+        }
+      }
+    }
+
+    // Гипногриб — гипнотизирует при съедании
+    if(p.type==='hypnoshroom'){
+      // Если съеден — обрабатывается в блоке зомби (ниже)
+    }
+
+    // Кукурузная пушка (Cob Cannon) — ядерный залп по площади
+    if(p.type==='cobcannon'){
+      p.shootTimer+=dt;
+      const target=S.zombies.find(z=>Math.abs(z.row-p.row)<=1&&z.x<YARD_RIGHT&&z.x>cellCX(p.col)&&z.hp>0&&!z.hypnotized);
+      if(target&&p.shootTimer>30000*boost){
+        p.shootTimer=0;
+        Sound.play('explosion');
+        for(const z of S.zombies){
+          if(z.hp<=0||z.hypnotized)continue;
+          if(Math.abs(z.row-p.row)<=1&&Math.abs(z.x-cellCX(p.col))<500)z.hp-=1800;
+        }
+        S.shake=20;
+        addParticles(cellCX(p.col)+100,cellCY(p.row),50,'#ffeb3b',12,1000,8);
+      }
+    }
+
+    // Кошкамыш (Cattail) — зенитка, бьёт по воздуху и по земле
+    if(p.type==='cattail'||p.type==='catmushroom'||p.type==='bluemushroom'){
+      p.shootTimer+=dt;
+      if(p.shootTimer>1500*boost){
+        p.shootTimer=0;
+        const candidates=S.zombies.filter(z=>z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT);
+        if(candidates.length>0){
+          const target=candidates.reduce((a,b)=>Math.abs(a.x-cellCX(p.col))<Math.abs(b.x-cellCX(p.col))?a:b);
+          const angle=Math.atan2(cellCY(target.row)-cellCY(p.row),target.x-cellCX(p.col));
+          S.projectiles.push({x:cellCX(p.col),y:cellCY(p.row)-14,row:p.row,vx:Math.cos(angle)*500,vy:Math.sin(angle)*500,damage:25,trail:[],cattail:true});
+          Sound.play('shoot');
+        }
+      }
+    }
+
+    // Шипы
+    if(p.type==='spikeweed'||p.type==='iron_spike'){
+      const dmgVal=p.type==='iron_spike'?40:(def.dmg||20);
+      for(const z of S.zombies){
+        if(z.hp<=0||z.hypnotized)continue;
+        if(z.row===p.row&&Math.abs(z.x-cellCX(p.col))<40){
+          z.spikeTimer=(z.spikeTimer||0)+dt;
+          if(z.spikeTimer>500){
+            z.spikeTimer=0;
+            z.hp-=dmgVal;
+            z.hitFlash=150;
+          }
+        }
+      }
+    }
+
+    // Магнит
+    if(p.type==='magnet')S.magnetActive=true;
+
+    // Дымогриб — урон всем в ряду
+    if(p.type==='fumeshroom'){
+      p.shootTimer+=dt;
+      if(p.shootTimer>1500*boost){
+        p.shootTimer=0;
+        S.zombies.forEach(z=>{
+          if(z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x>cellCX(p.col)-30&&z.x<cellCX(p.col)+120){
+            z.hp-=20;
+            z.hitFlash=150;
+          }
+        });
+      }
+    }
+
+    // Мрачногриб — по 3 рядам
+    if(p.type==='gloomyshroom'||p.type==='twinBF'){
+      p.shootTimer+=dt;
+      if(p.shootTimer>1500*boost){
+        p.shootTimer=0;
+        for(const z of S.zombies){
+          if(z.hp<=0||z.hypnotized)continue;
+          if(Math.abs(z.row-p.row)<=1&&Math.abs(z.x-cellCX(p.col))<120){
+            z.hp-=20;
+            z.hitFlash=150;
+          }
+        }
+        addParticles(cellCX(p.col),cellCY(p.row),8,'#a040a0',4,400,5);
+      }
+    }
+
+    // Грибочек / Трусогриб
+    if(p.type==='puffshroom'||p.type==='scaredy'){
+      if(p.type==='scaredy'){
+        const closeZ=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&Math.abs(z.x-cellCX(p.col))<50);
+        if(closeZ)continue;
+      }
+      p.shootTimer+=dt;
+      const range=p.type==='puffshroom'?220:200;
+      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<cellCX(p.col)+range&&z.x>cellCX(p.col));
+      if(target&&p.shootTimer>1500*boost){
+        p.shootTimer=0;
+        S.projectiles.push({x:cellCX(p.col)+20,y:cellCY(p.row)-14,row:p.row,vx:500,damage:20,spore:true,trail:[]});
+        Sound.play('shoot');
+      }
+    }
+
+    // Кактус — колючки
+    if(p.type==='cactus'){
+      p.shootTimer+=dt;
+      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT&&z.x>cellCX(p.col));
+      if(target&&p.shootTimer>1500*boost){
+        p.shootTimer=0;
+        S.projectiles.push({x:cellCX(p.col)+20,y:cellCY(p.row)-14,row:p.row,vx:600,damage:30,trail:[]});
+        Sound.play('shoot');
+      }
+    }
+
+    // Клевер — сбивает воздух
+    if(p.type==='clover'){
+      p.shootTimer+=dt;
+      if(p.shootTimer>3000*boost){
+        p.shootTimer=0;
+        S.zombies.forEach(z=>{
+          if(z.type==='balloon'&&z.hp>0){
+            z.type='basic';
+            addParticles(z.x,cellCY(z.row)-60,10,'#e91e63',5,600,5);
+          }
+        });
+      }
+    }
+
+    // Звезда — стреляет по 5 направлениям
+    if(p.type==='starfruit'){
+      p.shootTimer+=dt;
+      if(p.shootTimer>1500*boost){
+        p.shootTimer=0;
+        const dirs=[0,Math.PI/4,-Math.PI/4,Math.PI/2,-Math.PI/2];
+        for(const angle of dirs){
+          S.projectiles.push({x:cellCX(p.col),y:cellCY(p.row)-14,row:p.row,vx:Math.cos(angle)*500,vy:Math.sin(angle)*500,damage:20,trail:[],cattail:true});
+        }
+        Sound.play('shoot');
+      }
+    }
+
+    // Арбуз-пушка — по площади
+    if(p.type==='melonpult'){
+      p.shootTimer+=dt;
+      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT&&z.x>cellCX(p.col));
+      if(target&&p.shootTimer>2000*boost){
+        p.shootTimer=0;
+        for(const z of S.zombies){
+          if(z.hp<=0||z.hypnotized)continue;
+          if(Math.abs(z.row-p.row)<=1&&Math.abs(z.x-target.x)<CELL_W*1.5){
+            z.hp-=80;
+            z.hitFlash=200;
+          }
+        }
+        addParticles(target.x,cellCY(target.row),15,'#4caf50',6,600,5);
+        Sound.play('hit');
+      }
+    }
+
+    // Ледяной арбуз — по площади + заморозка
+    if(p.type==='icemelon'){
+      p.shootTimer+=dt;
+      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT&&z.x>cellCX(p.col));
+      if(target&&p.shootTimer>2500*boost){
+        p.shootTimer=0;
+        for(const z of S.zombies){
+          if(z.hp<=0||z.hypnotized)continue;
+          if(Math.abs(z.row-p.row)<=1&&Math.abs(z.x-target.x)<CELL_W*1.5){
+            z.hp-=60;
+            z.hitFlash=200;
+            z.slowTimer=5000;
+            z.frozenStop=true;
+            setTimeout(()=>{z.frozenStop=false;},3000);
+          }
+        }
+        addParticles(target.x,cellCY(target.row),20,'#4fc3f7',6,600,5);
+        Sound.play('freeze');
+      }
+    }
+
+    // Кукурузомёт — шанс оглушить
+    if(p.type==='kernelpult'){
+      p.shootTimer+=dt;
+      const target=S.zombies.find(z=>z.row===p.row&&z.hp>0&&!z.hypnotized&&z.x<YARD_RIGHT&&z.x>cellCX(p.col));
+      if(target&&p.shootTimer>1500*boost){
+        p.shootTimer=0;
+        const isButter=Math.random()<0.25;
+        target.hp-=isButter?40:20;
+        if(isButter){
+          target.slowTimer=3000;
+          target.frozenStop=true;
+          setTimeout(()=>{z.frozenStop=false;},3000);
+        }
+        Sound.play('shoot');
+      }
+    }
+
+    // Зонтик — сбивает парашюты
+    if(p.type==='umbrella'){
+      S.zombies.forEach(z=>{
+        if(z.type==='balloon'&&z.row===p.row&&Math.abs(z.x-cellCX(p.col))<100){
+          z.type='basic';
+          addParticles(z.x,cellCY(z.row)-60,8,'#e91e63',5,600,5);
+        }
+      });
+    }
+  }
+
+  // === СНАРЯДЫ ===
+  for(const pr of S.projectiles){
+    if(pr.delay>0){pr.delay-=dt;continue;}
+    if(pr.cattail){
+      pr.x+=(pr.vx||0)*dts;
+      pr.y+=(pr.vy||0)*dts;
+    }else{
+      pr.x+=pr.vx*dts;
+    }
+
+    for(let zi=0;zi<S.zombies.length;zi++){
+      const z=S.zombies[zi];
+      if(z.hp<=0||z.hypnotized)continue;
+      if(!pr.cattail&&z.row!==pr.row)continue;
+      if(z.x>=YARD_RIGHT)continue;
+
+      const zy=(z.y_air!==undefined&&z.falling)?z.y_air-20:cellCY(z.row)-20;
+      if(Math.abs(pr.x-z.x)<28&&Math.abs(pr.y-zy)<55){
+        z.hp-=pr.damage;
+        z.hitFlash=180;
+        if(pr.ice)z.slowTimer=5000;
+        if(pr.icemelon){
+          z.slowTimer=5000;
+          z.frozenStop=true;
+          setTimeout(()=>{z.frozenStop=false;},3000);
+        }
+        addParticles(pr.x,pr.y,4,pr.ice?'#4fc3f7':pr.spore?'#c8a2d8':pr.icemelon?'#4fc3f7':'#8bc34a',3,300,3);
+        pr.dead=true;
+        break;
+      }
+    }
+
+    if(pr.x>W+40||pr.x>YARD_RIGHT+5)pr.dead=true;
+    if(pr.y<-50||pr.y>H+50)pr.dead=true;
+  }
+  S.projectiles=S.projectiles.filter(p=>!p.dead);
+
+  // === СОЛНЦЕ / МОНЕТЫ ===
+  for(const s of S.suns){
+    s.life-=dt;
+    if(s.y<s.targetY){
+      s.y+=s.vy*dt*.06;
+      if(s.y>s.targetY)s.y=s.targetY;
+    }
+  }
+  S.suns=S.suns.filter(s=>s.life>0);
+
+  for(const c of S.coinsOnGround){
+    c.life-=dt;
+    if(c.y<c.targetY){
+      c.y+=c.vy*dt*.06;
+      if(c.y>c.targetY)c.y=c.targetY;
+    }
+  }
+  S.coinsOnGround=S.coinsOnGround.filter(c=>c.life>0);
+
+  for(const c of S.craters)c.life-=dt;
+  S.craters=S.craters.filter(c=>c.life>0);
+
+  // === ЗОМБИ ===
+  for(const z of S.zombies){
+    if(z.hp<=0){z.dyingTimer=(z.dyingTimer||0)+dt;continue;}
+    if(z.hitFlash>0)z.hitFlash-=dt;
+    if(z.slowTimer>0)z.slowTimer-=dt;
+    if(z.garlicPushTimer>0)z.garlicPushTimer-=dt;
+    z.walkPhase+=dt*.008;
+
+    if(z.hypnotized){
+      z.x+=Math.abs(z.speed)*dts*.7;
+      if(z.x>ROAD_RIGHT+50||z.x<GRID_X-50){
+        z.hp=0;
+        z.dyingTimer=800;
+        continue;
+      }
+      for(const other of S.zombies){
+        if(other===z||other.hypnotized||other.hp<=0)continue;
+        if(other.row===z.row&&Math.abs(other.x-z.x)<40){
+          z.attackTimer=(z.attackTimer||0)+dt;
+          if(z.attackTimer>800){
+            z.attackTimer=0;
+            other.hp-=z.dmg;
+          }
+        }
+      }
+      continue;
+    }
+
+    const col=Math.floor((z.x-GRID_X)/CELL_W);
+    const plant=getPlantAt(z.row,col);
+    let attacking=false;
+
+    // Грабли
+    if(z.x<GRID_X+CELL_W&&S.rakes.length>0){
+      for(let i=S.rakes.length-1;i>=0;i--){
+        const rk=S.rakes[i];
+        if(rk.row===z.row&&Math.abs(rk.x-z.x)<30){
+          z.hp=0;
+          z.dyingTimer=800;
+          S.rakes.splice(i,1);
+          S.rakesUsed=(S.rakesUsed||0)+1;
+          addParticles(rk.x,rk.y,15,'#8d6e63',5,600,5);
+          Sound.play('hit');
+          break;
+        }
+      }
+    }
+
+    if(plant&&z.x<YARD_RIGHT&&z.x-cellCX(col)<38&&z.x-cellCX(col)>-15){
+      if(plant.type==='hypnoshroom'){
+        z.attackTimer=(z.attackTimer||0)+dt;
+        if(z.attackTimer>800){
+          z.attackTimer=0;
+          plant.hp-=z.dmg;
+          if(plant.hp<=0){
+            z.hypnotized=true;
+            z.hp=100;
+            z.maxHp=100;
+            z.attackTimer=0;
+            S.hypnoCount=(S.hypnoCount||0)+1;
+            addParticles(z.x,cellCY(z.row),20,'#e040a0',6,700,6);
+            S.plants=S.plants.filter(p=>p!==plant);
+            rebuildPlantCache();
+            Sound.play('reward');
+          }
+        }
+        attacking=true;
+      }
+      else if(plant.type==='spikeweed'||plant.type==='iron_spike'){
+        attacking=false;
+      }
+      else if(plant.type==='garlic'&&!(z.garlicPushTimer>0)){
+        plant.hp-=z.dmg;
+        if(plant.hp<=0){
+          S.plants=S.plants.filter(p=>p!==plant);
+          rebuildPlantCache();
+        }
+        let targetRow=z.row;
+        const canUp=z.row>0;
+        const canDown=z.row<ROWS-1;
+        if(canUp&&canDown)targetRow=Math.random()<.5?z.row-1:z.row+1;
+        else if(canUp)targetRow=z.row-1;
+        else if(canDown)targetRow=z.row+1;
+        if(targetRow!==z.row){
+          z.row=targetRow;
+          z.x+=15;
+          z.garlicPushTimer=500;
+          S.shake=5;
+          S.garlicPushes=(S.garlicPushes||0)+1;
+        }
+        attacking=true;
+      }
+      else{
+        attacking=true;
+        z.attackTimer=(z.attackTimer||0)+dt;
+        if(z.attackTimer>800){
+          z.attackTimer=0;
+          plant.hp-=z.dmg;
+          if(plant.hp<=0){
+            if((plant.type==='potato'||plant.type==='potatomine')&&plant.armed)explodePotato(plant);
+            S.plants=S.plants.filter(p=>p!==plant);
+            rebuildPlantCache();
+          }
+        }
+      }
+    }
+
+    if(!attacking&&!z.falling){
+      let speedMul=1;
+      if(z.slowTimer>0)speedMul=.5;
+      if(z.frozenStop)speedMul=0;
+      z.x-=z.speed*speedMul*dts;
+    }
+
+    // Косилка
+    if(z.x<GRID_X-15&&!z.falling){
+      const mower=S.mowers[z.row];
+      if(mower&&!mower.used){
+        mower.used=true;
+        mower.active=true;
+        mower.x=GRID_X-30;
+        Sound.play('mower');
+      }else{
+        gameOver(false);
+        return;
+      }
+    }
+
+    // Гаргантюа бросает мини-зомби
+    if(z.type==='gargantuar'&&!z.threwMinions&&z.hp<z.maxHp*.5){
+      z.threwMinions=true;
+      for(let i=0;i<3;i++){
+        const row=Math.floor(Math.random()*ROWS);
+        S.zombies.push({
+          type:'minizombie',row,x:z.x-Math.random()*40,
+          hp:50,maxHp:50,speed:22,dmg:60,
+          walkPhase:Math.random()*Math.PI*2,
+          slowTimer:0,hitFlash:0,dyingTimer:0,attackTimer:0,
+          garlicPushTimer:0,hypnotized:false,y_air:undefined,falling:false,frozenStop:false,
+          spikeTimer:0,threwMinions:false
+        });
+      }
+      S.shake=15;
+      addParticles(z.x,cellCY(z.row),25,'#7a3a8a',8,800,6);
+    }
+  }
+
+  // Косилки
+  for(const m of S.mowers){
+    if(m.active){
+      m.x+=700*dts;
+      for(const z of S.zombies){
+        if(z.row===m.row&&z.hp>0&&z.x<m.x+40&&z.x>m.x-60)z.hp=0;
+      }
+      if(m.x>W+60)m.active=false;
+    }
+  }
+
+  // Смерть зомби
+  for(const z of S.zombies){
+    if(z.hp<=0&&!z._deadCounted){
+      z._deadCounted=true;
+      S.totalZombiesDead++;
+      S.killedZombies++;
+      Sound.play('zombieDie');
+      const def=ZOMBIE_TYPES[z.type];
+      if(def){
+        if(def.coins){
+          S.coins+=def.coins;
+          S.totalCoinsEarned+=def.coins;
+          S.zombieCoinsCollected+=def.coins;
+        }
+        if(def.dropChance&&Math.random()<def.dropChance){
+          S.coinsOnGround.push({
+            x:z.x,
+            y:cellCY(z.row)-20,
+            targetY:cellCY(z.row)+20,
+            life:12000,maxLife:12000,vy:.8,
+            phase:Math.random()*10,
+            value:def.coins||10,
+            coinType:def.coinType||'bronze'
+          });
+        }
+      }
+    }
+  }
+  S.zombies=S.zombies.filter(z=>!(z.hp<=0&&z.dyingTimer>800));
+
+  // Частицы
+  for(const p of S.particles){
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.vy+=p.gravity;
+    p.vx*=.98;
+    p.life-=dt;
+  }
+  S.particles=S.particles.filter(p=>p.life>0);
+
+  // === СПАВН ЗОМБИ ===
+  const totalWaves=S.currentLevel.waves||5;
+  S.zombieSpawnTimer+=dt;
+  const spawnInterval=S.currentLevel.spawnInterval||5000;
+  let effectiveInterval=spawnInterval;
+  if(S.minigameFlags.endless)effectiveInterval=Math.max(800,spawnInterval*Math.pow(.92,S.currentWave-1));
+
+  if(S.minigameFlags.endless||S.minigameFlags.sunny){
+    const aliveZ=S.zombies.filter(z=>z.hp>0).length;
+    if(aliveZ<MAX_ALIVE_ZOMBIES&&S.zombieSpawnTimer>effectiveInterval){
+      S.zombieSpawnTimer=0;
+      spawnZombie();
+    }
+  }else if(S.betweenWaves){
+    S.betweenWavesTimer-=dt;
+    if(S.betweenWavesTimer<=0){
+      S.betweenWaves=false;
+      if(S.currentWave<totalWaves)startWave(S.currentWave+1);
+    }
+  }else{
+    const aliveZ=S.zombies.filter(z=>z.hp>0&&z.type!=='zomboss'&&z.type!=='gargantuar').length;
+    if(S.waveZombiesRemaining>0&&aliveZ<MAX_ALIVE_ZOMBIES&&S.zombieSpawnTimer>effectiveInterval){
+      S.zombieSpawnTimer=0;
+      spawnZombie();
+      S.waveZombiesRemaining--;
+    }
+    const noWaveSpawnRemaining=S.waveZombiesRemaining<=0;
+    const aliveInWave=S.zombies.filter(z=>z.hp>0&&z.type!=='zomboss'&&z.type!=='gargantuar').length;
+    if(noWaveSpawnRemaining&&aliveInWave===0&&S.currentWave<totalWaves){
+      S.betweenWaves=true;
+      S.betweenWavesTimer=4000;
+      S.zombieSpawnTimer=0;
+    }
+  }
+
+  // Босс
+  if(S.currentLevel.boss&&!S.bossSpawned&&S.currentWave===totalWaves&&(S.spawnedZombies>=S.totalZombies-1||S.waveZombiesRemaining<=0)){
+    S.bossSpawned=true;
+    const row=Math.floor(Math.random()*ROWS);
+    const bossType=S.currentLevel.boss;
+    const def=ZOMBIE_TYPES[bossType];
+    S.zombies.push({
+      type:bossType,row,x:ZOMBIE_SPAWN_X+40,
+      hp:def.hp,maxHp:def.hp,speed:def.speed,dmg:def.dmg,
+      walkPhase:0,slowTimer:0,hitFlash:0,dyingTimer:0,attackTimer:0,
+      garlicPushTimer:0,hypnotized:false,y_air:undefined,falling:false,frozenStop:false,
+      threwMinions:false,spikeTimer:0
+    });
+    S.shake=30;
+  }
+
+  // Гравитация
+  if(S.minigameFlags.gravity){
+    for(const z of S.zombies){
+      if(z.falling&&z.y_air!==undefined){
+        z.y_air+=400*dts;
+        const groundY=cellCY(z.row);
+        if(z.y_air>=groundY){
+          z.y_air=groundY;
+          z.falling=false;
+          S.shake=4;
+        }
+      }
+    }
+  }
+
+  // Прогресс
+  S.levelProgress=clamp(
+    (S.currentWave-1)/totalWaves+
+    (S.waveZombiesPerWave>0?(1-S.waveZombiesRemaining/S.waveZombiesPerWave)/totalWaves:0),
+    0,1
+  );
+
+  // Победа/поражение
+  if(S.minigameFlags.sunny&&S.sun>=500){
+    S.minigameScore=Math.floor(S.sun);
+    gameOver(true);
+  }else if(S.minigameFlags.endless&&S.currentWave>20){
+    S.minigameScore=S.killedZombies;
+    gameOver(true);
+  }else{
+    const allSpawned=S.spawnedZombies>=S.totalZombies;
+    const bossKilled=!S.currentLevel.boss||(S.bossSpawned&&!S.zombies.some(z=>z.type===S.currentLevel.boss&&z.hp>0));
+    const noAlive=!S.zombies.some(z=>z.hp>0);
+    const noDying=!S.zombies.some(z=>z.hp<=0&&(z.dyingTimer||0)<800);
+    if(allSpawned&&bossKilled&&noAlive&&noDying&&S.currentWave>=totalWaves)gameOver(true);
+  }
+
+  if(S.shake>0)S.shake=Math.max(0,S.shake-dt*.02);
+  if(Math.floor(S.time/1000)!==Math.floor((S.time-dt)/1000))checkAchievements();
+}
+
+function startLevel(level){
+  Sound.init();Sound.resume();
+  if(S.musicOn)Sound.startMusic();
+  ROWS=level.rows||5;
+  ROW_START=level.rowsOffset||0;
+  S.dayNight=level.time||'day';
+  S.location=level.location||'yard';
+  bgCacheKey='';
+  bushesCacheKey='';
+  ensureBackgrounds();
+  ensureBushes();
+
+  S.currentLevel=level;
+  S.scene='playing';
+  S.sun=75;
+  S.plants=[];
+  S.zombies=[];
+  S.projectiles=[];
+  S.suns=[];
+  S.coinsOnGround=[];
+  S.particles=[];
+  S.craters=[];
+  S.rakes=[];
+  S.flash=0;
+  S.selectedSeed=null;
+  S.shovelSelected=false;
+  S.gloveSelected=false;
+  S.gloveHolding=null;
+  S.cooldowns={};
+  S.sunTimer=0;
+  S.zombieSpawnTimer=0;
+  S.spawnedZombies=0;
+  S.killedZombies=0;
+  S.totalZombiesDead=0;
+  S.totalZombies=level.totalZombies;
+  S.spawnInterval=level.spawnInterval;
+  S.currentWave=0;
+  S.gameOver=false;
+  S.won=false;
+  S.shake=0;
+  S.levelProgress=0;
+  S.bossSpawned=false;
+  S.plantedThisLevel=0;
+  S.usedShovelThisLevel=0;
+  S.garlicPushes=0;
+  S.hypnoCount=0;
+  S.rakesUsed=0;
+  S.levelStartTime=S.time;
+  S.minigameTime=0;
+  S.boosterTimer=0;
+  S.mowers=[];
+  S.magnetActive=false;
+  S.seedSelectMaxSlots=6+(S.extraSlots||0);
+  S.ironSpikeOwned=S.ownedItems.includes('spikeweed_iron');
+
+  for(let r=0;r<ROWS;r++){
+    const isPool=(S.location==='pool'||S.location==='nightpool')&&r>=2&&r<4;
+    S.mowers.push({row:r,x:GRID_X-32,used:false,active:false,isPool:isPool});
+  }
+
+  if(S.ownedItems.includes('rake')){
+    S.rakes.push({row:Math.floor(ROWS/2),x:GRID_X+CELL_W/2,y:cellCY(Math.floor(ROWS/2))});
+  }
+
+  for(let i=0;i<2;i++){
+    const x=rand(GRID_X+40,GRID_X+GRID_W-40);
+    const y=rand(activeTop()+40,activeBottom()-40);
+    S.suns.push({x,y,targetY:y,life:12000,maxLife:12000,vy:0,phase:Math.random()*10,value:25});
+  }
+
+  S.waveBannerTimer=0;
+  S.betweenWaves=true;
+  S.betweenWavesTimer=2000;
+  S.waveZombiesRemaining=0;
+  S.waveZombiesPerWave=0;
+  rebuildPlantCache();
+}
+
+function startMinigame(mg){
+  S.minigameType=mg.id;
+  S.minigameScore=0;
+  S.minigameTime=0;
+  S.minigameFlags={endless:false,sunny:false,gravity:false};
+  if(mg.config.endless)S.minigameFlags.endless=true;
+  if(mg.config.sunny)S.minigameFlags.sunny=true;
+  if(mg.config.gravity)S.minigameFlags.gravity=true;
+  const lvl={
+    id:-1,name:mg.name.slice(0,6),location:'yard',rows:5,rowsOffset:0,time:'day',
+    seeds:mg.config.seeds||['peashooter','sunflower','wallnut'],
+    totalZombies:mg.config.endless?9999:30,
+    spawnInterval:mg.config.spawnRate||5000,
+    types:['basic','cone','bucket','flag','football','dancer'],
+    waves:mg.config.endless?999:5,
+    reward:null
+  };
+  startLevel(lvl);
+  S.minigameType=mg.id;
+}
+
+function startLevelWithSeedSelect(level){
+  S.currentLevel=level;
+  S.seedSelectMode=true;
+  const ownedAvailable=S.ownedPlants.slice();
+  const prioritySeeds=[];
+  for(const lvl of LEVELS){
+    for(const s of lvl.seeds){
+      if(ownedAvailable.includes(s)&&!prioritySeeds.includes(s))prioritySeeds.push(s);
+    }
+  }
+  for(const s of ownedAvailable){
+    if(!prioritySeeds.includes(s))prioritySeeds.push(s);
+  }
+  S.seedSelectAvailable=prioritySeeds.filter(s=>ALL_PLANTS[s]);
+
+  const preChosen=[];
+  const maxSlots=6+(S.extraSlots||0);
+  for(const s of level.seeds){
+    if(S.ownedPlants.includes(s)&&preChosen.length<maxSlots)preChosen.push(s);
+  }
+  for(const s of S.seedSelectAvailable){
+    if(preChosen.length>=maxSlots)break;
+    if(!preChosen.includes(s))preChosen.push(s);
+  }
+  S.seedSelectChosen=preChosen;
+  S.scene='seedselect';
+}
+
+// [КОНЕЦ ЧАСТИ 12/13]
 // [КОНЕЦ ЧАСТИ 12/13]
 // ============================================================
 // ЧАСТЬ 13/13 — ВВОД, НАСТРОЙКИ, РЕНДЕР, СТАРТ
@@ -7683,6 +7785,10 @@ function getPos(e){
   const rect=canvas.getBoundingClientRect();
   return{x:(e.clientX-rect.left)*(W/rect.width),y:(e.clientY-rect.top)*(H/rect.height)};
 }
+
+// ============================================================
+// ЭКРАН НАСТРОЕК
+// ============================================================
 function drawSettings(){
   const bg=ctx.createLinearGradient(0,0,0,H);
   bg.addColorStop(0,'#1a2a3a');
@@ -7699,7 +7805,6 @@ function drawSettings(){
   ctx.fillText('⚙️ НАСТРОЙКИ',W/2,60);
 
   drawBackBtn(20,20,140,50);
-  S.backBtn = {x:20, y:20, w:140, h:50}; // ФИКС: сохраняем кнопку назад, чтобы работала
 
   const panelW=720;
   const panelH=580;
@@ -7816,205 +7921,7 @@ function drawSettings(){
   ctx.font='italic 14px Arial';
   ctx.fillText('v1.1 • Plants vs Zombies Fan Remake',W/2,H-30);
 }
-// ============================================================
-// ФИНАЛЬНЫЙ БЛОК (Аккаунт, Моды, Фиксы) 
-// ============================================================
 
-S.lang = 'ru';
-const LOCALE = {
-  ru: { hello: 'Привет', mods: 'МОДЫ', lang: 'ЯЗЫК: РУ' },
-  en: { hello: 'Hello', mods: 'MODS', lang: 'LANG: EN' }
-};
-
-// Фикс поливки (без дюпа денег)
-window.waterTree = function() {
-  if (S.treeWater <= 0) {
-    showSaveToast('❌ Нет поливки!');
-    return;
-  }
-  let watered = 0;
-  while (S.treeWater > 0 && S.treeWaterNeeded > 0) {
-    S.treeWater--;
-    S.treeWaterNeeded--;
-    watered++;
-  }
-  if (typeof Sound !== 'undefined') Sound.play('water');
-  if (S.treeWaterNeeded <= 0) {
-    S.treeLevel++;
-    S.treeWaterNeeded = 5 + S.treeLevel * 3;
-    showSaveToast('🌳 Дерево выросло! Ур. ' + S.treeLevel + '!');
-    if (S.treeLevel % 10 === 0) {
-      const allPlantsList = Object.keys(ALL_PLANTS).filter(p => !S.ownedPlants.includes(p));
-      if (allPlantsList.length > 0) {
-        const newPlant = allPlantsList[Math.floor(Math.random() * allPlantsList.length)];
-        S.ownedPlants.push(newPlant);
-        showSaveToast('🌻 Новое растение: ' + ALL_PLANTS[newPlant].name);
-      }
-    }
-    S.flash = 0.3;
-    S.shake = 10;
-  }
-  S.treeLastTip = S.time;
-  saveProgress(true);
-};
-
-// Аккаунт
-function initAuthAndMods() {
-  if (!S.user) {
-    S.user = JSON.parse(localStorage.getItem('pvz_user') || 'null');
-    S.customPlants = JSON.parse(localStorage.getItem('pvz_custom_plants') || '{}');
-    S.loginInput = '';
-  }
-  for (let id in S.customPlants) {
-    ALL_PLANTS[id] = S.customPlants[id];
-  }
-}
-
-document.addEventListener('keydown', (e) => {
-  if (S.scene === 'auth') {
-    if (e.key === 'Enter' && S.loginInput.trim()) {
-      S.user = { name: S.loginInput.trim() };
-      localStorage.setItem('pvz_user', JSON.stringify(S.user));
-      S.scene = 'menu';
-    } else if (e.key === 'Backspace') {
-      S.loginInput = S.loginInput.slice(0, -1);
-    } else if (e.key.length === 1) {
-      S.loginInput += e.key;
-    }
-  }
-});
-
-// Отрисовка меню с новыми кнопками
-const oldDrawMenu = drawMenu;
-window.drawMenu = function() {
-  oldDrawMenu();
-  if (S.user) {
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath(); ctx.roundRect(20, H/2 - 200, 250, 50, 10); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.font = 'bold 24px Arial';
-    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillText(LOCALE[S.lang].hello + ', ' + S.user.name + '!', 40, H/2 - 175);
-  }
-  ctx.fillStyle = '#e91e63';
-  ctx.beginPath(); ctx.roundRect(W/2 - 170, H - 160, 340, 60, 12); ctx.fill();
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 30px Impact';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🛠️ ' + LOCALE[S.lang].mods, W/2, H - 130);
-  ctx.fillStyle = '#2196f3';
-  ctx.beginPath(); ctx.roundRect(20, H - 160, 150, 50, 10); ctx.fill();
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 20px Impact';
-  ctx.fillText(LOCALE[S.lang].lang, 95, H - 135);
-};
-
-// Отрисовка новых экранов
-const oldRender = render;
-window.render = function() {
-  if (S.scene === 'auth') {
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.fillStyle = '#1a0f25'; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.font = 'bold 50px Impact'; ctx.fillText('РЕГИСТРАЦИЯ', W / 2, 150);
-    ctx.font = '20px Arial';
-    ctx.fillText('Введи своё имя и нажми ENTER:', W / 2, 250);
-    ctx.fillStyle = '#333'; ctx.fillRect(W / 2 - 200, 280, 400, 60);
-    ctx.strokeStyle = '#7cb342'; ctx.lineWidth = 3; ctx.strokeRect(W / 2 - 200, 280, 400, 60);
-    ctx.fillStyle = '#fff'; ctx.font = '30px monospace';
-    ctx.fillText(S.loginInput + (Math.floor(S.time / 500) % 2 === 0 ? '|' : ''), W / 2, 310);
-    return;
-  }
-  if (S.scene === 'mods') {
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, W, H);
-    drawBackBtn(20, 20, 140, 50);
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.font = 'bold 50px Impact'; ctx.fillStyle = '#38bdf8';
-    ctx.fillText('СОЗДАНИЕ МОДОВ', W / 2, 60);
-    ctx.font = '24px Arial'; ctx.fillStyle = '#fff';
-    ctx.fillText('Привет, ' + (S.user ? S.user.name : 'Гость') + '!', W / 2, 150);
-    ctx.fillStyle = '#e91e63';
-    ctx.beginPath(); ctx.roundRect(W / 2 - 150, 200, 300, 60, 10); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.font = 'bold 24px Arial';
-    ctx.fillText('СОЗДАТЬ РАСТЕНИЕ', W / 2, 230);
-    let y = 300;
-    for (let id in S.customPlants) {
-      ctx.fillStyle = '#333'; ctx.fillRect(100, y, 800, 50);
-      ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
-      ctx.fillText(S.customPlants[id].name, 120, y + 25);
-      y += 60;
-    }
-    return;
-  }
-  oldRender();
-};
-
-// Обработка кликов
-canvas.addEventListener('click', (e) => {
-  const p = getPos(e);
-  if (S.scene === 'menu') {
-    if (p.x > W/2 - 170 && p.x < W/2 + 170 && p.y > H - 160 && p.y < H - 100) {
-      S.scene = 'mods'; return;
-    }
-    if (p.x > 20 && p.x < 170 && p.y > H - 160 && p.y < H - 110) {
-      S.lang = S.lang === 'ru' ? 'en' : 'ru'; return;
-    }
-  }
-  if (S.scene === 'mods') {
-    if (p.x > 20 && p.x < 160 && p.y > 20 && p.y < 70) {
-      S.scene = 'menu'; return;
-    }
-    if (p.x > W/2 - 150 && p.x < W/2 + 150 && p.y > 200 && p.y < 260) {
-      let name = prompt("Название растения (на англ):");
-      if (name) {
-        let id = 'mod_' + Date.now();
-        S.customPlants[id] = { id: id, name: name, cost: 100, cd: 7500, hp: 100, sleep: 'day' };
-        ALL_PLANTS[id] = S.customPlants[id];
-        S.ownedPlants.push(id);
-        localStorage.setItem('pvz_custom_plants', JSON.stringify(S.customPlants));
-        alert('Мод создан!');
-      }
-      return;
-    }
-  }
-  if (S.scene === 'settings') {
-    if (S.backBtn && p.x >= S.backBtn.x && p.x <= S.backBtn.x + S.backBtn.w && p.y >= S.backBtn.y && p.y <= S.backBtn.y + S.backBtn.h) {
-      Sound.play('click');
-      S.scene = 'menu';
-      return;
-    }
-    for (const t of S.settingsToggles) {
-      if (t.testSound) {
-        if (p.x >= t.x && p.x <= t.x + t.w && p.y >= t.y && p.y <= t.y + t.h) {
-          Sound.play('win');
-          return;
-        }
-        continue;
-      }
-      if (t.slider) continue;
-      if (p.x >= t.x && p.x <= t.x + t.w && p.y >= t.y && p.y <= t.y + t.h) {
-        t.action();
-        return;
-      }
-    }
-  }
-});
-
-// Фикс бледного экрана
-const oldUpdate = update;
-window.update = function(dt) {
-  oldUpdate(dt);
-  if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 0.003);
-};
-
-// ЗАПУСК ИГРЫ
-initAuthAndMods();
-S.scene = 'menu'; // Принудительно запускаем меню (без регистрации, чтобы ты сразу поиграл)
-loadProgress();
-requestAnimationFrame(loop);
-
-})();
-</script>
-</body>
-</html>
 // ============================================================
 // ОБРАБОТКА МЫШИ
 // ============================================================
@@ -8558,32 +8465,13 @@ function loop(now){
     S.time+=dt;
     if(!Number.isFinite(S.time))S.time=0;
 
-        // FPS счётчик
+    // FPS счётчик
     S.fpsFrames++;
     S.fpsTimer+=dt;
     if(S.fpsTimer>=500){
       S.fps=Math.round(S.fpsFrames*1000/S.fpsTimer);
       S.fpsFrames=0;S.fpsTimer=0;
     }
-
-    // Отрисовка FPS (вставь перед render)
-    if(S.showFPS){
-      ctx.save();
-      ctx.setTransform(1,0,0,1,0,0);
-      ctx.fillStyle='rgba(0,0,0,.7)';
-      ctx.beginPath();
-      ctx.roundRect(W-90,H-50,80,32,6);
-      ctx.fill();
-      ctx.strokeStyle='#4fc3f7';ctx.lineWidth=2;ctx.stroke();
-      ctx.fillStyle=S.fps>=50?'#4caf50':S.fps>=30?'#ffeb3b':'#f44336';
-      ctx.font='bold 16px Consolas, monospace';
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText('FPS '+S.fps,W-50,H-34);
-      ctx.restore();
-    }
-
-    // Вызов отрисовки игры
-    render();
 
     if(S.scene==='playing'&&!S.gameOver)update(dt);
 
