@@ -7825,7 +7825,6 @@ function drawSettings(){
   const startY=panelY+20;
   let rowIdx=0;
 
-  // --- Тумблер ---
   const addToggle=(label,getVal,setVal)=>{
     const ry=startY+rowIdx*rowH;
     ctx.textAlign='left';
@@ -7853,11 +7852,10 @@ function drawSettings(){
     ctx.textAlign='center';
     ctx.fillText(val?'ВКЛ':'ВЫКЛ',btnX+btnW/2,btnY+btnH/2);
 
-    S.settingsToggles.push({x:btnX,y:btnY,w:btnW,h:btnH,action:setVal});
+    S.settingsToggles.push({type:'toggle',x:btnX,y:btnY,w:btnW,h:btnH,action:setVal});
     rowIdx++;
   };
 
-  // --- Слайдер ---
   const addSlider=(label,getVal,setVal)=>{
     const ry=startY+rowIdx*rowH;
     ctx.textAlign='left';
@@ -7888,37 +7886,40 @@ function drawSettings(){
     ctx.fillStyle='#4fc3f7';
     ctx.fillText(Math.round(val*100)+'%',panelX+panelW-40,ry+20);
 
-    S.settingsToggles.push({slider:true,x:slX,y:slY-10,w:slW,h:slH+20,setVal:setVal});
+    S.settingsToggles.push({type:'slider',x:slX,y:slY-10,w:slW,h:slH+20,setVal:setVal});
     rowIdx++;
   };
 
-   addToggle('🎵 Музыка',()=>S.musicOn,v=>{
-    S.musicOn=v;
-    Sound.setMusicEnabled(v);
-    if(v){
-      Sound.init();
-      Sound.resume();
-    }
-    saveProgress(true);
+  addToggle('🎵 Музыка',()=>S.musicOn,v=>{
+    S.musicOn=v;Sound.init();Sound.resume();Sound.setMusicEnabled(v);saveProgress(true);
   });
-  addSlider('🔊 Громкость музыки',()=>S.musicVolume,v=>{S.musicVolume=v;Sound.setMusicVolume(v);});
-    addToggle('🔔 Звуки',()=>S.soundOn,v=>{
-    S.soundOn=v;
-    Sound.setSfxEnabled(v);
-    // Принудительно инициализируем контекст при включении
-    if(v){
-      Sound.init();
-      Sound.resume();
-      Sound.play('click');
-    }
-    saveProgress(true);
-  });
-  addSlider('🔊 Громкость звуков',()=>S.soundVolume,v=>{S.soundVolume=v;Sound.setVolume(v);});
-  addToggle('📊 Показывать FPS',()=>S.showFPS,v=>{S.showFPS=v;saveProgress(true);});
-  addToggle('📏 Показывать сетку',()=>S.showGrid,v=>{S.showGrid=v;bgCacheKey='';saveProgress(true);});
-  addToggle('❤️ Полоски здоровья',()=>S.showHPBars,v=>{S.showHPBars=v;saveProgress(true);});
 
-  // Кнопка теста звука
+  addSlider('🔊 Громкость музыки',()=>S.musicVolume,v=>{
+    S.musicVolume=v;Sound.setMusicVolume(v);saveProgress(true);
+  });
+
+  addToggle('🔔 Звуки',()=>S.soundOn,v=>{
+    S.soundOn=v;Sound.init();Sound.resume();Sound.setSfxEnabled(v);
+    if(v)Sound.play('click');
+    saveProgress(true);
+  });
+
+  addSlider('🔊 Громкость звуков',()=>S.soundVolume,v=>{
+    S.soundVolume=v;Sound.setVolume(v);saveProgress(true);
+  });
+
+  addToggle('📊 Показывать FPS',()=>S.showFPS,v=>{
+    S.showFPS=v;saveProgress(true);
+  });
+
+  addToggle('📏 Показывать сетку',()=>S.showGrid,v=>{
+    S.showGrid=v;bgCacheKey='';saveProgress(true);
+  });
+
+  addToggle('❤️ Полоски здоровья',()=>S.showHPBars,v=>{
+    S.showHPBars=v;saveProgress(true);
+  });
+
   const testY=startY+rowIdx*rowH+10;
   const testBtnW=260,testBtnH=50;
   const testBtnX=panelX+panelW/2-testBtnW/2;
@@ -7933,25 +7934,24 @@ function drawSettings(){
   ctx.font='bold 22px Impact, Arial Black, sans-serif';
   ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText('🔊 ПРОВЕРИТЬ ЗВУК',testBtnX+testBtnW/2,testY+testBtnH/2);
-  S.settingsToggles.push({testSound:true,x:testBtnX,y:testY,w:testBtnW,h:testBtnH});
+  S.settingsToggles.push({type:'testSound',x:testBtnX,y:testY,w:testBtnW,h:testBtnH});
 
   ctx.fillStyle='rgba(255,255,255,.4)';
   ctx.font='italic 14px Arial';
-  ctx.fillText('v1.1 • Plants vs Zombies Fan Remake',W/2,H-30);
+  ctx.fillText('v1.2 • Plants vs Zombies Fan Remake',W/2,H-30);
 }
 
 // ============================================================
-// ОБРАБОТКА МЫШИ
+// ОБРАБОТКА МЫШИ (mousemove, mousedown, mouseup, click)
 // ============================================================
 canvas.addEventListener('mousemove',(e)=>{
   const p=getPos(e);
   S.cursorX=p.x;
   S.cursorY=p.y;
 
-  // Перетаскивание слайдера
   if(S.scene==='settings'&&S._draggingSlider!==undefined){
     const t=S.settingsToggles[S._draggingSlider];
-    if(t&&t.slider){
+    if(t&&t.type==='slider'){
       const val=clamp((p.x-t.x)/t.w,0,1);
       t.setVal(val);
     }
@@ -7964,14 +7964,16 @@ canvas.addEventListener('mouseleave',()=>{
 });
 
 canvas.addEventListener('mousedown',(e)=>{
-  if(S.scene==='settings'){
-    const p=getPos(e);
-    for(let i=0;i<S.settingsToggles.length;i++){
-      const t=S.settingsToggles[i];
-      if(t.slider&&p.x>=t.x&&p.x<=t.x+t.w&&p.y>=t.y&&p.y<=t.y+t.h){
-        S._draggingSlider=i;
-        break;
-      }
+  if(S.scene!=='settings')return;
+  const p=getPos(e);
+  for(let i=0;i<S.settingsToggles.length;i++){
+    const t=S.settingsToggles[i];
+    if(!t)continue;
+    if(t.type==='slider'&&p.x>=t.x&&p.x<=t.x+t.w&&p.y>=t.y&&p.y<=t.y+t.h){
+      S._draggingSlider=i;
+      const val=clamp((p.x-t.x)/t.w,0,1);
+      t.setVal(val);
+      break;
     }
   }
 });
@@ -7995,37 +7997,44 @@ canvas.addEventListener('click',(e)=>{
     const x=p.x;
     const y=p.y;
 
-        // === НАСТРОЙКИ ===
+    // === НАСТРОЙКИ ===
     if(S.scene==='settings'){
       if(S.backBtn&&x>=S.backBtn.x&&x<=S.backBtn.x+S.backBtn.w&&y>=S.backBtn.y&&y<=S.backBtn.y+S.backBtn.h){
         Sound.play('click');
-        S.scene='menu';
+        S.scene=S.settingsReturnScene||'menu';
+        S._draggingSlider=undefined;
         return;
       }
-      // Сначала проверяем тумблеры и кнопки
+
       for(const t of S.settingsToggles){
         if(!t)continue;
-        
-        // Кнопка "Проверить звук"
-        if(t.testSound){
+
+        if(t.type==='testSound'){
           if(x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h){
-            // Принудительно включаем звук для теста
-            const wasEnabled=Sound.sfxEnabled;
+            const wasSfx=Sound.sfxEnabled;
             Sound.setSfxEnabled(true);
+            Sound.init();Sound.resume();
             Sound.play('win');
-            if(!wasEnabled)Sound.setSfxEnabled(S.soundOn);
+            Sound.setSfxEnabled(wasSfx);
             return;
           }
           continue;
         }
-        
-        // Слайдеры обрабатываются в mousedown, тут пропускаем
-        if(t.slider)continue;
-        
-        // Тумблер
-        if(x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h){
-          t.action();
-          return;
+
+        if(t.type==='slider'){
+          if(x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h){
+            const val=clamp((x-t.x)/t.w,0,1);
+            t.setVal(val);
+            return;
+          }
+          continue;
+        }
+
+        if(t.type==='toggle'){
+          if(x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h){
+            t.action();
+            return;
+          }
         }
       }
       return;
@@ -8081,13 +8090,11 @@ canvas.addEventListener('click',(e)=>{
       }
       if(S.shopPageBtns.prev&&x>=S.shopPageBtns.prev.x&&x<=S.shopPageBtns.prev.x+S.shopPageBtns.prev.w&&y>=S.shopPageBtns.prev.y&&y<=S.shopPageBtns.prev.y+S.shopPageBtns.prev.h){
         S.shopPage=(S.shopPage-1+SHOP_PAGES.length)%SHOP_PAGES.length;
-        Sound.play('click');
-        return;
+        Sound.play('click');return;
       }
       if(S.shopPageBtns.next&&x>=S.shopPageBtns.next.x&&x<=S.shopPageBtns.next.x+S.shopPageBtns.next.w&&y>=S.shopPageBtns.next.y&&y<=S.shopPageBtns.next.y+S.shopPageBtns.next.h){
         S.shopPage=(S.shopPage+1)%SHOP_PAGES.length;
-        Sound.play('click');
-        return;
+        Sound.play('click');return;
       }
       for(const c of S.shopCards){
         if(x>=c.x&&x<=c.x+c.w&&y>=c.y&&y<=c.y+c.h){
@@ -8172,6 +8179,7 @@ canvas.addEventListener('click',(e)=>{
       }
       if(S.settingsBtn&&x>=S.settingsBtn.x&&x<=S.settingsBtn.x+S.settingsBtn.w&&y>=S.settingsBtn.y&&y<=S.settingsBtn.y+S.settingsBtn.h){
         Sound.play('click');
+        S.settingsReturnScene='menu';
         S.scene='settings';
         return;
       }
@@ -8204,7 +8212,7 @@ canvas.addEventListener('click',(e)=>{
 
     if(S.scene!=='playing'||S.gameOver)return;
 
-    // === МОНЕТЫ НА ЗЕМЛЕ ===
+    // === СБОР МОНЕТ ===
     for(let i=S.coinsOnGround.length-1;i>=0;i--){
       const c=S.coinsOnGround[i];
       if(dist(c.x,c.y,x,y)<32){
@@ -8218,7 +8226,7 @@ canvas.addEventListener('click',(e)=>{
       }
     }
 
-    // === СОЛНЦЕ ===
+    // === СБОР СОЛНЦА ===
     for(let i=S.suns.length-1;i>=0;i--){
       const s=S.suns[i];
       if(s.life<=0)continue;
@@ -8239,7 +8247,6 @@ canvas.addEventListener('click',(e)=>{
     const startX=8+sunW+20;
     const seeds=S.currentLevel.seeds;
 
-    // Клик по семечку
     for(let i=0;i<seeds.length;i++){
       const sx=startX+i*(packetW+4);
       if(x>=sx&&x<=sx+packetW&&y>=panelY&&y<=panelY+packetH){
@@ -8256,7 +8263,6 @@ canvas.addEventListener('click',(e)=>{
       }
     }
 
-    // Клик по лопате
     const shX=startX+seeds.length*(packetW+4)+4;
     if(x>=shX&&x<=shX+packetW&&y>=panelY&&y<=panelY+packetH){
       S.shovelSelected=!S.shovelSelected;
@@ -8266,7 +8272,6 @@ canvas.addEventListener('click',(e)=>{
       return;
     }
 
-    // Клик по перчатке
     const glX=shX+packetW+4;
     if(S.ownedItems.includes('glove')&&x>=glX&&x<=glX+packetW&&y>=panelY&&y<=panelY+packetH){
       S.gloveSelected=!S.gloveSelected;
@@ -8281,7 +8286,7 @@ canvas.addEventListener('click',(e)=>{
       return;
     }
 
-    // Клик по MENU
+    // MENU
     if(x>=W-98&&x<=W-8&&y>=panelY&&y<=panelY+40){
       saveProgress(true);
       S.scene='levelselect';
@@ -8292,9 +8297,10 @@ canvas.addEventListener('click',(e)=>{
       return;
     }
 
-    // Клик по НАСТРОЙКАМ
+    // НАСТРОЙКИ В ИГРЕ
     if(x>=W-194&&x<=W-104&&y>=panelY&&y<=panelY+40){
       Sound.play('click');
+      S.settingsReturnScene='playing';
       S.scene='settings';
       return;
     }
@@ -8304,7 +8310,6 @@ canvas.addEventListener('click',(e)=>{
     const row=Math.floor((y-activeTop())/CELL_H);
     if(col<0||col>=COLS||row<0||row>=ROWS)return;
 
-    // Перчатка
     if(S.gloveSelected){
       const plant=getPlantAt(row,col);
       if(S.gloveHolding){
@@ -8328,7 +8333,6 @@ canvas.addEventListener('click',(e)=>{
       }
     }
 
-    // Лопата
     if(S.shovelSelected){
       const plant=getPlantAt(row,col);
       if(plant){
@@ -8341,7 +8345,6 @@ canvas.addEventListener('click',(e)=>{
       return;
     }
 
-    // Посадка семени
     if(S.selectedSeed){
       const seed=ALL_PLANTS[S.selectedSeed];
       if(!seed)return;
@@ -8350,22 +8353,18 @@ canvas.addEventListener('click',(e)=>{
       if(getPlantAt(row,col))return;
       if(S.craters.find(c=>c.row===row&&c.col===col))return;
 
-      // === ОГРАНИЧЕНИЯ ===
-      // Кукурузная пушка занимает 2 клетки (проверка справа)
+      // ОГРАНИЧЕНИЯ МЕХАНИК
       if(seed.id==='cobcannon'){
         if(col>=COLS-1||getPlantAt(row,col+1)){Sound.play('error');return;}
       }
-      // Кошкамыш только на воду
       if(seed.id==='cattail'||seed.id==='catmushroom'){
         const isPool=(S.location==='pool'||S.location==='nightpool')&&row>=2&&row<4;
         if(!isPool){Sound.play('error');return;}
       }
-      // Кувшинка только на воду
       if(seed.id==='lilypad'){
         const isPool=(S.location==='pool'||S.location==='nightpool')&&row>=2&&row<4;
         if(!isPool){Sound.play('error');return;}
       }
-      // Водоросли только на воду
       if(seed.id==='tanglekelp'){
         const isPool=(S.location==='pool'||S.location==='nightpool')&&row>=2&&row<4;
         if(!isPool){Sound.play('error');return;}
@@ -8396,6 +8395,10 @@ canvas.addEventListener('click',(e)=>{
 
 // === КЛАВИАТУРА ===
 document.addEventListener('keydown',(e)=>{
+  if(S.scene==='settings'&&e.key==='Escape'){
+    S.scene=S.settingsReturnScene||'menu';
+    return;
+  }
   if(S.scene!=='playing'||S.gameOver)return;
   if(e.key==='Escape'){
     S.selectedSeed=null;
@@ -8454,7 +8457,6 @@ function render(){
 
   drawAchievementToasts();
 
-  // FPS
   if(S.showFPS){
     ctx.save();
     ctx.setTransform(1,0,0,1,0,0);
@@ -8495,7 +8497,7 @@ function loop(now){
     S.time+=dt;
     if(!Number.isFinite(S.time))S.time=0;
 
-    // FPS счётчик
+    // FPS
     S.fpsFrames++;
     S.fpsTimer+=dt;
     if(S.fpsTimer>=500){
@@ -8503,9 +8505,13 @@ function loop(now){
       S.fpsFrames=0;S.fpsTimer=0;
     }
 
-    if(S.scene==='playing'&&!S.gameOver)update(dt);
+    // В настройках игра на паузе
+    if(S.scene==='settings'){
+      S.lastTime=now;
+    } else if(S.scene==='playing'&&!S.gameOver){
+      update(dt);
+    }
 
-    // Затухание эффектов ВСЕГДА (фикс бледного экрана)
     if(S.shake>0)S.shake=Math.max(0,S.shake-dt*.02);
     if(S.flash>0)S.flash=Math.max(0,S.flash-dt*.003);
 
