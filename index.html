@@ -8769,36 +8769,11 @@ canvas.addEventListener('click', (e) => {
   }
 });
 
-// 7. ПЕРЕОПРЕДЕЛЯЕМ МЕНЮ (добавляем кнопки и имя)
-const originalDrawMenu = drawMenu;
-drawMenu = function() {
-  originalDrawMenu();
-  
-  // Приветствие
-  if (S.user) {
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath(); ctx.roundRect(20, H/2 - 200, 250, 50, 10); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.font = 'bold 24px Arial';
-    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillText(LOCALE[S.lang].hello + ', ' + S.user.name + '!', 40, H/2 - 175);
-  }
+// ============================================================
+// ИСПРАВЛЕННЫЙ ЗАПУСК (Финальный)
+// ============================================================
 
-  // Кнопка Моды
-  ctx.fillStyle = '#e91e63';
-  ctx.beginPath(); ctx.roundRect(W/2 - 170, H - 160, 340, 60, 12); ctx.fill();
-  ctx.strokeStyle = '#880e4f'; ctx.lineWidth = 4; ctx.stroke();
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 30px Impact';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🛠️ МОДЫ', W/2, H - 130);
-  
-  // Кнопка Языка
-  ctx.fillStyle = '#2196f3';
-  ctx.beginPath(); ctx.roundRect(20, H - 160, 150, 50, 10); ctx.fill();
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 20px Impact';
-  ctx.fillText('LANG: ' + S.lang.toUpperCase(), 95, H - 135);
-};
-
-// 8. ОБРАБОТКА ВЫБОРА ЯЗЫКА
+// 7. ОБРАБОТКА ВЫБОРА ЯЗЫКА
 canvas.addEventListener('click', (e) => {
   const p = getPos(e);
   if (S.scene === 'menu' && p.x > 20 && p.x < 170 && p.y > H - 160 && p.y < H - 110) {
@@ -8806,6 +8781,13 @@ canvas.addEventListener('click', (e) => {
     return;
   }
 });
+
+// 8. ФИКС БЛЕДНОГО ЭКРАНА
+const oldUpdate = update;
+window.update = function(dt) {
+  oldUpdate(dt);
+  if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 0.003);
+};
 
 // 9. СТАРТ
 initAuthAndMods();
@@ -8816,190 +8798,9 @@ if (!S.user) {
 }
 
 loadProgress();
-requestAnimationFrame(loop);
 
-})(); // Закрываем IIFE
-requestAnimationFrame(loop);
-
+// Закрываем игру правильно
 })();
-// ============================================================
-// ЧАСТЬ 13.5 — НАСТРОЙКИ, ДЕРЕВО, МОДЫ
-// ============================================================
-
-function drawSettingsFixed() {
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#1a2a3a');
-  bg.addColorStop(1, '#05101a');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = 'bold 56px Impact, Arial Black, sans-serif';
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 8;
-  ctx.strokeText('⚙️ НАСТРОЙКИ', W / 2, 60);
-  ctx.fillStyle = '#4fc3f7';
-  ctx.fillText('⚙️ НАСТРОЙКИ', W / 2, 60);
-
-  drawBackBtn(20, 20, 140, 50);
-
-  const panelW = 720, panelH = 580;
-  const panelX = W / 2 - panelW / 2, panelY = 120;
-  const pg = ctx.createLinearGradient(panelX, panelY, panelX, panelY + panelH);
-  pg.addColorStop(0, 'rgba(60,80,100,.95)');
-  pg.addColorStop(1, 'rgba(20,30,45,.95)');
-  ctx.fillStyle = pg;
-  ctx.beginPath();
-  ctx.roundRect(panelX, panelY, panelW, panelH, 20);
-  ctx.fill();
-  ctx.strokeStyle = '#4fc3f7';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  S.settingsToggles = [];
-  const rowH = 66;
-  const startY = panelY + 20;
-  let rowIdx = 0;
-
-  const addToggle = (label, getVal, setVal) => {
-    const ry = startY + rowIdx * rowH;
-    ctx.textAlign = 'left';
-    ctx.font = 'bold 22px Trebuchet MS, Arial';
-    ctx.fillStyle = '#e0e0e0';
-    ctx.fillText(label, panelX + 40, ry + 30);
-    const btnW = 130, btnH = 44;
-    const btnX = panelX + panelW - btnW - 40, btnY = ry + 8;
-    const val = getVal();
-    const bg2 = ctx.createLinearGradient(0, btnY, 0, btnY + btnH);
-    if (val) { bg2.addColorStop(0, '#66bb6a'); bg2.addColorStop(1, '#2e7d32'); }
-    else { bg2.addColorStop(0, '#666'); bg2.addColorStop(1, '#333'); }
-    ctx.fillStyle = bg2;
-    ctx.beginPath();
-    ctx.roundRect(btnX, btnY, btnW, btnH, 10);
-    ctx.fill();
-    ctx.strokeStyle = val ? '#1b5e20' : '#222';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 18px Impact, Arial Black, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(val ? 'ВКЛ' : 'ВЫКЛ', btnX + btnW / 2, btnY + btnH / 2);
-    S.settingsToggles.push({ x: btnX, y: btnY, w: btnW, h: btnH, action: setVal });
-    rowIdx++;
-  };
-
-  const addSlider = (label, getVal, setVal) => {
-    const ry = startY + rowIdx * rowH;
-    ctx.textAlign = 'left';
-    ctx.font = 'bold 20px Trebuchet MS, Arial';
-    ctx.fillStyle = '#e0e0e0';
-    ctx.fillText(label, panelX + 40, ry + 20);
-    const slX = panelX + 40, slY = ry + 34, slW = panelW - 160, slH = 14;
-    const val = getVal();
-    ctx.fillStyle = 'rgba(0,0,0,.5)';
-    ctx.beginPath();
-    ctx.roundRect(slX, slY, slW, slH, 7);
-    ctx.fill();
-    const fillG = ctx.createLinearGradient(slX, 0, slX + slW, 0);
-    fillG.addColorStop(0, '#4fc3f7');
-    fillG.addColorStop(1, '#0288d1');
-    ctx.fillStyle = fillG;
-    ctx.beginPath();
-    ctx.roundRect(slX, slY, slW * val, slH, 7);
-    ctx.fill();
-    const knobX = slX + slW * val;
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(knobX, slY + slH / 2, 12, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#0288d1';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.textAlign = 'right';
-    ctx.font = 'bold 18px Arial';
-    ctx.fillStyle = '#4fc3f7';
-    ctx.fillText(Math.round(val * 100) + '%', panelX + panelW - 40, ry + 20);
-    S.settingsToggles.push({ slider: true, x: slX, y: slY - 10, w: slW, h: slH + 20, setVal: setVal });
-    rowIdx++;
-  };
-
-  addToggle('🎵 Музыка', () => S.musicOn, v => { S.musicOn = v; Sound.init(); Sound.resume(); Sound.setMusicEnabled(v); saveProgress(true); });
-  addSlider('🔊 Громкость музыки', () => S.musicVolume, v => { S.musicVolume = v; Sound.setMusicVolume(v); saveProgress(true); });
-  addToggle('🔔 Звуки', () => S.soundOn, v => { S.soundOn = v; Sound.init(); Sound.resume(); Sound.setSfxEnabled(v); if (v) Sound.play('click'); saveProgress(true); });
-  addSlider('🔊 Громкость звуков', () => S.soundVolume, v => { S.soundVolume = v; Sound.setVolume(v); saveProgress(true); });
-  addToggle('📊 Показывать FPS', () => S.showFPS, v => { S.showFPS = v; saveProgress(true); });
-  addToggle('📏 Показывать сетку', () => S.showGrid, v => { S.showGrid = v; bgCacheKey = ''; saveProgress(true); });
-  addToggle('❤️ Полоски здоровья', () => S.showHPBars, v => { S.showHPBars = v; saveProgress(true); });
-
-  const testY = startY + rowIdx * rowH + 10;
-  const testBtnW = 260, testBtnH = 50;
-  const testBtnX = panelX + panelW / 2 - testBtnW / 2;
-  const testHover = S.cursorX >= testBtnX && S.cursorX <= testBtnX + testBtnW && S.cursorY >= testY && S.cursorY <= testY + testBtnH;
-  const tbg = ctx.createLinearGradient(0, testY, 0, testY + testBtnH);
-  if (testHover) { tbg.addColorStop(0, '#ab47bc'); tbg.addColorStop(1, '#6a1b9a'); }
-  else { tbg.addColorStop(0, '#9c27b0'); tbg.addColorStop(1, '#4a148c'); }
-  ctx.fillStyle = tbg;
-  ctx.beginPath();
-  ctx.roundRect(testBtnX, testY, testBtnW, testBtnH, 12);
-  ctx.fill();
-  ctx.strokeStyle = '#2a0050';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 22px Impact, Arial Black, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🔊 ПРОВЕРИТЬ ЗВУК', testBtnX + testBtnW / 2, testY + testBtnH / 2);
-  S.settingsToggles.push({ testSound: true, x: testBtnX, y: testY, w: testBtnW, h: testBtnH });
-
-  ctx.fillStyle = 'rgba(255,255,255,.4)';
-  ctx.font = 'italic 14px Arial';
-  ctx.fillText('v1.1 • Plants vs Zombies Fan Remake', W / 2, H - 30);
-}
-
-function waterTreeFixed() {
-  if (S.treeWater <= 0) {
-    showSaveToast('❌ Нет поливки!');
-    Sound.play('error');
-    return;
-  }
-  let watered = 0;
-  while (S.treeWater > 0 && S.treeWaterNeeded > 0) {
-    S.treeWater--;
-    S.treeWaterNeeded--;
-    watered++;
-  }
-  Sound.play('water');
-  if (S.treeWaterNeeded <= 0) {
-    S.treeLevel++;
-    S.treeWaterNeeded = 5 + S.treeLevel * 3;
-    showSaveToast('🌳 Дерево выросло! Ур. ' + S.treeLevel + '!');
-    Sound.play('levelup');
-    if (S.treeLevel % 10 === 0) {
-      const allPlantsList = Object.keys(ALL_PLANTS).filter(p => !S.ownedPlants.includes(p));
-      if (allPlantsList.length > 0) {
-        const newPlant = allPlantsList[Math.floor(Math.random() * allPlantsList.length)];
-        S.ownedPlants.push(newPlant);
-        showSaveToast('🌻 Новое растение: ' + ALL_PLANTS[newPlant].name);
-        Sound.play('reward');
-      }
-    }
-    if (S.treeLevel >= 10) unlockAchievement('tree_10');
-    if (S.treeLevel >= 25) unlockAchievement('tree_25');
-    if (S.treeLevel >= 50) unlockAchievement('tree_50');
-    if (S.treeLevel >= 100) unlockAchievement('tree_100');
-    S.flash = 0.3;
-    S.shake = 10;
-    for (let i = 0; i < 50; i++) {
-      addParticles(W / 2, H - 250, 1, '#a5d66a', 8, 1200, 6);
-      addParticles(W / 2, H - 250, 1, '#ffd700', 6, 1000, 4);
-    }
-  }
-  S.treeLastTip = S.time;
-  addParticles(W / 2, H - 250, 15, '#4fc3f7', 5, 600, 5);
-  saveProgress(true);
-}
 </script>
 </body>
 </html>
