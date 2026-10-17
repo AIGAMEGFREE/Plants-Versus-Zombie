@@ -8604,23 +8604,20 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 
-loadProgress();
 // ============================================================
-// ГЛОБАЛЬНЫЙ ПАТЧ: АККАУНТ, МОДЫ, НАСТРОЙКИ, ПОЛИВКА, ЯЗЫК
+// ФИНАЛЬНЫЙ БЛОК (Аккаунт, Моды, Фиксы)
 // ============================================================
 
-// 1. ЯЗЫКИ
 S.lang = 'ru';
 const LOCALE = {
-  ru: { hello: 'Привет', play: 'ИГРАТЬ', mods: 'МОДЫ', settings: 'НАСТРОЙКИ', shop: 'МАГАЗИН' },
-  en: { hello: 'Hello', play: 'PLAY', mods: 'MODS', settings: 'SETTINGS', shop: 'SHOP' }
+  ru: { hello: 'Привет', mods: 'МОДЫ', lang: 'ЯЗЫК: РУ' },
+  en: { hello: 'Hello', mods: 'MODS', lang: 'LANG: EN' }
 };
 
-// 2. ДЕРЕВО: ИСПРАВЛЕННАЯ ПОЛИВКА (без дюпа денег)
-waterTree = function() {
+// Фикс поливки (без дюпа денег)
+window.waterTree = function() {
   if (S.treeWater <= 0) {
     showSaveToast('❌ Нет поливки!');
-    Sound.play('error');
     return;
   }
   let watered = 0;
@@ -8629,43 +8626,27 @@ waterTree = function() {
     S.treeWaterNeeded--;
     watered++;
   }
-  Sound.play('water');
+  if (typeof Sound !== 'undefined') Sound.play('water');
   if (S.treeWaterNeeded <= 0) {
     S.treeLevel++;
     S.treeWaterNeeded = 5 + S.treeLevel * 3;
     showSaveToast('🌳 Дерево выросло! Ур. ' + S.treeLevel + '!');
-    Sound.play('levelup');
-    // Никаких монет за рост дерева (убрали дюп)
     if (S.treeLevel % 10 === 0) {
       const allPlantsList = Object.keys(ALL_PLANTS).filter(p => !S.ownedPlants.includes(p));
       if (allPlantsList.length > 0) {
         const newPlant = allPlantsList[Math.floor(Math.random() * allPlantsList.length)];
         S.ownedPlants.push(newPlant);
         showSaveToast('🌻 Новое растение: ' + ALL_PLANTS[newPlant].name);
-        Sound.play('reward');
       }
     }
     S.flash = 0.3;
     S.shake = 10;
-    for (let i = 0; i < 50; i++) {
-      addParticles(W / 2, H - 250, 1, '#a5d66a', 8, 1200, 6);
-      addParticles(W / 2, H - 250, 1, '#ffd700', 6, 1000, 4);
-    }
   }
   S.treeLastTip = S.time;
-  addParticles(W / 2, H - 250, 15, '#4fc3f7', 5, 600, 5);
   saveProgress(true);
 };
 
-// 3. ФИКС БЛЕДНОГО ЭКРАНА
-// Заменяем update, чтобы flash уменьшался всегда
-const originalUpdate = update;
-update = function(dt) {
-  originalUpdate(dt);
-  if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 0.003);
-};
-
-// 4. АККАУНТ И МОДЫ
+// Аккаунт
 function initAuthAndMods() {
   if (!S.user) {
     S.user = JSON.parse(localStorage.getItem('pvz_user') || 'null');
@@ -8677,53 +8658,6 @@ function initAuthAndMods() {
   }
 }
 
-function drawAuthScreen() {
-  ctx.fillStyle = '#1a0f25'; ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.font = 'bold 50px Impact'; ctx.fillText('РЕГИСТРАЦИЯ', W / 2, 150);
-  
-  ctx.font = '20px Arial';
-  ctx.fillText('Введи своё имя и нажми ENTER:', W / 2, 250);
-  
-  ctx.fillStyle = '#333';
-  ctx.fillRect(W / 2 - 200, 280, 400, 60);
-  ctx.strokeStyle = '#7cb342';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(W / 2 - 200, 280, 400, 60);
-  
-  ctx.fillStyle = '#fff';
-  ctx.font = '30px monospace';
-  ctx.fillText(S.loginInput + (Math.floor(S.time / 500) % 2 === 0 ? '|' : ''), W / 2, 310);
-}
-
-function drawModsScreen() {
-  ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, W, H);
-  drawBackBtn(20, 20, 140, 50);
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.font = 'bold 50px Impact'; ctx.fillStyle = '#38bdf8';
-  ctx.fillText('СОЗДАНИЕ МОДОВ', W / 2, 60);
-  
-  ctx.font = '24px Arial'; ctx.fillStyle = '#fff';
-  ctx.fillText('Привет, ' + (S.user ? S.user.name : 'Гость') + '!', W / 2, 150);
-  
-  // Кнопка Создать
-  ctx.fillStyle = '#e91e63';
-  ctx.beginPath(); ctx.roundRect(W / 2 - 150, 200, 300, 60, 10); ctx.fill();
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 24px Arial';
-  ctx.fillText('СОЗДАТЬ РАСТЕНИЕ', W / 2, 230);
-  
-  // Список модов
-  let y = 300;
-  for (let id in S.customPlants) {
-    ctx.fillStyle = '#333';
-    ctx.fillRect(100, y, 800, 50);
-    ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
-    ctx.fillText(S.customPlants[id].name, 120, y + 25);
-    y += 60;
-  }
-}
-
-// 5. ДОБАВЛЯЕМ ОБРАБОТКУ КЛАВИШ ДЛЯ АККАУНТА
 document.addEventListener('keydown', (e) => {
   if (S.scene === 'auth') {
     if (e.key === 'Enter' && S.loginInput.trim()) {
@@ -8738,68 +8672,116 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// 6. ПЕРЕХВАТ КЛИКОВ ДЛЯ НОВЫХ КНОПОК
-const originalClick = canvas.onclick;
+// Отрисовка меню с новыми кнопками
+const oldDrawMenu = drawMenu;
+window.drawMenu = function() {
+  oldDrawMenu();
+  if (S.user) {
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(20, H/2 - 200, 250, 50, 10); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(LOCALE[S.lang].hello + ', ' + S.user.name + '!', 40, H/2 - 175);
+  }
+  ctx.fillStyle = '#e91e63';
+  ctx.beginPath(); ctx.roundRect(W/2 - 170, H - 160, 340, 60, 12); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 30px Impact';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🛠️ ' + LOCALE[S.lang].mods, W/2, H - 130);
+  ctx.fillStyle = '#2196f3';
+  ctx.beginPath(); ctx.roundRect(20, H - 160, 150, 50, 10); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 20px Impact';
+  ctx.fillText(LOCALE[S.lang].lang, 95, H - 135);
+};
+
+// Отрисовка новых экранов
+const oldRender = render;
+window.render = function() {
+  if (S.scene === 'auth') {
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle = '#1a0f25'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = 'bold 50px Impact'; ctx.fillText('РЕГИСТРАЦИЯ', W / 2, 150);
+    ctx.font = '20px Arial';
+    ctx.fillText('Введи своё имя и нажми ENTER:', W / 2, 250);
+    ctx.fillStyle = '#333'; ctx.fillRect(W / 2 - 200, 280, 400, 60);
+    ctx.strokeStyle = '#7cb342'; ctx.lineWidth = 3; ctx.strokeRect(W / 2 - 200, 280, 400, 60);
+    ctx.fillStyle = '#fff'; ctx.font = '30px monospace';
+    ctx.fillText(S.loginInput + (Math.floor(S.time / 500) % 2 === 0 ? '|' : ''), W / 2, 310);
+    return;
+  }
+  if (S.scene === 'mods') {
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, W, H);
+    drawBackBtn(20, 20, 140, 50);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = 'bold 50px Impact'; ctx.fillStyle = '#38bdf8';
+    ctx.fillText('СОЗДАНИЕ МОДОВ', W / 2, 60);
+    ctx.font = '24px Arial'; ctx.fillStyle = '#fff';
+    ctx.fillText('Привет, ' + (S.user ? S.user.name : 'Гость') + '!', W / 2, 150);
+    ctx.fillStyle = '#e91e63';
+    ctx.beginPath(); ctx.roundRect(W / 2 - 150, 200, 300, 60, 10); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 24px Arial';
+    ctx.fillText('СОЗДАТЬ РАСТЕНИЕ', W / 2, 230);
+    let y = 300;
+    for (let id in S.customPlants) {
+      ctx.fillStyle = '#333'; ctx.fillRect(100, y, 800, 50);
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+      ctx.fillText(S.customPlants[id].name, 120, y + 25);
+      y += 60;
+    }
+    return;
+  }
+  oldRender();
+};
+
+// Обработка кликов
 canvas.addEventListener('click', (e) => {
   const p = getPos(e);
   if (S.scene === 'menu') {
-    // Кнопка Моды
     if (p.x > W/2 - 170 && p.x < W/2 + 170 && p.y > H - 160 && p.y < H - 100) {
       S.scene = 'mods'; return;
     }
+    if (p.x > 20 && p.x < 170 && p.y > H - 160 && p.y < H - 110) {
+      S.lang = S.lang === 'ru' ? 'en' : 'ru'; return;
+    }
   }
   if (S.scene === 'mods') {
-    // Кнопка Назад
     if (p.x > 20 && p.x < 160 && p.y > 20 && p.y < 70) {
       S.scene = 'menu'; return;
     }
-    // Кнопка Создать
     if (p.x > W/2 - 150 && p.x < W/2 + 150 && p.y > 200 && p.y < 260) {
-      let name = prompt("Название растения:");
+      let name = prompt("Название растения (на англ):");
       if (name) {
         let id = 'mod_' + Date.now();
         S.customPlants[id] = { id: id, name: name, cost: 100, cd: 7500, hp: 100, sleep: 'day' };
         ALL_PLANTS[id] = S.customPlants[id];
         S.ownedPlants.push(id);
         localStorage.setItem('pvz_custom_plants', JSON.stringify(S.customPlants));
-        alert('Мод создан и добавлен в инвентарь!');
+        alert('Мод создан!');
       }
       return;
     }
   }
 });
 
-// ============================================================
-// ИСПРАВЛЕННЫЙ ЗАПУСК (Финальный)
-// ============================================================
-
-// 7. ОБРАБОТКА ВЫБОРА ЯЗЫКА
-canvas.addEventListener('click', (e) => {
-  const p = getPos(e);
-  if (S.scene === 'menu' && p.x > 20 && p.x < 170 && p.y > H - 160 && p.y < H - 110) {
-    S.lang = S.lang === 'ru' ? 'en' : 'ru';
-    return;
-  }
-});
-
-// 8. ФИКС БЛЕДНОГО ЭКРАНА
+// Фикс бледного экрана
 const oldUpdate = update;
 window.update = function(dt) {
   oldUpdate(dt);
   if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 0.003);
 };
 
-// 9. СТАРТ
+// ЗАПУСК ИГРЫ
 initAuthAndMods();
 if (!S.user) {
   S.scene = 'auth';
 } else {
   S.scene = 'menu';
 }
-
 loadProgress();
+requestAnimationFrame(loop);
 
-// Закрываем игру правильно
 })();
 </script>
 </body>
