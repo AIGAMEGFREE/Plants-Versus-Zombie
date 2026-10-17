@@ -7698,9 +7698,8 @@ function drawSettings(){
   ctx.fillStyle='#4fc3f7';
   ctx.fillText('⚙️ НАСТРОЙКИ',W/2,60);
 
-  // Кнопка Назад
   drawBackBtn(20,20,140,50);
-  S.backBtn = {x:20, y:20, w:140, h:50};
+  S.backBtn = {x:20, y:20, w:140, h:50}; // ФИКС: сохраняем кнопку назад, чтобы работала
 
   const panelW=720;
   const panelH=580;
@@ -7788,10 +7787,10 @@ function drawSettings(){
     rowIdx++;
   };
 
-  addToggle('🎵 Музыка',()=>S.musicOn,v=>{S.musicOn=v;if(typeof Sound!=='undefined')Sound.setMusicEnabled(v);saveProgress(true);});
-  addSlider('🔊 Громкость музыки',()=>S.musicVolume,v=>{S.musicVolume=v;if(typeof Sound!=='undefined')Sound.setMusicVolume(v);});
-  addToggle('🔔 Звуки',()=>S.soundOn,v=>{S.soundOn=v;if(typeof Sound!=='undefined'){Sound.setSfxEnabled(v);if(v)Sound.play('click');}saveProgress(true);});
-  addSlider('🔊 Громкость звуков',()=>S.soundVolume,v=>{S.soundVolume=v;if(typeof Sound!=='undefined')Sound.setVolume(v);});
+  addToggle('🎵 Музыка',()=>S.musicOn,v=>{S.musicOn=v;Sound.setMusicEnabled(v);saveProgress(true);});
+  addSlider('🔊 Громкость музыки',()=>S.musicVolume,v=>{S.musicVolume=v;Sound.setMusicVolume(v);});
+  addToggle('🔔 Звуки',()=>S.soundOn,v=>{S.soundOn=v;Sound.setSfxEnabled(v);if(v)Sound.play('click');saveProgress(true);});
+  addSlider('🔊 Громкость звуков',()=>S.soundVolume,v=>{S.soundVolume=v;Sound.setVolume(v);});
   addToggle('📊 Показывать FPS',()=>S.showFPS,v=>{S.showFPS=v;saveProgress(true);});
   addToggle('📏 Показывать сетку',()=>S.showGrid,v=>{S.showGrid=v;bgCacheKey='';saveProgress(true);});
   addToggle('❤️ Полоски здоровья',()=>S.showHPBars,v=>{S.showHPBars=v;saveProgress(true);});
